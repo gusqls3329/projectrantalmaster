@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.team5.projrental.product.ProductMapper">
+
+
+    <!--    -->
+    <!--    for test-->
+    <select id="getIStatus">
+        select istatus from product where iproduct = #{iproduct}
+    </select>
+    <!--    -->
+    <!--    -->
+
+    <!--    -->
+    <!--    for test-->
+    <select id="getViewForTest">
+        select view from product where iproduct = #{iproduct}
+    </select>
+    <!--    -->
+    <!--    for test-->
+    <select id="getPicsCountForTest">
+        select count(*) from pics where iproduct = #{iproduct}
+    </select>
+    <!--    -->
+    <!--    -->
+    <!--    -->
+    <!--    for test-->
+    <select id="getAllIpics">
+        select ipics from pics where iproduct = #{iproduct}
+    </select>
+    <!--    -->
+    <!--    -->
+
+
+    <!--    -->
+    <select id="getRentalPricePerDay">
+        select rental_price from product where iproduct = #{iproduct}
+    </select>
+    <!--    -->
+
+
+    <!--    -->
+    <select id="checkIuser">
+        select count(iuser) from user where iuser = #{iuser}
+    </select>
+
+    <select id="checkIproduct">
+        select count(iproduct) from product where iproduct = #{iproduct}
+    </select>
+
+    <!--    -->
+
+    <!--    -->
+    <update id="countView">
+        <selectKey keyProperty="beforeView" resultType="java.lang.Integer" order="BEFORE">
+            select view from product where iproduct = #{iproduct}
+        </selectKey>
+        update product set view = 1 + #{beforeView} where iproduct = #{iproduct}
+    </update>
+    <!--    -->
+
+
+    <select id="getProductList">
+        select U.iuser, U.nick, U.stored_pic as userStoredPic, U.iauth, P.iproduct,
+        P.addr, P.rest_addr as restAddr, P.title, P.stored_pic as prodMainStoredPic,
+        P.price, P.rental_price as rentalPrice, P.deposit, P.rental_start_date as rentalStartDate,
+        P.rental_end_date as rentalEndDate, (select count(L.iproduct) from like L where L.iproduct = P.iproduct) as prodLike,
+        P.istatus,
+        if(L.iuser > 0, 1, 0) as isLiked, P.view, P.inventory, P.imain_category as mainCategory, P.isub_category as subCategory
+        from product P
+        join user U on P.iuser = U.iuser
+        left join like L on P.iproduct = L.iproduct
+        <if test="loginedIuser != null and loginedIuser > 0">
+            and
+            L.iuser = #{loginedIuser}
+        </if>
+        <where>
+            P.istatus in (0
+            <if test="loginedIuserForHiddenProduct != null and loginedIuserForHiddenProduct > 0">
+                , -2
+            </if>
+            )
+            <if test="icategory != null">
+                and P.imain_category = #{icategory.mainCategory} and P.isub_category = #{icategory.subCategory}
+            </if>
+            <if test="search != null">
+                and P.title like concat('%', #{search}, '%')
+            </if>
+            <if test="targetIuser != null">
+                and P.iuser = #{targetIuser}
+            </if>
+        </where>
+        <if test="sort == 2">
+            order by P.view desc,
+        </if>
+        <if test="sort == 1">
+            order by prodLike desc,
+        </if>
+        <if test="sort == null">
+            order by
+        </if>
+        P.iproduct desc
+        <if test="page != null and prodPerPage != null and prodPerPage != 0">
+            limit #{page}, #{prodPerPage}
+        </if>
+
+    </select>
+
+
+    <select id="getProduct">
+        select U.iuser, U.nick, U.stored_pic as userStoredPic, U.iauth,
+        P.iproduct, P.addr, P.rest_addr as restAddr, P.title, P.stored_pic as
+        prodMainStoredPic, P.price,
+        P.rental_price as rentalPrice, P.rental_start_date as rentalStartDate,
+        P.rental_end_date as rentalEndDate, COUNT(L.iproduct) as prodLike, P.istatus,
+        P.contents, P.deposit, P.buy_date as buyDate, P.x, P.y,
+        if(L.iuser > 0, 1, 0) as isLiked, P.view, P.inventory, P.imain_category as mainCategory, P.isub_category as subCategory
+        from product P
+        join user U on P.iuser = U.iuser
+        left join like L on P.iproduct = L.iproduct and L.iuser = #{iuser}
+        <where>
+            P.iproduct = #{iproduct} and
+            P.istatus = 0 and
+            P.imain_category = #{icategory.mainCategory} and
+            P.isub_category = #{icategory.subCategory}
+
+        </where>
+
+    </select>
+    <!--    거래 불가능 날짜 가져오기-->
+    <select id="findDisabledDatesBy">
+        select PA.rental_start_date as rentalStartDate, PA.rental_end_date as rentalEndDate
+        from payment PA
+        JOIN product_payment PP ON PA.ipayment = PP.ipayment
+        join payment_status PS on PA.ipayment = PS.ipayment
+        where PP.iproduct = #{iproduct}
+        and rental_end_date >= #{refStartDate}
+        and rental_start_date <![CDATA[<=]]> #{refEndDate}
+        and PS.istatus in (0, -4, 2, 3)
+        group by PS.ipayment
+    </select>
+
+    <select id="getProdEctPics">
+        select ipics, stored_pic as prodPics from pics
+        where iproduct = #{iproduct}
+    </select>
+
+    <!--    <select id="getIEupmyun">-->
+    <!--        select ieupmyun from eupmyun where eupmyun in (-->
+    <!--        <foreach collection="eupmyun" item="eup" separator=", ">-->
+    <!--            #{eup}-->
+    <!--        </foreach>-->
+    <!--        )-->
+    <!--    </select>-->
+
+    <insert id="insProduct" useGeneratedKeys="true" keyProperty="iproduct">
+        insert into product
+        (iuser, title, contents, addr, rest_addr,
+        price, rental_price, deposit, buy_date, rental_start_date, rental_end_date, imain_category,
+        isub_category, x, y,
+        inventory)
+        values
+        (#{iuser}, #{title}, #{contents}, #{addr}, #{restAddr},
+        #{price}, #{rentalPrice}, #{deposit}, #{buyDate}, #{rentalStartDate}, #{rentalEndDate}, #{icategory.mainCategory},
+        #{icategory.subCategory}, #{x},
+        #{y},
+        #{inventory})
+    </insert>
+
+    <insert id="insPics">
+        insert into pics (iproduct, stored_pic)
+        values
+        <foreach collection="pics" item="pic" separator=", ">
+            (#{iproduct}, #{pic})
+        </foreach>
+
+    </insert>
+
+    <delete id="deletePic">
+        delete from pics
+        <where>
+            iproduct = #{iproduct} and ipics in (
+            <foreach collection="delPics" item="pic" separator=", ">
+                #{pic}
+            </foreach>
+            )
+        </where>
+    </delete>
+
+    <select id="getProductForUpdate">
+        select stored_pic as storedPic, price, deposit, buy_date as buyDate, rental_start_date as rentalStartDate,
+        rental_end_date as rentalEndDate
+        from product
+        where iproduct = #{iproduct} and istatus = 0
+        <if test="iuser != null and iuser != 0">
+            and iuser = #{iuser}
+        </if>
+
+    </select>
+
+    <select id="getPicCount">
+        select count(iproduct) from pics where iproduct = #{iproduct}
+    </select>
+
+
+    <update id="updateProduct">
+        update product
+        <set>
+            <if test="icategory != null">
+                imain_category = #{icategory.mainCategory},
+                isub_category = #{icategory.subCategory}
+            </if>
+            <if test="addr != null">
+                , addr = #{addr}
+            </if>
+            <if test="restAddr != null">
+                , rest_addr = #{restAddr}
+            </if>
+            <if test="title != null">
+                , title = #{title}
+            </if>
+            <if test="contents != null">
+                , contents = #{contents}
+            </if>
+            <if test="storedMainPic != null">
+                , stored_pic = #{storedMainPic}
+            </if>
+            <if test="price != null">
+                , price = #{price}
+            </if>
+            <if test="rentalPrice != null">
+                , rental_price = #{rentalPrice}
+            </if>
+            <if test="deposit != null">
+                , deposit = #{deposit}
+            </if>
+            <if test="buyDate != null">
+                , buy_date = #{buyDate}
+            </if>
+            <if test="rentalStartDate != null">
+                , rental_start_date = #{rentalStartDate}
+            </if>
+            <if test="rentalEndDate != null">
+                , rental_end_date = #{rentalEndDate}
+            </if>
+            <if test="x != null">
+                , x = #{x}
+            </if>
+            <if test="y != null">
+                , y = #{y}
+            </if>
+            <if test="inventory != null">
+                , inventory = #{inventory}
+            </if>
+        </set>
+        where iproduct = #{iproduct} and iuser = #{iuser}
+
+    </update>
+
+    <!--
+
+
+        삭제를 거래중이면 불가능하게? -> 별로인듯 함 그냥 -1 처리 해 두기만 하면 판매자 정보를 join 으로 조회할 수 있음.
+
+        div * -1
+        -1 -> -1이 아닌곳을 -1 로
+        -2 -> 0인 곳을 -2 로 update
+        결과가 0 이면 -> 잘못된 정보 기입됨. ex 발생.
+    -->
+    <update id="changeProdStatus">
+        update product
+        set istatus = #{div}
+        where iproduct = #{iproduct} and iuser = #{iuser} and istatus
+        <if test="div == -1">
+            != #{div}
+        </if>
+        <if test="div == -2">
+            = 0
+        </if>
+    </update>
+
+    <update id="updateIpayment">
+        update product set ipayment = #{ipayment} where iproduct = #{iproduct}
+    </update>
+
+    <select id="getReview">
+        select R.ireview, R.contents, R.rating, U.iuser, U.nick, U.stored_pic as userProfPic
+        from product_payment PP
+        JOIN payment PA ON PP.ipayment = PA.ipayment
+        JOIN review R ON PA.ipayment = R.ipayment
+        JOIN payment_status PS ON PA.ipayment = PS.ipayment
+        JOIN user U ON U.iuser = R.iuser
+        where PP.iproduct = #{iproduct} and PS.istatus != -1 and PS.istatus != -2
+        and R.contents != '' and R.rating > 0
+        GROUP BY R.ireview
+        <if test="page != null and prodPerPage != null">
+            limit #{page}, #{prodPerPage}
+        </if>
+    </select>
+
+    <select id="getLendStartDateAndEndDate">
+        SELECT PA.rental_start_date as rentalStartDate, PA.rental_end_date as rentalEndDate FROM product_payment PP
+        JOIN payment PA ON PP.ipayment = PA.ipayment
+        WHERE PP.iproduct = #{iproduct}
+    </select>
+
+    <select id="getPicsAllBy">
+        select stored_pic from pics where ipics in
+        (
+        <foreach collection="ipics" item="pic" separator=", ">
+            #{pic}
+        </foreach>
+        )
+    </select>
+
+
+    <select id="findStockCountBy">
+        select inventory
+        from product where iproduct = #{iproduct}
+    </select>
+
+    <select id="findMainPicPathForDelBy">
+        select stored_pic from product where iproduct = #{iproduct}
+    </select>
+    <select id="findSubPicsPathForDelBy">
+        select stored_pic from pics where iproduct = #{iproduct}
+    </select>
+
+    <select id="getAllIproductsLimit">
+        select iproduct from product order by iproduct desc limit 0, #{limit}
+    </select>
+
+    <select id="checkStatusBothAndGetIproduct">
+        select P.iproduct, PS.istatus
+        from payment_status PS
+        join payment PA on PS.ipayment = PA.ipayment
+        join product_payment PP on PA.ipayment = PP.ipayment
+        join product P on P.iproduct = PP.iproduct
+        where PS.ipayment = #{ipayment}
+
+    </select>
+</mapper>

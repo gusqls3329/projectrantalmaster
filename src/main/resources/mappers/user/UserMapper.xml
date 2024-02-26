@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.team5.projrental.user.UserMapper">
+    <insert id="insUser" useGeneratedKeys="true" keyProperty="iuser">
+        INSERT INTO user
+        SET addr = #{addr}
+        <if test="iauth > 0">
+            , iauth = #{iauth}
+        </if>
+        , rest_addr = #{restAddr}
+        , uid = #{uid}
+        , upw = #{upw}
+        , nick = #{nick}
+        , phone = #{phone}
+        , email = #{email}
+        , y = #{y}
+        , x = #{x}
+    </insert>
+    <insert id="insCom">
+        INSERT INTO comp_info
+        set comp_code = #{compCode}
+        , comp_nm = #{compNm}
+        , iuser = #{iuser}
+    </insert>
+    <select id="selUserSignup">
+        select
+    </select>
+    <!--    auth join 필요 없음 user 데이터만 가져오기.
+         -->
+    <select id="selSignin">
+        SELECT u.iuser,u.iauth, a.auth, u.upw, u.uid, firebase_token AS firebaseToken
+        FROM user u
+        JOIN auth a
+        ON a.iauth = u.iauth
+        WHERE u.uid = #{uid}
+    </select>
+
+    <update id="patchToken">
+        update user set firebase_token = #{firebaseToken} where iuser = #{iuser}
+    </update>
+
+    <update id="updUserFirebaseToken">
+        UPDATE user
+        SET firebase_token = #{firebaseToken}
+        WHERE iuser = #{iuser}
+    </update>
+
+    <select id="selFindUid">
+        SELECT uid, upw, auth
+        FROM users
+        WHERE phone = #{phone}
+    </select>
+
+    <update id="upFindUpw">
+        UPDATE users
+        SET upw = #{upw}
+        WHERE phone = #{phone}
+        and uid = #{uid}
+    </update>
+
+    <update id="changeUser">
+        UPDATE users us
+        Left JOIN user u
+        ON u.iuser = us.iuser
+        <set>
+            <if test="nick != null and nick != '' ">
+                u.nick =#{nick}
+            </if>
+            <if test="chPic != null and chPic != '' ">
+                , u.stored_pic =#{chPic}
+            </if>
+            <if test="upw != null and upw != '' ">
+                , us.upw =#{upw}
+            </if>
+            <if test="phone != null and phone != '' ">
+                , us.phone =#{phone}
+            </if>
+            <if test="addr != null and addr != '' ">
+                , u.addr = #{addr}
+                , u.y = #{y}
+                , u.x = #{x}
+            </if>
+            <if test="restAddr != null and restAddr != '' ">
+                ,u.rest_addr =#{restAddr}
+            </if>
+            <if test="email != null and email != '' ">
+                ,us.email = #{email}
+            </if>
+        </set>
+        where us.iuser = #{iuser}
+    </update>
+
+    <delete id="delUser">
+        DELETE FROM user
+        WHERE iuser = #{iuser}
+        and uid = #{uid}
+        and phone = #{phone}
+    </delete>
+    <select id="seldelUserPay">
+        SELECT COUNT(pai.ipayment) + COUNT(pr.iproduct)
+        from payment pa
+        JOIN product pr
+        on pa.iproduct = pr.iproduct
+        AND pr.`status` = 'ACTIVATED'
+        JOIN payment_info pai
+        ON pai.ipayment = pa.ipayment
+        AND pai.`status` = 'ACTIVATED'
+        WHERE pa.iusers = #{iuser} OR pr.iusers = {iuser}
+    </select>
+
+
+    <delete id="delUserProPic">
+        DELETE FROM pics
+        where iproduct in (
+        <foreach collection="iproducts" item="iproduct" separator=",">
+            iproduct
+        </foreach>
+        )
+    </delete>
+
+    <delete id="delLike">
+        delete from like
+        where iuser in (
+        <foreach collection="iusers" item="iuser" separator=",">
+            iuser
+        </foreach>
+        )
+    </delete>
+
+    <delete id="delRev">
+        delete from review
+        where iuser in (
+        <foreach collection="iusers" item="iuser" separator=",">
+            iuser
+        </foreach>
+        )
+    </delete>
+
+    <!--    채팅 개수 가져오기 -> 채팅 개수가 1이상일 경우만 수행,
+                                채팅 삭제 개수가 채팅 개수와 동일하지 않으면 예외 발생-->
+    <select id="getUserChatCount">
+        select count(ichat) from chat_user where iusers = #{iuser}
+    </select>
+    <!--    -->
+    <!--    채팅 삭제 (-1 인 곳만)-->
+    <update id="delUserChat">
+        UPDATE chat_user
+        SET status = 'DELETED'
+        WHERE iusers = #{iuser};
+    </update>
+    <!--    -->
+    <select id="selUser">
+        SELECT u.y, u.x, u.nick,  u.stored_pic as storedPic, us.phone, us.email, u.rating,  u.addr, u.rest_addr as restAddr, us.auth
+        FROM users us
+        Left JOIN user u
+        ON us.iuser = u.iuser
+        WHERE us.iuser = #{iuser}
+    </select>
+
+
+    <!--예외처리-->
+    <select id="selLoginStatus">
+        SELECT u.`status`
+        FROM users us
+        LEFT JOIN `user` u
+        ON us.iuser = u.iuser
+        WHERE us.uid = #{uid}
+    </select>
+
+    <select id="selpatchUser">
+        SELECT COUNT(pai.ipayment) + COUNT(pr.iproduct)
+        from payment pa
+        JOIN product pr
+        on pa.iproduct = pr.iproduct
+        AND pr.`status` NOT IN ('COMPLETED')
+        JOIN payment_info pai
+        ON pai.ipayment = pa.ipayment
+        AND pai.`status` NOT IN ('COMPLETED')
+        WHERE pa.iusers = #{iuser} OR pr.iusers = #{iuser}
+
+    </select>
+
+    <select id="checkUserUid">
+        SELECT count(iuser)
+        FROM users
+        WHERE uid = #{obj}
+    </select>
+
+    <select id="checkUserNickUser">
+        SELECT count(iuser)
+        FROM user
+        WHERE nick = #{obj}
+    </select>
+
+    <select id="getCompInf">
+        SELECT comp_code as compCode, comp_nm as compNm
+        FROM comp
+        WHERE iuser = #{iuser}
+    </select>
+
+    <update id="changeCompInfo">
+        uUPDATE users us
+        Left JOIN comp c
+        ON c.iuser = us.iuser
+        <set>
+            <if test="nick != null and nick != '' ">
+                c.nick =#{nick}
+            </if>
+            <if test="chPic != null and chPic != '' ">
+                , c.stored_pic =#{chPic}
+            </if>
+            <if test="upw != null and upw != '' ">
+                , us.upw =#{upw}
+            </if>
+            <if test="phone != null and phone != '' ">
+                , us.phone =#{phone}
+            </if>
+            <if test="addr != null and addr != '' ">
+                , c.addr = #{addr}
+                , c.y = #{y}
+                , c.x = #{x}
+            </if>
+            <if test="restAddr != null and restAddr != '' ">
+                ,c.rest_addr =#{restAddr}
+            </if>
+            <if test="email != null and email != '' ">
+                ,us.email = #{email}
+            </if>
+            <if test="compCode != null and compCode > 0">
+                c.comp_code = #{compCode}
+            </if>
+            <if test="compNm != null">
+                , c.comp_nm = #{compNm}
+            </if>
+            <if test="compCeo != null">
+                , c.comp_ceo = #{compCeo}
+            </if>
+            <if test="staredAt != null">
+                , c.stared_at = #{staredAt}
+            </if>
+
+        </set>
+        where us.iuser = #{iuser}
+    </update>
+</mapper>

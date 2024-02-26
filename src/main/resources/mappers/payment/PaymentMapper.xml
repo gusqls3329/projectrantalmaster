@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.team5.projrental.payment.PaymentMapper">
+    <!--    -->
+    <!--    for test-->
+    <select id="getPaymentFromProductPayment">
+        select ipayment from product_payment where iproduct = #{iproduct} and ipayment = #{ipayment}
+    </select>
+    <select id="getProductFromProductPayment">
+        select iproduct from product_payment where iproduct = #{iproduct} and ipayment = #{ipayment}
+    </select>
+    <!--    -->
+    <!--    -->
+
+    <!--    -->
+    <select id="getValidationInfoFromProduct">
+        select P.iuser as iseller, P.rental_price as rentalPrice, P.deposit, P.price, P.inventory,
+        PA.rental_start_date as paymentRentalStartDate,
+        PA.rental_end_date as paymentRentalEndDate,
+        P.rental_start_date as productRentalStartDate,
+        P.rental_end_date as productRentalEndDate
+        from product P
+        left join product_payment PP on P.iproduct = PP.iproduct
+        left join payment PA on PP.ipayment = PA.ipayment
+        where P.iproduct = #{iproduct} and P.istatus = 0
+    </select>
+    <!--    -->
+
+    <insert id="insPayment" useGeneratedKeys="true" keyProperty="ipayment">
+        insert into payment (ibuyer, ipayment_method, rental_start_date, rental_end_date, rental_duration,
+        price, code, deposit)
+        values (#{ibuyer}, #{ipaymentMethod}, #{rentalStartDate}, #{rentalEndDate}, #{rentalDuration},
+        #{price}, #{code}, #{deposit})
+    </insert>
+
+    <insert id="insProductPayment">
+        insert into product_payment (iproduct, ipayment)
+        values (#{iproduct}, #{ipayment})
+    </insert>
+
+
+    <select id="checkIuserAndIproduct">
+
+        select PA.istatus, PA.rental_end_date as rentalEndDate, P.iuser as iSeller, PA.ibuyer as iBuyer
+        from product_payment PPA
+        join product P on P.iproduct = PPA.iproduct
+        join payment PA on PA.ipayment = PPA.ipayment
+        join payment_status PS on PA.ipayment = PS.ipayment
+        where PA.ipayment = #{ipayment} and PS.istatus != -1 and PS.iuser = #{iuser}
+
+    </select>
+
+    <update id="delPayment">
+        <!--        update payment set istatus = #{istatus} where ipayment = #{ipayment}-->
+
+        update payment_status set istatus = #{istatus} where ipayment = #{ipayment} and iuser = #{loginIuser}
+
+    </update>
+
+    <select id="getPayment">
+
+        <!--        -->
+        <!--        -->
+        select
+        U.iuser,
+        U.nick,
+        U.stored_pic as userStoredPic,
+        PA.ipayment,
+        P.iproduct,
+        P.title,
+        PS.istatus,
+        PA.ipayment_method as ipaymentMethod,
+        P.stored_pic as prodStoredPic,
+        PA.rental_start_date as rentalStartDate,
+        PA.rental_end_date as rentalEndDate,
+        PA.rental_duration as rentalDuration,
+        PA.price,
+        P.deposit,
+        U.phone,
+        PA.code,
+        U.phone,
+        PA.code,
+        PA.created_at as createdAt,
+        if(PA.ibuyer = #{iuser}, 1, if(P.iuser = 1, 2, 0)) as role
+        from payment PA
+        join product_payment PP on PA.ipayment = PP.ipayment
+        join product P on PP.iproduct = P.iproduct
+        join payment_status PS on PA.ipayment = PS.ipayment
+        join user U on if(P.iuser = #{iuser}, PA.ibuyer = U.iuser, P.iuser = U.iuser)
+        where PS.istatus not in (-1) and PA.ipayment = #{ipayment} and PS.iuser = #{iuser}
+
+
+    </select>
+
+    <update id="updateIstatusOverRentalEndDate">
+        update payment_status PS join payment PA on PS.ipayment = PA.ipayment set PS.istatus = -4
+        where PA.rental_end_date <![CDATA[<=]]> #{now} and PS.istatus = 0
+    </update>
+
+    <insert id="savePaymentStatus">
+        insert into payment_status (ipayment, iuser) values (#{ipayment}, #{iseller})
+    </insert>
+</mapper>

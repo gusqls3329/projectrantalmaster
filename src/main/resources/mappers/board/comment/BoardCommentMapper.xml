@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.team5.projrental.board.comment.BoardCommentMapper">
+    <insert id="insBoardComment" useGeneratedKeys="true" keyProperty="iboardComment">
+        INSERT INTO board_comment
+        SET comment = #{comment}
+    </insert>
+
+    <update id="patchBoardComment">
+        UPDATE board_comment
+        SET comment = #{comment}
+        WHERE iboard_comment = #{iboardComment}
+    </update>
+
+    <delete id="delBoardComment">
+        DELETE FROM board_comment
+        WHERE iboard_comment = #{iboardComment}
+    </delete>
+</mapper>

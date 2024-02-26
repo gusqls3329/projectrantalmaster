@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.team5.projrental.mypage.MypageMapper">
+
+    <select id="getPaymentList">
+        SELECT
+        A.iproduct, A.title, A.stored_pic AS productStoredPic, A.deposit, A.iuser,
+        A.imain_category AS imainCategory,
+        A.isub_category AS isubCategory,
+        C.ipayment, PS.istatus, C.ibuyer, C.price,
+        C.rental_duration AS rentalDuration,
+        C.rental_start_date AS rentalStartDate,
+        C.rental_end_date AS rentalEndDate,
+        C.created_at AS createdAt,
+        D.iuser AS targetIuser,
+        D.nick AS targetNick,
+        D.stored_pic AS userStoredPic
+        FROM product A
+        JOIN product_payment B
+        ON A.iproduct = B.iproduct
+        LEFT JOIN payment C
+        ON B.ipayment = C.ipayment
+        JOIN payment_status PS ON C.ipayment = PS.ipayment and PS.istatus != -1
+        LEFT JOIN user D
+        ON
+        <if test="role != null and role == 1">
+            A.iuser = D.iuser
+            where C.ibuyer = #{loginedIuser} AND A.iuser != #{loginedIuser}
+        </if>
+        <if test="role != null and role == 2">
+            C.ibuyer = D.iuser
+            WHERE A.iuser = #{loginedIuser} and C.ibuyer != #{loginedIuser}
+        </if>
+        GROUP BY C.ipayment
+        ORDER BY C.ipayment DESC
+        LIMIT 0, 10
+    </select>
+
+    <select id="getIbuyerReviewList">
+        SELECT B.iuser, A.nick, A.stored_pic AS loginedUserPic,
+        D.imain_category AS imainCategory,
+        D.isub_category AS isubCategory,
+        D.iproduct, D.title, D.stored_pic AS prodPic, B.ireview, B.rating, B.`contents`
+        FROM user A
+        LEFT JOIN review B
+        ON A.iuser = B.iuser
+        LEFT JOIN product_payment C
+        ON B.ipayment = C.ipayment
+        LEFT JOIN product D
+        ON C.iproduct = D.iproduct
+        WHERE B.iuser = #{iuser}
+    </select>
+
+    <select id="getFavList">
+        SELECT
+        A.updated_at AS updatedAt,
+        A.iproduct,
+        A.price,
+        A.deposit,
+        A.title,
+        A.stored_pic AS prodPic,
+        A.imain_category AS imainCategory,
+        A.isub_category AS isubCategory,
+        B.iuser AS loginedIuser,
+        B.nick,
+        B.stored_pic AS pic
+        FROM product A
+        LEFT JOIN user B
+        ON A.iuser = B.iuser
+        JOIN like C
+        ON A.iproduct = C.iproduct
+        WHERE C.iuser = #{loginedIuser}
+        ORDER BY A.updated_at DESC
+        LIMIT #{startIdx}, #{rowCount}
+    </select>
+
+    <select id="getAllReviewFromMyProduct">
+        SELECT R.ireview, R.contents, R.rating, R.iuser, U.nick, U.stored_pic as userProfPic, P.iproduct,
+        P.imain_category AS imainCategory,
+        P.isub_category AS isubCategory
+        FROM product P
+        JOIN product_payment PP on P.iproduct = PP.iproduct
+        JOIN review R on PP.ipayment = R.ipayment
+        JOIN user U on R.iuser = U.iuser
+        where P.iuser = #{iuser} and R.contents != '' and R.rating > 0
+    </select>
+
+</mapper>

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.team5.projrental.chat.ChatMapper">
+
+    <insert id="insChat" useGeneratedKeys="true" keyProperty="ichat"> <!--빈 채팅방 생성-->
+        INSERT INTO chat
+        SET last_msg = NULL,<!-- 마지막 보낸 메세지가 없음 -->
+        iproduct = #{iproduct}
+    </insert>
+
+
+    <insert id="insChatUser">
+        INSERT INTO chat_user
+        SET
+        <if test="ichat != null and ichat != '' ">
+            ichat = #{ichat},
+        </if>
+        <if test="iuser != null and iuser != '' ">
+            iuser = #{iuser}
+        </if>
+    </insert>
+
+
+    <insert id="insChatMsg">
+        <selectKey resultType="int" keyProperty="seq" order="BEFORE"> <!--BEFORE는 SELECT 먼저 실행하고 insert 실행한다는 뜻-->
+            SELECT IFNULL(MAX(seq), 0) + 1 <!-- IFNULL은 최초 메세지 보낼 때 seq가 null이면 0 + 1해서 0+1 = 1로 채팅 seq(PK)번호 생성-->
+            FROM chat_message
+            WHERE ichat = #{ichat}
+        </selectKey>
+        INSERT INTO chat_message
+        SET ichat = #{ichat}, <!--채팅방 PK-->
+        seq = #{seq}, <!--메세지 PK-->
+        iuser = #{loginedIuser}, <!--메세지 보내는 사람-->
+        <if test="msg != null and msg != '' ">
+            msg = #{msg} <!-- 메세지 내용-->
+        </if>
+    </insert>
+
+
+    <select id="selChatAll">
+        SELECT B.ichat, B.iuser, C.nick AS otherPersonNm, C.stored_pic AS otherPersonPic
+        , D.last_msg AS lastMsg, D.last_msg_at AS lastMsgAt
+        , E.iproduct, E.title, E.stored_pic AS prodPic
+        FROM chat_user A
+        INNER JOIN chat_user B
+        ON A.ichat = B.ichat
+        INNER JOIN user C
+        ON B.iuser = C.iuser
+        INNER JOIN chat D
+        ON B.ichat = D.ichat
+        INNER JOIN product E
+        ON D.iproduct = E.iproduct
+        WHERE A.iuser = #{loginedIuser} AND A.istatus != -1 AND B.iuser != #{loginedIuser}
+        ORDER BY D.last_msg_at DESC
+        LIMIT #{startIdx}, #{rowCount}
+    </select>
+
+
+    <select id="selChatMsgAll">
+        SELECT
+        F.seq,
+        F.msg,
+        F.created_at AS createdAt,
+        B.stored_pic AS prodPic,
+        C.iuser AS writerIuser,
+        C.stored_pic AS writerPic
+        FROM chat A
+        LEFT JOIN product B
+        ON A.iproduct = B.iproduct
+        LEFT JOIN user C
+        ON B.iuser = C.iuser
+        LEFT JOIN chat_user D
+        ON A.ichat = D.ichat
+        LEFT JOIN chat_user E
+        ON D.ichat = E.ichat
+        LEFT JOIN chat_message F
+        ON A.ichat = F.ichat
+        WHERE D.iuser = #{loginedIuser} AND E.iuser != #{loginedIuser} AND D.istatus != -1 AND F.ichat = #{ichat}
+        GROUP BY F.seq
+        ORDER BY F.created_at DESC
+        LIMIT #{startIdx}, #{rowCount}
+    </select>
+
+
+    <!--<delete id="chatDelMsg">
+        DELETE chat_message
+        WHERE ichat = #{ichat} AND iuser =#{iuser}
+    </delete>-->
+
+
+    <!--<select id="selChatUserCheck">
+        SELECT ichat
+        FROM chat_user
+        WHERE iuser = #{loginedIuser} OR iuser =#{otherPersonIuser}
+        GROUP BY ichat
+        HAVING COUNT(ichat) = 2
+    </select>-->
+
+    <select id="selChatUserCheck2">
+        SELECT SUM(CASE WHEN A.istatus + B.istatus = 0 THEN 1 ELSE 0 END) AS existEnableRoom
+        FROM chat_user A
+        INNER JOIN chat_user B
+        ON A.ichat = B.ichat
+        INNER JOIN chat C
+        ON B.ichat = C.ichat
+        WHERE A.iuser = #{loginedIuser}
+        AND B.iuser = #{otherPersonIuser}
+        AND C.iproduct = #{iproduct}
+    </select>
+
+    <update id="updChatLastMsg">
+        UPDATE chat
+        SET
+        <if test="msg != null">
+            last_msg = #{msg}
+        </if>
+        WHERE ichat = #{ichat}
+    </update>
+
+    <update id="updChatLastMsgAfterDelByLastMsg">
+        UPDATE chat_user
+        SET istatus = -1
+        WHERE iuser = #{iuser} AND ichat = #{ichat} ;
+    </update>
+
+
+    <!--<update id="updChatLastMsgAfterDelByLastMsg">
+        UPDATE chat A
+        INNER JOIN (
+        SELECT ichat, msg, created_at AS createdAt
+        FROM chat_message
+        WHERE ichat = #{ichat}
+        ORDER BY seq DESC
+        LIMIT 1
+        ) B
+        ON A.ichat = B.ichat
+        SET A.last_msg = B.msg,
+        A.last_msg_at = B.created_at
+        WHERE A.ichat = #{ichat}
+    </update>-->
+
+
+    <select id="selOtherPersonByLoginUser">
+        SELECT
+        B.iuser,
+        B.stored_pic AS storedPic,
+        B.firebase_token AS firebaseToken
+        FROM chat_user A
+        INNER JOIN user B
+        ON A.iuser = B.iuser
+        WHERE A.ichat = #{ichat}
+        AND A.iuser != #{loginedIuser}
+    </select>
+
+
+    <update id="chatDel"> <!--숨김 처리-->
+        UPDATE
+        chat_user
+        SET istatus = -1
+        WHERE iuser =#{iuser} AND ichat =#{ichat}
+    </update>
+
+
+    <select id="selChatUser">
+        SELECT iuser, nick, stored_pic AS storedPic
+        FROM user
+        WHERE iuser = #{iuser}
+    </select>
+
+    <select id="delBeforeChatIstatus">
+        SELECT istatus
+        FROM chat_user
+        WHERE ichat = #{ichat} AND iuser != #{loginedIuser};
+    </select>
+
+</mapper>
