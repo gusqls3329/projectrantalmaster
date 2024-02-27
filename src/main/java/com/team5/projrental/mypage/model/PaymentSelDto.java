@@ -2,6 +2,7 @@ package com.team5.projrental.mypage.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.team5.projrental.common.exception.ErrorMessage;
+import com.team5.projrental.entities.enums.PaymentInfoStatus;
 import com.team5.projrental.entities.enums.UserStatus;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
@@ -16,7 +17,7 @@ public class PaymentSelDto {
     private Long loginedIuser; // 로그인 유저정보가 ibuyer에 조건으로 들어가면 빌린내역 seller에 들어가면 빌려준내역
 
     @Range(min = 1,max = 2, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
-    private int role; // 디폴트 1:일반유저 // 3차프로젝트때 2:기업  이렇게?
+    private long role; // 디폴트 1:일반유저 // 3차프로젝트때 2:기업  이렇게?
 
     @JsonIgnore
     private int startIdx;// 시작 인덱스 넘버
@@ -25,10 +26,7 @@ public class PaymentSelDto {
     private int rowCount = 6;//페이지 당 일지 수
 
     @JsonIgnore
-    private int istatus;
-
-    @JsonIgnore
-    private UserStatus userStatus;
+    private Long istatus;
 
 
     public void setPage(int page){

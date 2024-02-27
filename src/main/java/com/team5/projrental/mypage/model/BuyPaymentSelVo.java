@@ -22,19 +22,4 @@ public class BuyPaymentSelVo {
     private String nick;
     private String userPic;
 
-    private Categories icategory;
-
-    public void setImainCategory(int imainCategory) {
-        if (this.icategory == null) {
-            this.icategory = new Categories();
-        }
-        this.icategory.setMainCategory(imainCategory);
-    }
-
-    public void setIsubCategory(int isubCategory) {
-        if (this.icategory == null) {
-            this.icategory = new Categories();
-        }
-        this.icategory.setSubCategory(isubCategory);
-    }
 }

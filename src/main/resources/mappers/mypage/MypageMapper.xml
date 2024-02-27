@@ -16,7 +16,13 @@
         ON pp.iproduct = pa.iproduct
         JOIN `user` u
         ON u.iuser = pr.iuser
-        WHERE pa.iuser = 10
+        WHERE pa.iuser = #{iuser}
+        <if test="istatus != null and istatus == 1">
+            and pai.`status` in ('RESERVED', 'ACTIVATED', 'CANCELED')
+        </if>
+        <if test="istatus != null and istatus == -1">
+            and pai.`status` in ('EXPIRED', 'COMPLETED', 'HIDDEN')
+        </if>
         GROUP BY pa.ipayment
         ORDER BY pa.ipayment DESC
         LIMIT 0, 10
@@ -27,15 +33,21 @@
         , pa.rental_start_date as rentalStartDate, pa.duration, pa.created_at as createdAt,
         pai.`status`, pr.iuser, u.nick, u.stored_pic as userPic
         FROM `user` u
-        LEFT JOIN product pr
+        JOIN product pr
         ON u.iuser = pr.iuser
         LEFT JOIN prod_pics pp
         ON pp.iproduct = pr.iproduct
-        LEFT JOIN payment pa
+        JOIN payment pa
         ON pa.iproduct = pr.iproduct
         LEFT JOIN payment_info pai
         ON pa.ipayment = pai.ipayment
         WHERE pr.iuser = #{iuser}
+        <if test="istatus != null and istatus == 1">
+            and pai.`status` in ('RESERVED', 'ACTIVATED', 'CANCELED')
+        </if>
+        <if test="istatus != null and istatus == -1">
+            and pai.`status` in ('EXPIRED', 'COMPLETED', 'HIDDEN')
+        </if>
         GROUP BY pr.iproduct
         ORDER BY pr.iproduct DESC
         LIMIT 0, 10
@@ -54,7 +66,6 @@
         LEFT JOIN product D
         ON C.iproduct = D.iproduct
         WHERE B.iuser = #{iuser}
-        
     </select>
 
     <select id="getFavList">

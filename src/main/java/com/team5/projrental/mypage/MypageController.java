@@ -1,5 +1,6 @@
 package com.team5.projrental.mypage;
 
+import com.team5.projrental.common.exception.thrid.ClientException;
 import com.team5.projrental.common.model.ResVo;
 import com.team5.projrental.mypage.model.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import java.awt.print.Pageable;
 import java.util.List;
 
+import static com.team5.projrental.common.exception.ErrorMessage.ILLEGAL_EX_MESSAGE;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -28,12 +31,18 @@ public class MypageController {
     @Operation(summary = "대여리스트", description = "대여관련 내역")
     @Parameters(value = {
             @Parameter(name = "status", description = "status가 1이면 대여중(RESERVED, ACTIVATED, CANCELED ), -1이면 대여완료(EXPIRED, COMPLETED, HIDDEN)"),
-            @Parameter(name = "page", description = "페이지")})
-    public List<BuyPaymentSelVo> getRentalList(@RequestParam(name = "status", required = false) int status,
+            @Parameter(name = "page", description = "페이지")
+    , @Parameter(name = "role", description = "role:1 -> iuser 가 구매한 상품들\n" +
+            "role:2 -> iuser 가 판매한 상품들")})
+    public List<BuyPaymentSelVo> getRentalList(@RequestParam(name = "role", defaultValue = "1") Long role, @RequestParam(name = "status", required = false) int status,
                                                @RequestParam(defaultValue = "1") @Range(min = 1) int page) {
+        if(status != 1 && status != -1) {
+            throw new ClientException(ILLEGAL_EX_MESSAGE);
+        }
         PaymentSelDto dto = new PaymentSelDto();
-        dto.setIstatus(status);
+        dto.setIstatus((long) status);
         dto.setPage(page);
+        dto.setRole(role);
         return service.getRentalList(dto);
     }
 
