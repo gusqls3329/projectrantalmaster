@@ -40,16 +40,6 @@ public class MypageService {
         throw new ClientException(ILLEGAL_EX_MESSAGE);
     }
 
-    public List<MyBuyReviewListSelVo> selIbuyerReviewList(MyBuyReviewListSelDto dto){
-        Long loginUserPk = authenticationFacade.getLoginUserPk();
-        dto.setIuser(loginUserPk);
-
-
-        List<MyBuyReviewListSelVo> list = mapper.getIbuyerReviewList(dto);
-
-        return list;
-    }
-
     public List<MyFavListSelVo> getFavList(MyFavListSelDto dto) {
         Long loginUserPk = authenticationFacade.getLoginUserPk();
         dto.setIuser(loginUserPk);
@@ -57,10 +47,19 @@ public class MypageService {
         return vo;
     }
 
-    public List<MyBuyReviewListSelVo> getReview(MyBuyReviewListSelDto dto) {
+
+    public List<MyBuyReviewListSelVo> getReview(MyBuyReviewListSelDto dto){
+        Long loginUserPk = authenticationFacade.getLoginUserPk();
+        dto.setIuser(loginUserPk);
+
+        List<MyBuyReviewListSelVo> list = mapper.getIbuyerReviewList(dto);
+        return list;
+    }
+
+    /*public List<MyBuyReviewListSelVo> getReview(MyBuyReviewListSelDto dto) {
         return null;
                 //mapper.getAllReviewFromMyProduct(authenticationFacade.getLoginUserPk());
-    }
+    }*/
 
     public List<MyDisputeVo> getDispute(MyBuyReviewListSelDto dto) {
         return null; //mapper.getDispute(dto);
