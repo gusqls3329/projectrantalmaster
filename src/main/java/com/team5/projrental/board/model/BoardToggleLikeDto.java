@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BoardToggleLikeDto {
-    private int iboard;
+    private long iboard;
     private long loginIuser;
 }

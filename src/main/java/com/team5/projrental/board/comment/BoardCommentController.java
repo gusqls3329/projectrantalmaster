@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/board/comment")
 public class BoardCommentController {
     private final BoardCommentService service;
-/*
+
     @Operation(summary = "댓글 등록", description = "게시글에 댓글 등록")
     @Parameters(value = {
             @Parameter(name = "comment", description = "댓글 내용")})
@@ -42,5 +42,5 @@ public class BoardCommentController {
     @DeleteMapping("{iboardComment}")
     public ResVo delComment(@PathVariable int iboardComment) {
         return service.delComment(iboardComment);
-    }*/
+    }
 }

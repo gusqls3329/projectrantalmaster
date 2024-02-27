@@ -29,7 +29,7 @@ public class BoardController {
 
 
 
-    @Operation(summary = "게시글 등록", description = "게시판에 게시글 등록")
+    @Operation(summary = "게시글 등록", description = "게시판에 게시글 등록<br><br> 결과값 - result: 등록된 게시글의 pk값(1이상 값 나오면 등록성공)")
     @Parameters(value = {
             @Parameter(name = "title", description = "제목"),
             @Parameter(name = "contents", description = "내용")})
@@ -60,11 +60,13 @@ public class BoardController {
                                              @RequestParam(name = "search", required = false)
                                              String search,
                                              @RequestParam(name = "type", required = false)
-                                             int type,
+                                             Integer type,
                                              @RequestParam(name = "targetIuser", required = false) @Nullable
                                              Integer targetIuser)
     {
-        return null;
+        BoardListSelDto dto = new BoardListSelDto();
+        dto.setPage(page);
+        return service.getBoardList(dto);
     }
 
 
@@ -92,7 +94,7 @@ public class BoardController {
     @Parameters(value = {
             @Parameter(name = "iboard", description = "삭제 할 게시글pk")})
     @DeleteMapping("/{iboard}")
-    public ResVo delUserBoard(@PathVariable int iboard) {
+    public ResVo delUserBoard(@PathVariable long iboard) {
         return service.delBoard(iboard);
     }
 
@@ -101,7 +103,7 @@ public class BoardController {
     @Parameters(value = {
             @Parameter(name = "iboard", description = "좋아요 처리 할 게시판pk")})
     @GetMapping("/like/{iboard}")
-    public ResVo toggleLike(@PathVariable int iboard) {
+    public ResVo toggleLike(@PathVariable long iboard) {
         return service.toggleLike(iboard);
     }
 

@@ -11,7 +11,11 @@ import lombok.*;
 @AllArgsConstructor
 public class BoardCommentInsDto {
     @JsonIgnore
-    private int iboardComment;
+    private long iboardComment;
+
+    private long loginIuser;
+
+    private long iboard;
 
     private String comment;
 }

@@ -7,9 +7,11 @@ import com.team5.projrental.entities.mappedsuper.CreatedAt;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @Setter
+@DynamicUpdate
 @Entity
 public class BoardLike extends CreatedAt {
     @EmbeddedId

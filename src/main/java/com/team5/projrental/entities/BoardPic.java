@@ -3,12 +3,14 @@ package com.team5.projrental.entities;
 import com.team5.projrental.entities.mappedsuper.CreatedAt;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@DynamicUpdate
 @Entity
 public class BoardPic extends CreatedAt {
     @Id
