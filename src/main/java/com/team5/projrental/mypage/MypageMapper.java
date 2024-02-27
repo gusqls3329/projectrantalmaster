@@ -1,7 +1,6 @@
 package com.team5.projrental.mypage;
 
 import com.team5.projrental.mypage.model.*;
-import com.team5.projrental.product.model.review.ReviewResultVo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -9,7 +8,8 @@ import java.util.List;
 @Mapper
 public interface MypageMapper {
 
-    List<PaymentSelVo> getPaymentList(PaymentSelDto dto);
+    List<BuyPaymentSelVo> getPaymentList(Long loginUserPk);
+    List<BuyPaymentSelVo> getProductList(Long loginUserPk);
     List<MyBuyReviewListSelVo> getIbuyerReviewList(MyBuyReviewListSelDto dto);
     List<MyFavListSelVo> getFavList(MyFavListSelDto dto);
 

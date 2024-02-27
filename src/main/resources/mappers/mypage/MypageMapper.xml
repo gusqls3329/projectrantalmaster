@@ -3,36 +3,41 @@
 <mapper namespace="com.team5.projrental.mypage.MypageMapper">
 
     <select id="getPaymentList">
-        SELECT
-        A.iproduct, A.title, A.stored_pic AS productStoredPic, A.deposit, A.iuser,
-        A.imain_category AS imainCategory,
-        A.isub_category AS isubCategory,
-        C.ipayment, PS.istatus, C.ibuyer, C.price,
-        C.rental_duration AS rentalDuration,
-        C.rental_start_date AS rentalStartDate,
-        C.rental_end_date AS rentalEndDate,
-        C.created_at AS createdAt,
-        D.iuser AS targetIuser,
-        D.nick AS targetNick,
-        D.stored_pic AS userStoredPic
-        FROM product A
-        JOIN product_payment B
-        ON A.iproduct = B.iproduct
-        LEFT JOIN payment C
-        ON B.ipayment = C.ipayment
-        JOIN payment_status PS ON C.ipayment = PS.ipayment and PS.istatus != -1
-        LEFT JOIN user D
-        ON
-        <if test="role != null and role == 1">
-            A.iuser = D.iuser
-            where C.ibuyer = #{loginedIuser} AND A.iuser != #{loginedIuser}
-        </if>
-        <if test="role != null and role == 2">
-            C.ibuyer = D.iuser
-            WHERE A.iuser = #{loginedIuser} and C.ibuyer != #{loginedIuser}
-        </if>
-        GROUP BY C.ipayment
-        ORDER BY C.ipayment DESC
+        SELECT distinct pa.iproduct, pa.ipayment, pp.stored_pic as ProStoredPic,
+        pa.deposit, pa.total_price as totalPrice, pa.rental_end_date as rentalEndDate
+        , pa.rental_start_date as rentalStartDate, pa.duration, pa.created_at as createdAt,
+        pai.`status`, pr.iuser, u.nick, u.stored_pic as userPic
+        from payment pa
+        LEFT JOIN payment_info pai
+        ON pa.ipayment = pai.ipayment
+        LEFT JOIN product pr
+        ON pa.iproduct = pr.iproduct
+        LEFT JOIN prod_pics pp
+        ON pp.iproduct = pa.iproduct
+        JOIN `user` u
+        ON u.iuser = pr.iuser
+        WHERE pa.iuser = 10
+        GROUP BY pa.ipayment
+        ORDER BY pa.ipayment DESC
+        LIMIT 0, 10
+    </select>
+    <select id="getProductList">
+        SELECT distinct pr.iproduct, pa.ipayment, pp.stored_pic as ProStoredPic,
+        pa.deposit, pa.total_price as totalPrice, pa.rental_end_date as rentalEndDate
+        , pa.rental_start_date as rentalStartDate, pa.duration, pa.created_at as createdAt,
+        pai.`status`, pr.iuser, u.nick, u.stored_pic as userPic
+        FROM `user` u
+        LEFT JOIN product pr
+        ON u.iuser = pr.iuser
+        LEFT JOIN prod_pics pp
+        ON pp.iproduct = pr.iproduct
+        LEFT JOIN payment pa
+        ON pa.iproduct = pr.iproduct
+        LEFT JOIN payment_info pai
+        ON pa.ipayment = pai.ipayment
+        WHERE pr.iuser = #{iuser}
+        GROUP BY pr.iproduct
+        ORDER BY pr.iproduct DESC
         LIMIT 0, 10
     </select>
 
@@ -49,6 +54,7 @@
         LEFT JOIN product D
         ON C.iproduct = D.iproduct
         WHERE B.iuser = #{iuser}
+        
     </select>
 
     <select id="getFavList">

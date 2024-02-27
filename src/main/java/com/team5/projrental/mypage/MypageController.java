@@ -2,12 +2,10 @@ package com.team5.projrental.mypage;
 
 import com.team5.projrental.common.model.ResVo;
 import com.team5.projrental.mypage.model.*;
-import com.team5.projrental.product.model.review.ReviewResultVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import jakarta.validation.constraints.Min;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Range;
@@ -17,8 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.awt.print.Pageable;
 import java.util.List;
-
-import static com.team5.projrental.common.exception.ErrorMessage.BAD_SORT_EX_MESSAGE;
 
 @Slf4j
 @RestController
@@ -31,12 +27,12 @@ public class MypageController {
     @GetMapping("/prod")
     @Operation(summary = "대여리스트", description = "대여관련 내역")
     @Parameters(value = {
-            @Parameter(name = "status", description = "특정 상태인 결제 조회 (예약중, 거래시작, 만료됨, 거래완료, 예약취소, 숨김 조회 가능)\n"+
-                    "로그인유저의 결제정보를 조회한다는것을 잊으면 안됨."),
+            @Parameter(name = "status", description = "status가 1이면 대여중(RESERVED, ACTIVATED, CANCELED ), -1이면 대여완료(EXPIRED, COMPLETED, HIDDEN)"),
             @Parameter(name = "page", description = "페이지")})
-    public List<PaymentSelVo> getRentalList(@RequestParam(name = "status", required = false) int status,
-                                            @RequestParam(defaultValue = "1") @Range(min = 1) int page) {
+    public List<BuyPaymentSelVo> getRentalList(@RequestParam(name = "status", required = false) int status,
+                                               @RequestParam(defaultValue = "1") @Range(min = 1) int page) {
         PaymentSelDto dto = new PaymentSelDto();
+        dto.setIstatus(status);
         dto.setPage(page);
         return service.getRentalList(dto);
     }

@@ -539,7 +539,6 @@ UserService {
         }
         throw new BadDateInfoException(AUTHENTICATION_FAIL_EX_MESSAGE);
     }*/
-
     public SelUserVo getUser(Long iuser) {
         boolean checker = iuser == null || iuser == 0;
         Long actionIuser = checker ? authenticationFacade.getLoginUserPk() : iuser;

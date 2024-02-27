@@ -2,6 +2,7 @@ package com.team5.projrental.mypage.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.team5.projrental.common.exception.ErrorMessage;
+import com.team5.projrental.entities.enums.UserStatus;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
@@ -23,7 +24,11 @@ public class PaymentSelDto {
     @JsonIgnore
     private int rowCount = 6;//페이지 당 일지 수
 
+    @JsonIgnore
+    private int istatus;
 
+    @JsonIgnore
+    private UserStatus userStatus;
 
 
     public void setPage(int page){

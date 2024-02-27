@@ -8,4 +8,5 @@ public interface PaymentQueryRepository {
     Payment selBuyRew(Long ipayment, Long iuser);
     User selUser(Long ipayment);
     SelRatVo selRat(Long iuser);
+
 }
