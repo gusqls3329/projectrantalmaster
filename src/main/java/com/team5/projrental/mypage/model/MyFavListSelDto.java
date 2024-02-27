@@ -11,7 +11,7 @@ public class MyFavListSelDto {
     @Range(min = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
     private int page;
     @Range(min = 1)
-    private Long loginedIuser;
+    private Long iuser;
     @JsonIgnore
     private int startIdx;
     @JsonIgnore

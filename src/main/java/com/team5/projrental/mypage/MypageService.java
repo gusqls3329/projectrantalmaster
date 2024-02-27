@@ -36,6 +36,7 @@ public class MypageService {
             List<BuyPaymentSelVo> list = mapper.getProductList(loginUserPk);
             return list;
         }
+
         throw new ClientException(ILLEGAL_EX_MESSAGE);
     }
 
@@ -51,9 +52,9 @@ public class MypageService {
 
     public List<MyFavListSelVo> getFavList(MyFavListSelDto dto) {
         Long loginUserPk = authenticationFacade.getLoginUserPk();
-        dto.setLoginedIuser(loginUserPk);
-
-        return mapper.getFavList(dto);
+        dto.setIuser(loginUserPk);
+        List<MyFavListSelVo> vo = mapper.getFavList(dto);
+        return vo;
     }
 
     public List<MyBuyReviewListSelVo> getReview(MyBuyReviewListSelDto dto) {

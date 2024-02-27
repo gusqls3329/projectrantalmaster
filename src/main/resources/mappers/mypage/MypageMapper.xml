@@ -25,7 +25,7 @@
         </if>
         GROUP BY pa.ipayment
         ORDER BY pa.ipayment DESC
-        LIMIT 0, 10
+        LIMIT #{startIdx}, #{rowCount}
     </select>
     <select id="getProductList">
         SELECT distinct pr.iproduct, pa.ipayment, pp.stored_pic as ProStoredPic,
@@ -50,7 +50,7 @@
         </if>
         GROUP BY pr.iproduct
         ORDER BY pr.iproduct DESC
-        LIMIT 0, 10
+        LIMIT #{startIdx}, #{rowCount}
     </select>
 
     <select id="getIbuyerReviewList">
@@ -69,24 +69,14 @@
     </select>
 
     <select id="getFavList">
-        SELECT
-        A.updated_at AS updatedAt,
-        A.iproduct,
-        A.price,
-        A.deposit,
-        A.title,
-        A.stored_pic AS prodPic,
-        A.imain_category AS imainCategory,
-        A.isub_category AS isubCategory,
-        B.iuser AS loginedIuser,
-        B.nick,
-        B.stored_pic AS pic
+        SELECT A.iproduct, A.title, A.`contents`, A.stored_pic AS pic,
+        A.rental_price AS rentalPrice, A.iuser, B.stored_pic, B.nick
         FROM product A
         LEFT JOIN user B
         ON A.iuser = B.iuser
-        JOIN like C
+        JOIN prod_like C
         ON A.iproduct = C.iproduct
-        WHERE C.iuser = #{loginedIuser}
+        WHERE C.iuser = #{iuser}
         ORDER BY A.updated_at DESC
         LIMIT #{startIdx}, #{rowCount}
     </select>
