@@ -293,8 +293,8 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
         return query.selectFrom(product)
                 .join(product.user).fetchJoin()
                 .where(product.status.notIn(ProductStatus.DELETED), searchCategoryFindAllLimitPage(type, search))
-//                .offset(page)
-//                .limit(Const.ADMIN_PER_PAGE)
+                .offset(page)
+                .limit(Const.ADMIN_PER_PAGE)
                 .orderBy(orderByFindAllLimitPage(sort))
                 .fetch();
 
@@ -327,6 +327,17 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
         return Optional.ofNullable(query.selectFrom(product)
                 .where(product.id.eq(iproduct).and(product.status.notIn(ProductStatus.DELETED)))
                 .fetchOne());
+    }
+
+    @Override
+    public Long totalCountByOptions(Integer type, String search) {
+
+        return query.select(product.count())
+                .from(product)
+                .join(product.user).fetchJoin()
+                .where(product.status.notIn(ProductStatus.DELETED), searchCategoryFindAllLimitPage(type, search))
+                .fetchOne();
+
     }
 
 

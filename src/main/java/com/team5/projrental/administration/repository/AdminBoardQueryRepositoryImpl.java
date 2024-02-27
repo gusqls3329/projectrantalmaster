@@ -44,6 +44,16 @@ public class AdminBoardQueryRepositoryImpl implements AdminBoardQueryRepository 
 
     }
 
+    @Override
+    public Long totalCountByOptions(Integer type, String search) {
+        return query.select(board.count())
+                .from(board)
+                .join(board.user).fetchJoin()
+                .where(whereFindAllLimitPage(type, search))
+                .fetchOne();
+
+    }
+
     private OrderSpecifier<Long> orderByFindAllLimitPage(Integer sort) {
         return sort == null || sort == 0 ? board.id.desc() : board.view.desc();
     }

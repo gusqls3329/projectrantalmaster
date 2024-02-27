@@ -46,4 +46,6 @@ public interface ProductQueryRepository {
     List<Product> findAllLimitPage(int page, Integer type, String search, Integer sort);
 
     Optional<Product> findByIdJoinFetch(Long iproduct);
+
+    Long totalCountByOptions(Integer type, String search);
 }

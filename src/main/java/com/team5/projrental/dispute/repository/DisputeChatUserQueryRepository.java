@@ -11,4 +11,5 @@ public interface DisputeChatUserQueryRepository {
 
     List<ChatUser> findAllLimitPage(Integer page);
 
+    Long totalCountByOptions();
 }

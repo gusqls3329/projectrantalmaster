@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface RefundQueryRepository {
     List<Refund> findAllLimitPage(Integer page, Integer status);
+
+    Long totalCountByOptions(Integer status);
 }

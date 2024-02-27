@@ -29,4 +29,13 @@ public class DisputeChatUserQueryRepositoryImpl implements DisputeChatUserQueryR
                 .fetch();
 
     }
+
+    @Override
+    public Long totalCountByOptions() {
+        return query.select(chatUser.count())
+                .from()
+                .join(chatUser.user).fetchJoin()
+                .join(product).on(chatUser.chat.product.eq(product)).fetchJoin()
+                .fetchOne();
+    }
 }

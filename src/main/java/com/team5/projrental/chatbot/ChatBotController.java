@@ -38,6 +38,6 @@ public class ChatBotController {
         return chatBotService.pub(grp, level, depth);
     }
 
-    // 메시지 직접 전송시
+    // todo 메시지 직접 전송시
 
 }

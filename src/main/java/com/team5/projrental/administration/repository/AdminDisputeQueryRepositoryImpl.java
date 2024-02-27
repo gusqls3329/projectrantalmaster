@@ -25,8 +25,8 @@ public class AdminDisputeQueryRepositoryImpl implements AdminDisputeQueryReposit
 
         return query.selectFrom(dispute)
                 .where(whereFindByLimitPage(div, search, category, status))
-//                .offset(page)
-//                .limit(Const.ADMIN_PER_PAGE)
+                .offset(page)
+                .limit(Const.ADMIN_PER_PAGE)
                 .orderBy(dispute.id.desc())
                 .fetch();
 
@@ -39,6 +39,17 @@ public class AdminDisputeQueryRepositoryImpl implements AdminDisputeQueryReposit
                 .join(dispute.reporter).fetchJoin()
                 .where(dispute.id.eq(idispute).and(dispute.status.eq(disputeStatus)))
                 .fetchOne());
+    }
+
+    @Override
+    public Long totalCountByOptions(Integer div, String search, Integer category, Integer status) {
+
+        return query.select(dispute.count())
+                .from(dispute)
+                .where(whereFindByLimitPage(div, search, category, status))
+                .orderBy(dispute.id.desc())
+                .fetchOne();
+
     }
 
     private BooleanBuilder whereFindByLimitPage(Integer div, String search, Integer category, Integer status) {

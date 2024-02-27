@@ -10,4 +10,6 @@ public interface AdminDisputeQueryRepository {
     List<Dispute> findByLimitPage(int page, Integer div, String search, Integer category, Integer status);
 
     Optional<Dispute> findByIdAndStatus(Long idispute, DisputeStatus disputeStatus);
+
+    Long totalCountByOptions(Integer div, String search, Integer category, Integer status);
 }

@@ -8,5 +8,6 @@ import java.util.List;
 public interface AdminUserQueryRepository {
     List<User> findUserByOptions(Integer page, Integer searchType, String search, UserStatus status);
 
+    Long totalCountByOptions(Integer searchType, String search, UserStatus status);
 
 }

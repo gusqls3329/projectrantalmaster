@@ -5,6 +5,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.team5.projrental.common.Const;
 import com.team5.projrental.entities.User;
 import com.team5.projrental.entities.enums.UserStatus;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,17 +18,28 @@ import static com.team5.projrental.entities.QUser.user;
 public class AdminUserQueryRepositoryImpl implements AdminUserQueryRepository {
 
     private final JPAQueryFactory query;
+    private final EntityManager em;
 
     @Override
     public List<User> findUserByOptions(Integer page, Integer searchType, String search, UserStatus status) {
 
         return query.selectFrom(user)
                 .where(whereFindByUserByOptions(searchType, search, status))
-//                .offset(page)
-//                .limit(Const.ADMIN_PER_PAGE)
+                .offset(page)
+                .limit(Const.ADMIN_PER_PAGE)
                 .orderBy(user.id.desc())
                 .fetch();
 
+
+    }
+
+    @Override
+    public Long totalCountByOptions(Integer searchType, String search, UserStatus status) {
+        return query.select(user.count())
+                .from(user)
+                .where(whereFindByUserByOptions(searchType, search, status))
+                .orderBy(user.id.desc())
+                .fetchOne();
 
     }
 
