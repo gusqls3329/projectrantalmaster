@@ -29,8 +29,15 @@ public class ChatBotController {
 
     @GetMapping("pub")
     public List<ChatBotVo> pub(@RequestParam("r") Integer grp,
-                               @RequestParam("l") Integer level,
-                               @RequestParam("d") Integer depth) {
+                               @RequestParam("d") Integer depth,
+                               @RequestParam("l") Integer level) {
+
+        if (depth == 3) return chatBotConnect();
+
+
         return chatBotService.pub(grp, level, depth);
     }
+
+    // 메시지 직접 전송시
+
 }

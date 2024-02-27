@@ -42,14 +42,9 @@ public enum DisputeReason {
     }
 
     public static List<DisputeReason> getByDiv(int div) {
-        return Arrays.stream(DisputeReason.values()).map(dr -> {
-            if (div < 0) {
-                if (dr.getNum() < 0) return dr;
-            }
-            if (div > 0) {
-                if (dr.getNum() > 0) return dr;
-            }
-            throw new ClientException(ErrorCode.BAD_DIV_INFO_EX_MESSAGE, "잘못된 div 값");
-        }).toList();
+
+        return Arrays.stream(DisputeReason.values())
+                .filter(dr -> div < 0 && dr.getNum() < 0 || div > 0 && dr.getNum() > 0)
+                .toList();
     }
 }

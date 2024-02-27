@@ -24,6 +24,7 @@ public class RefundQueryRepositoryImpl implements RefundQueryRepository {
                 .where(whereFindAllLimitPage(status))
                 .offset(page)
                 .limit(Const.ADMIN_PER_PAGE)
+                .orderBy(refund.id.desc())
                 .fetch();
 
 

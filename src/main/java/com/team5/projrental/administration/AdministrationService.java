@@ -273,7 +273,8 @@ public class AdministrationService {
 
 
         List<Product> findProducts = productRepository.findAllLimitPage(page, type, search);
-        if (type == 2) {
+        // 카테고리는 db에서 조회하는 방법이 없어서 자바에서 수행. (limit 이 있으므로 성능상 엄청 크게 손해는 없다.)
+        if (type != null && type == 2) {
             findProducts = findProducts.stream().filter(p -> {
                 String basName = p.getSubCategory().getName();
 
@@ -349,8 +350,8 @@ public class AdministrationService {
     }
 
     @Transactional
-    public BoardByAdminVo getAllBoards(int page, Integer type, String search) {
-        List<Board> findBoards = boardRepository.findAllLimitPage(page, type, search);
+    public BoardByAdminVo getAllBoards(int page, Integer type, String search, Integer sort) {
+        List<Board> findBoards = boardRepository.findAllLimitPage(page, type, search, sort);
 
         return BoardByAdminVo.builder()
                 .totalBoardCount((long) findBoards.size())

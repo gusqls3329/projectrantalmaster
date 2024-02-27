@@ -6,6 +6,7 @@ import com.team5.projrental.common.exception.ErrorCode;
 import com.team5.projrental.common.exception.thrid.ClientException;
 import com.team5.projrental.common.model.ResVo;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
@@ -108,6 +109,7 @@ public class AdministrationController {
     @Validated
     @GetMapping("/dispute")
     public DisputeByAdminVo getAllDispute(@RequestParam Integer page,
+                                          @NotNull
                                           @Range(min = -1, max = 1)
                                           @RequestParam Integer div,
 
@@ -118,7 +120,7 @@ public class AdministrationController {
                                           @RequestParam(required = false) Integer status) {
         if (div == 0) throw new ClientException(ErrorCode.BAD_DIV_INFO_EX_MESSAGE,
                 "잘못된 div 값(1 또는 -1)");
-        if (category == 0) {
+        if (category != null && category == 0) {
             throw new ClientException(ErrorCode.ILLEGAL_EX_MESSAGE,
                     "잘못된 category 값");
         }
@@ -171,20 +173,23 @@ public class AdministrationController {
             description = "[필수: [v]]<br>" +
                           "[v] page: 페이징 <br>" +
                           "    type: 검색 타입 -> 1: 닉네임, 2: 제목<br>" +
-                          "    search: 검색어 키워드")
+                          "    search: 검색어 키워드<br>" +
+                          "    sort: 제공하지 않으면 최신순, 1: 조회수 많은순 내림차순, (조회수 오름차순도 필요하면 말해주세요)")
     @Validated
     @GetMapping("board")
     public BoardByAdminVo getAllBoards(@RequestParam Integer page,
                                        @Range(min = 1, max = 2)
                                        @RequestParam(required = false) Integer type,
                                        @Length(min = 2)
-                                       @RequestParam(required = false) String search) {
+                                       @RequestParam(required = false) String search,
+                                       @Range(min = 1, max = 1)
+                                       @RequestParam(required = false) Integer sort) {
         if (search != null && search.isEmpty()) {
             throw new ClientException(ErrorCode.CAN_NOT_BLANK_EX_MESSAGE,
                     "search 는 빈 값일수 없습니다.");
         }
         return administrationService.getAllBoards((page - 1) * Const.ADMIN_PER_PAGE,
-                type, search);
+                type, search, sort);
     }
 
     @Operation(summary = "운영자 권한 반환 예정금 조회",

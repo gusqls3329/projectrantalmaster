@@ -1,6 +1,7 @@
 package com.team5.projrental.administration.repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.team5.projrental.common.Const;
 import com.team5.projrental.entities.Board;
@@ -15,7 +16,7 @@ import static com.team5.projrental.entities.QBoard.board;
 
 @Slf4j
 @RequiredArgsConstructor
-public class AdminBoardQueryRepositoryImpl implements AdminBoardQueryRepository{
+public class AdminBoardQueryRepositoryImpl implements AdminBoardQueryRepository {
 
     private final JPAQueryFactory query;
 
@@ -32,19 +33,24 @@ public class AdminBoardQueryRepositoryImpl implements AdminBoardQueryRepository{
     }
 
     @Override
-    public List<Board> findAllLimitPage(int page, Integer type, String search) {
+    public List<Board> findAllLimitPage(int page, Integer type, String search, Integer sort) {
         return query.selectFrom(board)
                 .join(board.user).fetchJoin()
                 .where(whereFindAllLimitPage(type, search))
                 .offset(page)
                 .limit(Const.ADMIN_PER_PAGE)
+                .orderBy(orderByFindAllLimitPage(sort))
                 .fetch();
 
     }
 
+    private OrderSpecifier<Long> orderByFindAllLimitPage(Integer sort) {
+        return sort == null || sort == 0 ? board.id.desc() : board.view.desc();
+    }
+
     private BooleanBuilder whereFindAllLimitPage(Integer type, String search) {
         BooleanBuilder builder = new BooleanBuilder();
-
+        if(type == null) return builder;
         if (type == 1) {
             builder.and(board.user.nick.like("%" + search + "%"));
         }

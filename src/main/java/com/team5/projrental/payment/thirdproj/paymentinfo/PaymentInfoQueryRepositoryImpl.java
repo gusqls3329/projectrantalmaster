@@ -43,6 +43,7 @@ public class PaymentInfoQueryRepositoryImpl implements PaymentInfoQueryRepositor
                 .join(paymentInfo.payment.product).fetchJoin()
                 .join(paymentInfo.payment.paymentDetail).fetchJoin()
                 .where(paymentInfo.code.eq(code))
+                .orderBy(paymentInfo.createdAt.desc())
                 .fetchOne());
     }
 

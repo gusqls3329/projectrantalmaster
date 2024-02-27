@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface AdminBoardQueryRepository {
     Optional<Board> findActivatedById(Long iboard);
 
-    List<Board> findAllLimitPage(int page, Integer type, String search);
+    List<Board> findAllLimitPage(int page, Integer type, String search, Integer sort);
 }

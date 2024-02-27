@@ -295,6 +295,7 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
                 .where(product.status.notIn(ProductStatus.DELETED))
                 .offset(page)
                 .limit(Const.ADMIN_PER_PAGE)
+                .orderBy(product.id.desc())
                 .fetch();
 
     }
