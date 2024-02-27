@@ -147,19 +147,22 @@ public class AdministrationController {
             description = "[필수: [v]]<br>" +
                           "[v] page: 페이징 <br>" +
                           "    type: 검색 타입 -> 1: 닉네임, 2: 카테고리<br>" +
-                          "    search: 검색어 키워드")
+                          "    search: 검색어 키워드" +
+                          "    sort: 제공하지 않으면 최신순, 1: 조회수 많은순 내림차순, (조회수 오름차순도 필요하면 말해주세요)")
     @Validated
     @GetMapping("product")
     public ProductByAdminVo getAllProducts(@RequestParam Integer page,
                                            @Range(min = 1, max = 2)
                                            @RequestParam(required = false) Integer type,
-                                           @RequestParam(required = false) String search) {
+                                           @RequestParam(required = false) String search,
+                                           @Range(min = 1, max = 1)
+                                               @RequestParam(required = false) Integer sort) {
         if (search != null && search.isEmpty()) {
             throw new ClientException(ErrorCode.CAN_NOT_BLANK_EX_MESSAGE,
                     "search 는 빈 값일수 없습니다.");
         }
         return administrationService.getAllProducts((page - 1) * Const.ADMIN_PER_PAGE,
-                type, search);
+                type, search, sort);
     }
 
     @Operation(summary = "상품 강제 숨김 처리",

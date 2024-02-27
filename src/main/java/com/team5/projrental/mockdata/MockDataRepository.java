@@ -85,6 +85,37 @@ public class MockDataRepository {
             user.setUpw("test" + i);
             user.setAuth(Auth.USER);
 
+            if (i % 4 == 0) {
+                DisputeReason reason = DisputeReason.getByNum(i % 3);
+                DisputeUser disputeUser = new DisputeUser();
+                disputeUser.setUser(user);
+                disputeUser.setPenalty(((byte) reason.getPenaltyScore()));
+                disputeUser.setStatus(DisputeStatus.STAND_BY);
+                disputeUser.setReason(reason);
+
+
+                User findUser2 = null;
+                User findUser3 = null;
+                while (findUser2 == null) {
+                    int rNum1 = (int) (Math.random() * 100) + 1;
+                    findUser2 = em.find(User.class, rNum1);
+                    if (findUser2 != null && !Objects.equals(user.getId(), findUser2.getId())) {
+                        break;
+                    }
+
+                    int rNum2 = (int) (Math.random() * 100) + 1;
+                    findUser3 = em.find(User.class, rNum2);
+                    if (findUser3 != null && !Objects.equals(user.getId(), findUser3.getId())) {
+                        break;
+                    }
+                }
+                disputeUser.setReportedUser(findUser2);
+                disputeUser.setReporter(findUser3);
+                disputeUser.setDetails("Seatset" + i);
+                em.persist(disputeUser);
+            }
+
+
             em.persist(user);
             Admin admin = new Admin("운영자", "asetaset", AdminStatus.ACTIVE);
             admin.setEmail(i * i + "test@test.com");
@@ -131,6 +162,117 @@ public class MockDataRepository {
                     .seq(1L)
                     .build();
             product.getStocks().add(stock);
+
+            if (i % 4 == 0) {
+                DisputeReason reason = DisputeReason.getByNum(i % 3);
+                DisputeProduct disputeProduct = new DisputeProduct();
+                disputeProduct.setProduct(product);
+                disputeProduct.setPenalty(((byte) reason.getPenaltyScore()));
+                disputeProduct.setStatus(DisputeStatus.STAND_BY);
+                disputeProduct.setReason(reason);
+
+
+                User findUser2 = null;
+                User findUser3 = null;
+                while (findUser2 == null) {
+                    int rNum1 = (int) (Math.random() * 100) + 1;
+                    findUser2 = em.find(User.class, rNum1);
+                    if (findUser2 != null && !Objects.equals(product.getUser().getId(), findUser2.getId())) {
+                        break;
+                    }
+
+                    int rNum2 = (int) (Math.random() * 100) + 1;
+                    findUser3 = em.find(User.class, rNum2);
+                    if (findUser3 != null && !Objects.equals(product.getUser().getId(), findUser3.getId())) {
+                        break;
+                    }
+                }
+                disputeProduct.setReportedUser(findUser2);
+                disputeProduct.setReporter(findUser3);
+                disputeProduct.setDetails("Seatset" + i);
+                em.persist(disputeProduct);
+
+            }
+
+            Chat savChat = Chat.builder()
+                    .product(product)
+                    .build();
+            User findUser2 = null;
+            User findUser3 = null;
+            while (findUser2 == null) {
+                int rNum1 = (int) (Math.random() * 100) + 1;
+                findUser2 = em.find(User.class, rNum1);
+                if (findUser2 != null && !Objects.equals(product.getUser().getId(), findUser2.getId())) {
+                    break;
+                }
+
+                int rNum2 = (int) (Math.random() * 100) + 1;
+                findUser3 = em.find(User.class, rNum2);
+                if (findUser3 != null && !Objects.equals(product.getUser().getId(), findUser3.getId())) {
+                    break;
+                }
+            }
+            ChatUser saveChatUser1 = new ChatUser();
+            saveChatUser1.setUser(findUser2);
+            saveChatUser1.setStatus(ChatUserStatus.ACTIVE);
+            saveChatUser1.setChat(savChat);
+            ChatUser saveChatUser2 = new ChatUser();
+            saveChatUser2.setUser(findUser3);
+            saveChatUser2.setStatus(ChatUserStatus.ACTIVE);
+            saveChatUser2.setChat(savChat);
+            em.persist(saveChatUser1);
+            em.persist(saveChatUser2);
+            em.flush();
+
+            ChatMsg saveChatMsg1 = new ChatMsg();
+            saveChatMsg1.setChatUser(saveChatUser1);
+            saveChatMsg1.setMsg("mesaaaaaag" + i);
+            saveChatMsg1.setChatUser(saveChatUser1);
+
+
+            ChatMsg saveChatMsg2 = new ChatMsg();
+            saveChatMsg2.setChatUser(saveChatUser1);
+            saveChatMsg2.setMsg("hiiiiiiiiiiii" + i);
+            saveChatMsg2.setChatUser(saveChatUser2);
+
+
+
+            em.persist(saveChatMsg1);
+            em.persist(saveChatMsg2);
+            em.flush();
+
+            if(i % 5 == 0) {
+                DisputeReason reason = DisputeReason.getByNum(i % 3);
+                DisputeChatUser disputeChatUser = new DisputeChatUser();
+                disputeChatUser.setChatUser(saveChatUser1);
+                disputeChatUser.setPenalty(((byte) reason.getPenaltyScore()));
+                disputeChatUser.setStatus(DisputeStatus.STAND_BY);
+                disputeChatUser.setReason(reason);
+
+
+                User findUser4 = null;
+                User findUser5 = null;
+                while (findUser4 == null) {
+                    int rNum1 = (int) (Math.random() * 100) + 1;
+                    findUser4 = em.find(User.class, rNum1);
+                    if (findUser4 != null && !Objects.equals(product.getUser().getId(), findUser4.getId())) {
+                        break;
+                    }
+
+                    int rNum2 = (int) (Math.random() * 100) + 1;
+                    findUser5 = em.find(User.class, rNum2);
+                    if (findUser5 != null && !Objects.equals(product.getUser().getId(), findUser5.getId())) {
+                        break;
+                    }
+                }
+                disputeChatUser.setReportedUser(saveChatUser1.getUser());
+                disputeChatUser.setReporter(findUser5);
+                disputeChatUser.setDetails("Seatset" + i);
+                em.persist(disputeChatUser);
+
+            }
+
+
             em.persist(product);
             List<String> tags = List.of("태그1", "태그2", "태그3", "태그5", "태그6", "태그7");
             HashTag hashTag = HashTag.builder()
@@ -260,6 +402,36 @@ public class MockDataRepository {
                     .payment(payment)
                     .build();
 
+            if (i % 4 == 0) {
+                DisputeReason reason = DisputeReason.getByNum(i % 3);
+                DisputePayment disputePayment = new DisputePayment();
+                disputePayment.setPaymentInfo(paymentInfo);
+                disputePayment.setPenalty(((byte) reason.getPenaltyScore()));
+                disputePayment.setStatus(DisputeStatus.STAND_BY);
+                disputePayment.setReason(reason);
+
+
+                User findUser2 = null;
+                User findUser3 = null;
+                while (findUser2 == null) {
+                    int rNum1 = (int) (Math.random() * 100) + 1;
+                    findUser2 = em.find(User.class, rNum1);
+                    if (findUser2 != null && !Objects.equals(paymentInfo.getPaymentInfoIds().getIuser(), findUser2.getId())) {
+                        break;
+                    }
+
+                    int rNum2 = (int) (Math.random() * 100) + 1;
+                    findUser3 = em.find(User.class, rNum2);
+                    if (findUser3 != null && !Objects.equals(paymentInfo.getPaymentInfoIds().getIuser(), findUser3.getId())) {
+                        break;
+                    }
+                }
+                disputePayment.setReportedUser(findUser2);
+                disputePayment.setReporter(findUser3);
+                disputePayment.setDetails("Seatset" + i);
+                em.persist(disputePayment);
+            }
+
             em.persist(payment);
             em.persist(paymentInfo);
             em.persist(paymentInfo2);
@@ -306,39 +478,92 @@ INSERT INTO board_like (`board_iboard`, `created_at`, `iuser`) VALUES (1, '2024-
 INSERT INTO board_pic (`created_at`, `iboard`, `ipics`, `stored_pic`) VALUES ('2024-02-19 13:14:27', 1, 1, 'propic.jpeg');
 
          */
+        for (int i = 0; i < 40; i++) {
+            User findUser = null;
+            while (findUser == null) {
+                int rNum1 = (int) (Math.random() * 100) + 1;
+//            User findUser = em.createQuery("select u from User u where u.uid = 'test7'", User.class).getSingleResult();
+                findUser = em.find(User.class, rNum1);
+            }
 
-        User findUser = em.createQuery("select u from User u where u.uid = 'test7'", User.class).getSingleResult();
-        User commentUser = em.createQuery("select u from User u where u.uid = 'test8'", User.class).getSingleResult();
 
-        Board saveBoard = Board.builder()
-                .user(findUser)
-                .view(0L)
-                .contents("etest")
-                .title("etst")
-                .status(BoardStatus.ACTIVATED)
-                .build();
-        saveBoard.setCreatedAt(LocalDateTime.now());
-        saveBoard.setUpdatedAt((LocalDateTime.now()));
+            Board saveBoard = Board.builder()
+                    .user(findUser)
+                    .view(0L)
+                    .contents("etest" + i)
+                    .title("etst" + i)
+                    .status(BoardStatus.ACTIVATED)
+                    .build();
+            saveBoard.setCreatedAt(LocalDateTime.now());
+            saveBoard.setUpdatedAt((LocalDateTime.now()));
 
-        BoardComment saveBoardComment = BoardComment.builder()
-                .board(saveBoard)
-                .user(commentUser)
-                .comment("testasetcomment")
-                .build();
+            User commentUser = null;
+            BoardComment saveBoardComment = null;
+            while (commentUser == null) {
+                int rNum2 = (int) (Math.random() * 100) + 1;
+                commentUser = em.find(User.class, rNum2);
+                saveBoardComment = BoardComment.builder()
+                        .board(saveBoard)
+                        .user(commentUser)
+                        .comment("testasetcomment" + 1)
+                        .build();
+            }
 
-        saveBoardComment.setCreatedAt(LocalDateTime.now());
-        saveBoardComment.setUpdatedAt((LocalDateTime.now()));
-        em.persist(saveBoardComment);
+
+            saveBoardComment.setCreatedAt(LocalDateTime.now());
+            saveBoardComment.setUpdatedAt((LocalDateTime.now()));
+            em.persist(saveBoardComment);
+
+            if (i % 4 == 0) {
+                DisputeReason reason = DisputeReason.getByNum(i % 3);
+                DisputeBoard disputeBoard = new DisputeBoard();
+                disputeBoard.setBoard(saveBoard);
+                disputeBoard.setPenalty(((byte) reason.getPenaltyScore()));
+                disputeBoard.setStatus(DisputeStatus.STAND_BY);
+                disputeBoard.setReason(reason);
+
+
+                User findUser2 = null;
+                User findUser3 = null;
+                while (findUser2 == null) {
+                    int rNum1 = (int) (Math.random() * 100) + 1;
+                    findUser2 = em.find(User.class, rNum1);
+                    if (findUser2 != null && !Objects.equals(saveBoard.getId(), findUser2.getId())) {
+                        break;
+                    }
+
+                    int rNum2 = (int) (Math.random() * 100) + 1;
+                    findUser3 = em.find(User.class, rNum2);
+                    if (findUser3 != null && !Objects.equals(saveBoard.getId(), findUser3.getId())) {
+                        break;
+                    }
+                }
+                disputeBoard.setReportedUser(findUser2);
+                disputeBoard.setReporter(findUser3);
+                disputeBoard.setDetails("Seatset" + i);
+                em.persist(disputeBoard);
+            }
+        }
         em.flush();
         em.clear();
 
 
-        em.createQuery("select us from Users us where us.uid = '7test7'", Users.class).getSingleResult()
+        em.createQuery("select us from Users us where us.uid = '7test7'", Users.class).
+
+                getSingleResult()
                 .setUpw("$2a$10$4OxWp8Q.ghCbheS732cYhu7ZVBGNTdrgl8uHjpCnvAxjRIZFczsmu");
-        em.createQuery("select us from Users us where us.uid = 'test7'", Users.class).getSingleResult()
+        em.createQuery("select us from Users us where us.uid = 'test7'", Users.class).
+
+                getSingleResult()
                 .setUpw("$2a$10$4OxWp8Q.ghCbheS732cYhu7ZVBGNTdrgl8uHjpCnvAxjRIZFczsmu");
         em.flush();
         em.clear();
+
+//        em.find(Board.class);
+
+
+
+
     }
 
     private String genUserPaymentCode() {

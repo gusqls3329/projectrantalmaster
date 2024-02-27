@@ -1,6 +1,5 @@
 package com.team5.projrental.entities;
 
-import com.team5.projrental.entities.ids.ChatMsgIds;
 import com.team5.projrental.entities.mappedsuper.CreatedAt;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,15 +8,16 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"ichat_user", "seq"}))
 public class ChatMsg extends CreatedAt {
 
-    @EmbeddedId
-    private ChatMsgIds chatMsgIds;
-
-    @MapsId("ichatUser")
+    @Id
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "ichat_user")
     private ChatUser chatUser;
+
+    @Column(columnDefinition = "BIGINT UNSIGNED")
+    private Long seq;
 
 
 

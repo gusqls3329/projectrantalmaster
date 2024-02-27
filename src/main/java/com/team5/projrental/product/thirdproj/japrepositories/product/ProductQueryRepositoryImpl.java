@@ -288,16 +288,20 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
     }
 
     @Override
-    public List<Product> findAllLimitPage(int page, Integer type, String search) {
+    public List<Product> findAllLimitPage(int page, Integer type, String search, Integer sort) {
 
         return query.selectFrom(product)
                 .join(product.user).fetchJoin()
                 .where(product.status.notIn(ProductStatus.DELETED))
                 .offset(page)
                 .limit(Const.ADMIN_PER_PAGE)
-                .orderBy(product.id.desc())
+                .orderBy(orderByFindAllLimitPage(sort))
                 .fetch();
 
+    }
+
+    private OrderSpecifier<Long> orderByFindAllLimitPage(Integer sort) {
+        return sort == null || sort == 0 ? product.id.desc() : product.view.desc();
     }
 
     private BooleanBuilder whereFindAllLimitPage(Integer type, String search) {

@@ -201,8 +201,8 @@ public class AdministrationService {
                 kind = DisputeKind.PRODUCT;
                 pk = String.valueOf(disputeProduct.getProduct().getId());
             }
-            if (dispute instanceof DisputeChat) {
-                DisputeChat disputeChat = (DisputeChat) dispute;
+            if (dispute instanceof DisputeChatUser) {
+                DisputeChatUser disputeChat = (DisputeChatUser) dispute;
                 kind = DisputeKind.CHAT;
                 pk = String.valueOf(disputeChat.getChatUser().getId());
             }
@@ -268,11 +268,11 @@ public class AdministrationService {
         return new ResVo((long) changeDisputeStatus.getNum());
     }
 
-    public ProductByAdminVo getAllProducts(int page, Integer type, String search) {
+    public ProductByAdminVo getAllProducts(int page, Integer type, String search, Integer sort) {
         // 삭제된 상태의 제품은 제외하고 조회
 
 
-        List<Product> findProducts = productRepository.findAllLimitPage(page, type, search);
+        List<Product> findProducts = productRepository.findAllLimitPage(page, type, search, sort);
         // 카테고리는 db에서 조회하는 방법이 없어서 자바에서 수행. (limit 이 있으므로 성능상 엄청 크게 손해는 없다.)
         if (type != null && type == 2) {
             findProducts = findProducts.stream().filter(p -> {

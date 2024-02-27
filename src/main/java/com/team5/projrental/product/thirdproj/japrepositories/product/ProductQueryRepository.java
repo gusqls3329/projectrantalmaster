@@ -43,7 +43,7 @@ public interface ProductQueryRepository {
 
     LocalDateTime findLastProductCreatedAtBy(User user);
 
-    List<Product> findAllLimitPage(int page, Integer type, String search);
+    List<Product> findAllLimitPage(int page, Integer type, String search, Integer sort);
 
     Optional<Product> findByIdJoinFetch(Long iproduct);
 }
