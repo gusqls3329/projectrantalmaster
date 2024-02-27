@@ -19,7 +19,7 @@ public class SelUserVo {
     private String auth;
     private int istatus;
     private String status;
-
+    private Long penalty;
     @JsonInclude
     private int iauth;
 

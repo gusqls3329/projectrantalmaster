@@ -150,7 +150,7 @@
     </update>
     <!--    -->
     <select id="selUser">
-        SELECT u.y, u.x, u.nick,  u.stored_pic as storedPic, us.phone, us.email, u.rating,  u.addr, u.rest_addr as restAddr, us.auth, u.`status`
+        SELECT u.y, u.x, u.nick,  u.stored_pic as storedPic, us.phone, us.email, u.rating,  u.addr, u.rest_addr as restAddr, us.auth, u.`status`, u.penalty
         FROM users us
         Left JOIN user u
         ON us.iuser = u.iuser
