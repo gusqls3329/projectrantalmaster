@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public class ProductInfoByAdmin {
     private Long iproduct;
     private Long iuser;
+    private String nick;
     private Integer mainCategory;
     private Integer subCategory;
     private Integer pricePerDay;

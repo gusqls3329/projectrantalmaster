@@ -294,6 +294,7 @@ public class AdministrationService {
                 .status(product.getStatus().getNum())
 
                 .iuser(product.getUser().getId())
+                .nick(product.getUser().getNick())
                 .build()).toList();
 
         return ProductByAdminVo.builder()
