@@ -64,6 +64,7 @@ public class MypageController {
     @Parameters(value = {@Parameter(name = "page", description = "페이지")})
     public List<MyBuyReviewListSelVo> getReview(@RequestParam(defaultValue = "1") @Range(min = 1) int page) {
         MyBuyReviewListSelDto dto = new MyBuyReviewListSelDto();
+        dto.setPage(page);
         return service.getReview(dto);
     }
 

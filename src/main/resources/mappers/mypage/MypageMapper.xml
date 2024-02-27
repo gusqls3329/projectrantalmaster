@@ -54,18 +54,18 @@
     </select>
 
     <select id="getIbuyerReviewList">
-        SELECT B.iuser, A.nick, A.stored_pic AS loginedUserPic,
-        D.imain_category AS imainCategory,
-        D.isub_category AS isubCategory,
-        D.iproduct, D.title, D.stored_pic AS prodPic, B.ireview, B.rating, B.`contents`
+        SELECT B.ireview, B.rating, B.`contents`, A.nick, A.stored_pic AS loginedUserPic,
+        D.iproduct, D.title, D.stored_pic AS prodPic
         FROM user A
         LEFT JOIN review B
         ON A.iuser = B.iuser
-        LEFT JOIN product_payment C
+        LEFT JOIN payment C
         ON B.ipayment = C.ipayment
         LEFT JOIN product D
         ON C.iproduct = D.iproduct
         WHERE B.iuser = #{iuser}
+        ORDER BY B.updated_at DESC
+        LIMIT #{startIdx}, #{rowCount}
     </select>
 
     <select id="getFavList">
