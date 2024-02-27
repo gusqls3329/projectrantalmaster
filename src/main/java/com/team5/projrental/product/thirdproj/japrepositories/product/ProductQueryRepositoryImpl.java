@@ -292,12 +292,20 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
 
         return query.selectFrom(product)
                 .join(product.user).fetchJoin()
-                .where(product.status.notIn(ProductStatus.DELETED))
+                .where(product.status.notIn(ProductStatus.DELETED), searchCategoryFindAllLimitPage(type, search))
                 .offset(page)
                 .limit(Const.ADMIN_PER_PAGE)
                 .orderBy(orderByFindAllLimitPage(sort))
                 .fetch();
 
+    }
+
+    private BooleanBuilder searchCategoryFindAllLimitPage(Integer type, String search) {
+        BooleanBuilder builder = new BooleanBuilder();
+        if (type != null && type == 2) {
+            builder.and(product.subCategory.stringValue().like("%" + search + "%"));
+        }
+        return builder;
     }
 
     private OrderSpecifier<Long> orderByFindAllLimitPage(Integer sort) {

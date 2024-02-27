@@ -273,16 +273,7 @@ public class AdministrationService {
 
 
         List<Product> findProducts = productRepository.findAllLimitPage(page, type, search, sort);
-        // 카테고리는 db에서 조회하는 방법이 없어서 자바에서 수행. (limit 이 있으므로 성능상 엄청 크게 손해는 없다.)
-        if (type != null && type == 2) {
-            findProducts = findProducts.stream().filter(p -> {
-                String basName = p.getSubCategory().getName();
 
-                return basName.contains(search) ||
-                       basName.equalsIgnoreCase(search);
-
-            }).toList();
-        }
         long count = findProducts.size();
         List<ProductInfoByAdmin> productResults = findProducts.stream().map(product -> ProductInfoByAdmin.builder()
                 .iproduct(product.getId())
