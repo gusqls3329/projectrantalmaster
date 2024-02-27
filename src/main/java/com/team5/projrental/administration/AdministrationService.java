@@ -130,9 +130,13 @@ public class AdministrationService {
                         status == 2 ? UserStatus.ACTIVATED :
                                 status == 3 ? UserStatus.DELETED : null);
 
+        int basePage = page * Const.ADMIN_PER_PAGE;
+        int limitPage = basePage + Const.ADMIN_PER_PAGE;
+        List<User> resultUser = findUser.subList(basePage, limitPage);
+
         return UserByAdminVo.builder()
                 .totalUserCount((long) findUser.size())
-                .users(findUser.stream()
+                .users(resultUser.stream()
                         .map(user -> UserInfoByAdmin.builder()
                                 .iuser(user.getId())
                                 .uid(user.getUid())
@@ -181,8 +185,11 @@ public class AdministrationService {
 
     public DisputeByAdminVo getAllDispute(int page, Integer div, String search, Integer category, Integer status) {
         List<Dispute> findDisputes = adminDisputeRepository.findByLimitPage(page, div, search, category, status);
-        long count = findDisputes.size();
-        List<DisputeInfoByAdmin> disputeInfoByAdmins = findDisputes.stream().map(dispute -> {
+
+        int basePage = page * Const.ADMIN_PER_PAGE;
+        int limitPage = basePage + Const.ADMIN_PER_PAGE;
+        List<Dispute> resultDispute = findDisputes.subList(basePage, limitPage);
+        List<DisputeInfoByAdmin> disputeInfoByAdmins = resultDispute.stream().map(dispute -> {
             DisputeKind kind = null;
             String pk = "";
             if (dispute instanceof DisputeBoard) {
@@ -222,7 +229,7 @@ public class AdministrationService {
         }).toList();
 
         return DisputeByAdminVo.builder()
-                .totalDisputeCount(count)
+                .totalDisputeCount((long) findDisputes.size())
                 .disputes(disputeInfoByAdmins)
                 .build();
     }
@@ -274,8 +281,12 @@ public class AdministrationService {
 
         List<Product> findProducts = productRepository.findAllLimitPage(page, type, search, sort);
 
-        long count = findProducts.size();
-        List<ProductInfoByAdmin> productResults = findProducts.stream().map(product -> ProductInfoByAdmin.builder()
+        int basePage = page * Const.ADMIN_PER_PAGE;
+        int limitPage = basePage + Const.ADMIN_PER_PAGE;
+        List<Product> resultProducts = findProducts.subList(basePage, limitPage);
+
+
+        List<ProductInfoByAdmin> productResults = resultProducts.stream().map(product -> ProductInfoByAdmin.builder()
                 .iproduct(product.getId())
                 .mainCategory(product.getMainCategory().getNum())
                 .subCategory(product.getSubCategory().getNum())
@@ -289,7 +300,7 @@ public class AdministrationService {
                 .build()).toList();
 
         return ProductByAdminVo.builder()
-                .totalDisputeCount(count)
+                .totalDisputeCount((long) findProducts.size())
                 .products(productResults)
                 .build();
     }
@@ -345,9 +356,13 @@ public class AdministrationService {
     public BoardByAdminVo getAllBoards(int page, Integer type, String search, Integer sort) {
         List<Board> findBoards = boardRepository.findAllLimitPage(page, type, search, sort);
 
+        int basePage = page * Const.ADMIN_PER_PAGE;
+        int limitPage = basePage + Const.ADMIN_PER_PAGE;
+        List<Board> resultBoards = findBoards.subList(basePage, limitPage);
+
         return BoardByAdminVo.builder()
                 .totalBoardCount((long) findBoards.size())
-                .boards(findBoards.stream().map(board -> BoardInfoByAdmin.builder()
+                .boards(resultBoards.stream().map(board -> BoardInfoByAdmin.builder()
                         .iboard(board.getId())
                         .nick(board.getUser().getNick())
                         .view(board.getView())
@@ -359,9 +374,14 @@ public class AdministrationService {
 
     public RefundByAdminVo getAllRefunds(Integer page, Integer status) {
         List<Refund> findRefunds = refundRepository.findAllLimitPage(page, status);
+
+        int basePage = page * Const.ADMIN_PER_PAGE;
+        int limitPage = basePage + Const.ADMIN_PER_PAGE;
+        List<Refund> resultRefunds = findRefunds.subList(basePage, limitPage);
+
         return RefundByAdminVo.builder()
                 .totalRefundCount((long) findRefunds.size())
-                .refunds(findRefunds.stream().map(refund -> RefundInfoByAdmin.builder()
+                .refunds(resultRefunds.stream().map(refund -> RefundInfoByAdmin.builder()
                         .irefund(refund.getId())
                         .iuser(refund.getUser().getId())
                         .uid(refund.getUser().getUid())

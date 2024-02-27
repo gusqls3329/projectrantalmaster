@@ -25,8 +25,8 @@ public class AdminDisputeQueryRepositoryImpl implements AdminDisputeQueryReposit
 
         return query.selectFrom(dispute)
                 .where(whereFindByLimitPage(div, search, category, status))
-                .offset(page)
-                .limit(Const.ADMIN_PER_PAGE)
+//                .offset(page)
+//                .limit(Const.ADMIN_PER_PAGE)
                 .orderBy(dispute.id.desc())
                 .fetch();
 

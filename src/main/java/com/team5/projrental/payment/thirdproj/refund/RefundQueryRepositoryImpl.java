@@ -22,8 +22,8 @@ public class RefundQueryRepositoryImpl implements RefundQueryRepository {
     public List<Refund> findAllLimitPage(Integer page, Integer status) {
         return query.selectFrom(refund)
                 .where(whereFindAllLimitPage(status))
-                .offset(page)
-                .limit(Const.ADMIN_PER_PAGE)
+//                .offset(page)
+//                .limit(Const.ADMIN_PER_PAGE)
                 .orderBy(refund.id.desc())
                 .fetch();
 

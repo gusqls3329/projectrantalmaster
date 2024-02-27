@@ -37,8 +37,8 @@ public class AdminBoardQueryRepositoryImpl implements AdminBoardQueryRepository 
         return query.selectFrom(board)
                 .join(board.user).fetchJoin()
                 .where(whereFindAllLimitPage(type, search))
-                .offset(page)
-                .limit(Const.ADMIN_PER_PAGE)
+//                .offset(page)
+//                .limit(Const.ADMIN_PER_PAGE)
                 .orderBy(orderByFindAllLimitPage(sort))
                 .fetch();
 

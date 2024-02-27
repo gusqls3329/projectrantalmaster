@@ -293,8 +293,8 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
         return query.selectFrom(product)
                 .join(product.user).fetchJoin()
                 .where(product.status.notIn(ProductStatus.DELETED), searchCategoryFindAllLimitPage(type, search))
-                .offset(page)
-                .limit(Const.ADMIN_PER_PAGE)
+//                .offset(page)
+//                .limit(Const.ADMIN_PER_PAGE)
                 .orderBy(orderByFindAllLimitPage(sort))
                 .fetch();
 

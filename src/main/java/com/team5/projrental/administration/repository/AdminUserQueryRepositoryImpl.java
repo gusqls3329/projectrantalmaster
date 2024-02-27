@@ -23,8 +23,8 @@ public class AdminUserQueryRepositoryImpl implements AdminUserQueryRepository {
 
         return query.selectFrom(user)
                 .where(whereFindByUserByOptions(searchType, search, status))
-                .offset(page)
-                .limit(Const.ADMIN_PER_PAGE)
+//                .offset(page)
+//                .limit(Const.ADMIN_PER_PAGE)
                 .orderBy(user.id.desc())
                 .fetch();
 
