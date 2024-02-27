@@ -1,7 +1,7 @@
-package com.team5.projrental.initializr;
+package com.team5.projrental.chatbot;
 
-import com.team5.projrental.initializr.model.ChatBotVo;
-import com.team5.projrental.initializr.repository.ChatBotRepository;
+import com.team5.projrental.chatbot.model.ChatBotVo;
+import com.team5.projrental.chatbot.repository.ChatBotRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

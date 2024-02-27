@@ -1,6 +1,6 @@
-package com.team5.projrental.initializr;
+package com.team5.projrental.chatbot;
 
-import com.team5.projrental.initializr.model.ChatBotVo;
+import com.team5.projrental.chatbot.model.ChatBotVo;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

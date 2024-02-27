@@ -1,4 +1,4 @@
-package com.team5.projrental.initializr.model;
+package com.team5.projrental.chatbot.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;

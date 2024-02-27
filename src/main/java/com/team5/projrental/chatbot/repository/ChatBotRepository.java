@@ -1,4 +1,4 @@
-package com.team5.projrental.initializr.repository;
+package com.team5.projrental.chatbot.repository;
 
 import com.team5.projrental.entities.ChatBot;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,7 +1,7 @@
-package com.team5.projrental.initializr.init;
+package com.team5.projrental.chatbot.init;
 
 import com.team5.projrental.entities.ChatBot;
-import com.team5.projrental.initializr.repository.ChatBotRepository;
+import com.team5.projrental.chatbot.repository.ChatBotRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
