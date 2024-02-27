@@ -18,6 +18,7 @@ public class SelUserVo {
     private int rating;
     private String auth;
     private int istatus;
+    private String status;
 
     @JsonInclude
     private int iauth;

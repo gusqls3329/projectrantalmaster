@@ -1,6 +1,9 @@
 package com.team5.projrental.user;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.team5.projrental.board.BoardRepository;
+import com.team5.projrental.board.BoardService;
+import com.team5.projrental.board.model.BoardDelDto;
 import com.team5.projrental.common.Const;
 import com.team5.projrental.common.SecurityProperties;
 import com.team5.projrental.common.exception.*;
@@ -23,6 +26,13 @@ import com.team5.projrental.entities.enums.*;
 import com.team5.projrental.entities.inheritance.QUsers;
 import com.team5.projrental.entities.inheritance.Users;
 import com.team5.projrental.entities.mappedsuper.BaseUser;
+import com.team5.projrental.payment.review.PaymentReviewService;
+import com.team5.projrental.payment.review.ReviewRepository;
+import com.team5.projrental.payment.review.model.DelRivewDto;
+import com.team5.projrental.payment.review.model.SelRatVo;
+import com.team5.projrental.payment.review.model.UpRating;
+import com.team5.projrental.payment.thirdproj.PaymentRepository;
+import com.team5.projrental.payment.thirdproj.paymentinfo.PaymentInfoRepository;
 import com.team5.projrental.product.thirdproj.japrepositories.product.ProductRepository;
 import com.team5.projrental.user.model.*;
 import com.team5.projrental.user.verification.users.TossVerificationRequester;
@@ -44,6 +54,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.team5.projrental.common.exception.ErrorCode.*;
@@ -60,7 +71,13 @@ UserService {
     private final UserRepository userRepository;
     private final UsersRepository usersRepository;
     private final ProductRepository productRepository;
+    private final PaymentInfoRepository paymentInfoRepository;
+    private final PaymentRepository paymentRepository;
+    private final ReviewRepository reviewRepository;
+    private final BoardRepository boardRepository;
 
+    private final BoardService boardService;
+    private final PaymentReviewService paymentReviewService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final SecurityProperties securityProperties;
@@ -420,20 +437,34 @@ UserService {
         }
         List<DelSelVo> vo = mapper.selStatusPay(loginUserPk);
         List<DelSelProcVo> procVo = mapper.selStatusPro(loginUserPk);
+        Review review = reviewRepository.findByUser(user);
+        DelRivewDto reviewDto = new DelRivewDto();
+        reviewDto.setIreview(review.getId().intValue());
+        reviewDto.setIreview(review.getId().intValue());
+        paymentReviewService.delReview(reviewDto);
+
+        Board board = boardRepository.findByUser(user);
+        BoardDelDto delDto = new BoardDelDto();
+        delDto.setIboard(board.getId().intValue());
+        boardService.delBoard(delDto.getIboard());
 
         for (DelSelVo list : vo) {
             if(list.getStatus().equals(PaymentInfoStatus.ACTIVATED.name())) {
-                throw new IllegalException(CAN_NOT_DEL_USER_EX_MESSAGE);
+               throw new ClientException(CAN_NOT_DEL_USER_EX_MESSAGE);
             }
+            Optional<Product> product = productRepository.findById(list.getIproduct());
+            product.get().setStatus(ProductStatus.DELETED);
         }
 
         for (DelSelProcVo list : procVo) {
             if(list.getStatus().equals(PaymentInfoStatus.ACTIVATED.name())) {
                 throw new IllegalException(CAN_NOT_DEL_USER_EX_MESSAGE);
             }
+            Optional<Payment> payment = paymentRepository.findById(list.getIpayment());
+            PaymentInfo paymentInfo = paymentInfoRepository.findByPaymentAndUser(payment.get(), user);
+            paymentInfo.setStatus(PaymentInfoStatus.DELETED);
         }
-
-        return 0;
+        return (int)Const.SUCCESS;
 
     }
 
@@ -500,12 +531,14 @@ UserService {
         Long actionIuser = checker ? authenticationFacade.getLoginUserPk() : iuser;
 
         SelUserVo vo = mapper.selUser(actionIuser);
-
-        if (iuser != authenticationFacade.getLoginUserPk()) {
+        if (vo.getStatus().equals(UserStatus.FAILED.name()) || vo.getStatus().equals(UserStatus.HIDDEN.name()) || vo.getStatus().equals(UserStatus.DELETED.name())) {
+            throw new ClientException(ErrorMessage.NO_SUCH_USER_EX_MESSAGE);
+        }
+        if ((!Objects.equals(iuser, authenticationFacade.getLoginUserPk()))) {
             vo.setPhone(null);
             vo.setEmail(null);
         }
-        if (vo.getAuth() == Auth.USER.name()) {
+        if (vo.getAuth().equals(Auth.USER.name())){
             vo.setIauth(Auth.USER.getIauth());
         }
         return vo;
@@ -538,3 +571,4 @@ UserService {
 
 
 }
+

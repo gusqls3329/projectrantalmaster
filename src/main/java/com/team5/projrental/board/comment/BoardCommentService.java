@@ -17,6 +17,7 @@ public class BoardCommentService {
     private final BoardCommentReposity boardCommentReposity;
     private final BoardCommentMapper mapper;
 
+/*
 
     public ResVo postComment(BoardCommentInsDto dto) {
         long result = mapper.insBoardComment(dto);
@@ -32,6 +33,7 @@ public class BoardCommentService {
         long result = mapper.delBoardComment(iboardComment);
         return new ResVo(result);
     }
+*/
 
 
 }

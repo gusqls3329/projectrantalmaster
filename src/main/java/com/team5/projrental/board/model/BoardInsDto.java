@@ -16,9 +16,9 @@ import java.util.List;
 @AllArgsConstructor
 public class BoardInsDto {
     @JsonIgnore
-    private Integer iboard;
+    private int iboard;
     @JsonIgnore
-    private Integer iuser;
+    private int iuser;
     @NotBlank(message = ErrorMessage.CAN_NOT_BLANK_EX_MESSAGE)
     @Length(min = 2, max = 50)
     private String title;

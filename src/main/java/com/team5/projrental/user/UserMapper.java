@@ -45,5 +45,4 @@ public interface UserMapper {
     List<DelSelVo> selStatusPay(Long iuser);
 
     List<DelSelProcVo> selStatusPro(Long iuser);
-
 }

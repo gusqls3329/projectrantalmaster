@@ -15,8 +15,8 @@ import javax.annotation.Nullable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardListSelDto {
-
-    private int targetIuser;
+    @JsonIgnore
+    private long loginIuser;
 
     @Range(min = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
     private int page;
@@ -24,9 +24,11 @@ public class BoardListSelDto {
     @JsonIgnore
     private int startIdx;
 
+    private int sort; // 0:최신순 ,1:좋아요순, 2:조회수순
+
 
     @JsonIgnore
-    @Builder.Default
+    //@Builder.Default
     private int rowCount = 12;
 
     public void setPage(int page) {

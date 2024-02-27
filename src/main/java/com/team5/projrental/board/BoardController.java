@@ -28,14 +28,16 @@ public class BoardController {
     private final BoardService service;
 
 
+
     @Operation(summary = "게시글 등록", description = "게시판에 게시글 등록")
     @Parameters(value = {
             @Parameter(name = "title", description = "제목"),
             @Parameter(name = "contents", description = "내용")})
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResVo postBoard(@RequestPart(required = false) List<MultipartFile> storedPic, @RequestPart @Validated BoardInsDto dto) {
-        //return service.postBoard(dto);
-        return null;
+        dto.setStoredPic(storedPic);
+        return service.postBoard(dto);
+
     }
 
     @Operation(summary = "전체 게시글 목록", description = "게시판 목록")
@@ -49,7 +51,8 @@ public class BoardController {
             @Parameter(name = "targetIuser", description = "이때, targetIuser 가 제공되면\n" +
                     "targetIuser가 0일경우 로그인유자가 작성한 게시글중 + 검색조건 ,\n" +
                     "targetIuser 가 1 이상일 경우, targetIuser 에 해당하는 iuser 를 가진 유저가 작성한 게시글중 + 검색조건 \n" +
-                    "으로 조회함.")})
+                    "으로 조회함."),
+            @Parameter(name = "sort", description = "sort:0 (default) - 최신순<br>sort:1 - 좋아요순<br>sort:2 - 조회수 많은순")})
     @Validated
     @GetMapping
     public List<BoardListSelVo> getBoardList(@RequestParam(defaultValue = "1") @Min(1)
@@ -88,9 +91,9 @@ public class BoardController {
     @Operation(summary = "게시글 삭제", description = "내가 쓴 게시글 삭제(숨김:status를 2로 변경/default:1)")
     @Parameters(value = {
             @Parameter(name = "iboard", description = "삭제 할 게시글pk")})
-    @DeleteMapping("{iboard}")
-    public ResVo delUserBoard(@PathVariable BoardDelDto dto) {
-        return service.delBoard(dto);
+    @DeleteMapping("/{iboard}")
+    public ResVo delUserBoard(@PathVariable int iboard) {
+        return service.delBoard(iboard);
     }
 
 
@@ -101,5 +104,6 @@ public class BoardController {
     public ResVo toggleLike(@PathVariable int iboard) {
         return service.toggleLike(iboard);
     }
+
 
 }

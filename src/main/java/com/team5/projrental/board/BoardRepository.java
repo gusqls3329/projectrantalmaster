@@ -17,7 +17,7 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardQueryR
     @Query("select b from Board b join fetch b.user where b.id = :identity")
     Optional<Board> findByIdJoinFetch(Long identity);
 
-
+    Board findByUser(User user);
 
     /*@EntityGraph(attributePaths = {"user"})
     List<Board> findAllByUserOrderByIboardDesc(User user, Pageable pageable);*/
