@@ -177,7 +177,6 @@
         ON pai.ipayment = pa.ipayment
         AND pai.`status` NOT IN ('COMPLETED')
         WHERE pa.iusers = #{iuser} OR pr.iusers = #{iuser}
-
     </select>
 
     <select id="checkUserUid">
@@ -242,4 +241,23 @@
         </set>
         where us.iuser = #{iuser}
     </update>
+
+    <select id="selStatusPay">
+        SELECT distinct pr.iproduct, pa.ipayment, pa.iuser, pai.`status`
+        FROM `user` u
+        JOIN product pr
+        ON pr.iuser = u.iuser
+        JOIN payment pa
+        ON pa.iproduct = pr.iproduct
+        JOIN payment_info pai
+        ON pai.ipayment = pa.ipayment
+        WHERE u.iuser = #{iuser}
+    </select>
+    <select id="selStatusPro">
+        SELECT pa.ipayment, pai.`status`
+        from payment pa
+        JOIN payment_info pai
+        ON pa.iuser = pai.iuser
+        WHERE pa.iuser = #{iuser}
+    </select>
 </mapper>

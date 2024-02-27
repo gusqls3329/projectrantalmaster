@@ -41,4 +41,9 @@ public interface UserMapper {
 
     //예외
     String selLoginStatus(SigninDto dto);
+
+    List<DelSelVo> selStatusPay(Long iuser);
+
+    List<DelSelProcVo> selStatusPro(Long iuser);
+
 }

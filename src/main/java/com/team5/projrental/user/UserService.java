@@ -23,6 +23,7 @@ import com.team5.projrental.entities.enums.*;
 import com.team5.projrental.entities.inheritance.QUsers;
 import com.team5.projrental.entities.inheritance.Users;
 import com.team5.projrental.entities.mappedsuper.BaseUser;
+import com.team5.projrental.product.thirdproj.japrepositories.product.ProductRepository;
 import com.team5.projrental.user.model.*;
 import com.team5.projrental.user.verification.users.TossVerificationRequester;
 import com.team5.projrental.user.verification.users.model.VerificationUserInfo;
@@ -58,6 +59,7 @@ UserService {
     private final UserMapper mapper;
     private final UserRepository userRepository;
     private final UsersRepository usersRepository;
+    private final ProductRepository productRepository;
 
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
@@ -409,6 +411,36 @@ UserService {
         Long loginUserPk = authenticationFacade.getLoginUserPk();
         dto.setIuser(loginUserPk);
 
+        User user = userRepository.findById(loginUserPk).orElseThrow(() -> new ClientException(NO_SUCH_ID_EX_MESSAGE));
+
+        if (user == null) {
+            throw new NoSuchDataException(NO_SUCH_ID_EX_MESSAGE);
+        } else if (!passwordEncoder.matches(dto.getUpw(), user.getUpw())) {
+            throw new NoSuchDataException(NO_SUCH_PASSWORD_EX_MESSAGE);
+        }
+        List<DelSelVo> vo = mapper.selStatusPay(loginUserPk);
+        List<DelSelProcVo> procVo = mapper.selStatusPro(loginUserPk);
+
+        for (DelSelVo list : vo) {
+            if(list.getStatus().equals(PaymentInfoStatus.ACTIVATED.name())) {
+                throw new IllegalException(CAN_NOT_DEL_USER_EX_MESSAGE);
+            }
+        }
+
+        for (DelSelProcVo list : procVo) {
+            if(list.getStatus().equals(PaymentInfoStatus.ACTIVATED.name())) {
+                throw new IllegalException(CAN_NOT_DEL_USER_EX_MESSAGE);
+            }
+        }
+
+        return 0;
+
+    }
+
+    /*public int patchUser(DelUserDto dto) {
+        Long loginUserPk = authenticationFacade.getLoginUserPk();
+        dto.setIuser(loginUserPk);
+
         SigninDto inDto = new SigninDto();
         inDto.setUid(dto.getUid());
         inDto.setUpw(dto.getUpw());
@@ -461,7 +493,7 @@ UserService {
             }
         }
         throw new BadDateInfoException(AUTHENTICATION_FAIL_EX_MESSAGE);
-    }
+    }*/
 
     public SelUserVo getUser(Long iuser) {
         boolean checker = iuser == null || iuser == 0;
@@ -506,4 +538,3 @@ UserService {
 
 
 }
-
