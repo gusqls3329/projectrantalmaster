@@ -4,12 +4,14 @@ import com.team5.projrental.entities.inheritance.Users;
 import com.team5.projrental.entities.mappedsuper.BaseAt;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@DynamicUpdate
 @Entity
 public class BoardComment extends BaseAt {
     @Id

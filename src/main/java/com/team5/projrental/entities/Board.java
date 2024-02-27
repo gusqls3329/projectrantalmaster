@@ -5,6 +5,7 @@ import com.team5.projrental.entities.enums.BoardStatus;
 import com.team5.projrental.entities.mappedsuper.BaseAt;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@DynamicUpdate
 @Entity
 public class Board extends BaseAt {
     @Id

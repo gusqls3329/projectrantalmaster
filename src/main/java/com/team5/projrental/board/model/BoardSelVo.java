@@ -22,9 +22,10 @@ public class BoardSelVo {
     private String contents;
     private int view;
     private String createdAt;
+
     private List<String> pic;
 
-    private List<BoardCommentSelVo> comments;
+    private List<String> comments;
 
 
 }

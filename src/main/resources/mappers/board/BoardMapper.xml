@@ -1,36 +1,90 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.team5.projrental.board.BoardMapper">
-    <select id="selBoard">
-        SELETE A.nick, A.stored_pic AS userPic
-            , B.view, B.created_at AS createdAt
-            , C.comment AS comments, D.storedPic AS pic
+    <insert id="insBoard" useGeneratedKeys="true" keyProperty="iboard" keyColumn="iboard">
+        INSERT INTO board
+        SET title = #{title}
+        , contents = #{contents}
+    </insert>
+
+    <insert id="insBoardPics" useGeneratedKeys="true" keyProperty="ipics">
+        INSERT INTO board_pic
+        SET
+        <foreach collection="pics" item="pic" open="(" close=")" separator=",">
+            stored_pic = #{storedPic}
+        </foreach>
+    </insert>
+
+    <select id="selBoardList">
+        SELECT A.nick, B.title, B.iboard, B.view
+        , B.created_at AS createdAt
         FROM user A
         JOIN board B
         ON A.iuser = B.iuser
-        JOIN board_comment C
-        ON B.iboard = C.iboard
-        JOIN board_pic D
-        ON B.iboard = D.iboard
-        WHERE B.iboard = {iboard} and status = 1
+        ORDER BY B.iboard DESC
+        LIMIT #{startIdx}, #{rowCount}
     </select>
 
+    <select id="selBoard">
+        SELECT A.nick, A.stored_pic, B.iboard, B.title, B.contents
+        , B.view, B.created_at
+        FROM user A
+        JOIN board B
+        ON A.iuser = B.iuser
+        WHERE B.iboard = #{iboard]
+        ORDER BY B.iboard DESC
+        LIMIT #{startIdx}, #{rowCount}
+    </select>
 
+    <!-- 특정 게시글의 사진들 -->
+    <select id="selBoardPicList">
+        SELECT stored_pic
+        FROM board_pic
+        WHERE iboard = #{iboard}
+    </select>
+
+    <!-- 조회수 -->
+    <update id="viewCount" parameterType="int">
+        UPDATE board
+        SET view = view + 1
+        WHERE iboard = #{iboard};
+    </update>
+
+    <!-- 게시글 수정 -->
+    <update id="putBoard">
+        UPDATE board
+        SET title = #{title}
+        , content = #{content}
+        WHERE iboard = #{iboard}
+    </update>
+
+    <!-- 게시글의 사진 수정 -->
+    <update id="putBoardPic">
+        UPDATE board_pic
+        SET
+        <foreach collection="pic" item="pic" open="(" close=")" separator=",">
+            stored_pic = #{storedPic}
+        </foreach>
+        WHERE iboard = #{iboard}
+    </update>
+
+    <!-- 게시글 삭제(숨김) -->
     <update id="delBoard">
         UPDATE board
-        SET status = 2
+        SET status = #{status}
         WHERE iboard = #{iboard}
     </update>
 
     <insert id="insLike">
         INSERT INTO board_like
-        SET board_iboard = #{iboard} and iuser = #{loginIuser}
+        SET board_iboard = #{iboard}
+        and iuser = #{loginIuser}
     </insert>
 
     <delete id="delLike">
         DELETE FROM board_like
-        WHERE board_iboard = #{iboard} and iuser = #{loginIuser}
+        WHERE board_iboard = #{iboard}
+        and iuser = #{loginIuser}
     </delete>
-
 
 </mapper>

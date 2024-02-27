@@ -4,7 +4,18 @@
     <insert id="insBoardComment" useGeneratedKeys="true" keyProperty="iboardComment">
         INSERT INTO board_comment
         SET comment = #{comment}
+        , iboard = #{iboard}
+        , iuser = #{loginIuser}
     </insert>
+
+    <select id="selCommentList">
+        SELECT u.iuser, u.nick, u.stored_pic AS storedPic
+        , comment, created_at AS createAt
+        FROM board_comment c
+        JOIN user u
+        ON c.iuser = u.iuser
+        WHERE iboard = #{iboard};
+    </select>
 
     <update id="patchBoardComment">
         UPDATE board_comment

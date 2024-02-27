@@ -1,7 +1,9 @@
 package com.team5.projrental.board;
 
 
+import com.team5.projrental.board.comment.BoardCommentMapper;
 import com.team5.projrental.board.model.*;
+import com.team5.projrental.common.Const;
 import com.team5.projrental.common.exception.BadWordException;
 import com.team5.projrental.common.exception.checked.FileNotContainsDotException;
 import com.team5.projrental.common.exception.thrid.ClientException;
@@ -12,6 +14,7 @@ import com.team5.projrental.common.utils.MyFileUtils;
 import com.team5.projrental.entities.Board;
 import com.team5.projrental.entities.BoardPic;
 import com.team5.projrental.entities.User;
+import com.team5.projrental.entities.enums.BoardStatus;
 import com.team5.projrental.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,10 +36,12 @@ import static com.team5.projrental.common.exception.ErrorCode.BAD_WORD_EX_MESSAG
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
+    private final BoardLikeRepository boardLikeRepository;
     private final AuthenticationFacade authenticationFacade;
     private final MyFileUtils myFileUtils;
     private final UserRepository userRepository;
     private final BoardMapper mapper;
+    private final BoardCommentMapper commentMapper;
 
     @Transactional
     public ResVo postBoard(BoardInsDto dto) {
@@ -64,60 +69,65 @@ public class BoardService {
                 .user(user)
                 .title(dto.getTitle())
                 .contents(dto.getContents())
+                .status(BoardStatus.ACTIVATED)
                 .build();
         boardRepository.save(board);
         board.setUser(user);
         board.setTitle(dto.getTitle());
         board.setContents(dto.getContents());
 
-    String stringId= String.valueOf(board.getId());
-    BoardPicInsDto boardPicInsDto = new BoardPicInsDto();
-    boardPicInsDto.setIboard(board.getId().intValue());
+        String stringId= String.valueOf(board.getId());
+        BoardPicInsDto boardPicInsDto = new BoardPicInsDto();
+        boardPicInsDto.setIboard(board.getId().intValue());
 
-    if(dto.getStoredPic() != null && !dto.getStoredPic().isEmpty()) {
-        try {
-            board.setBoardPicList(myFileUtils.savePic(dto.getStoredPic(), "board", stringId)
-                    .stream()
-                    .map(picName -> BoardPic.builder()
-                            .board(board)
-                            .storedPic(picName)
-                            .build()).collect(Collectors.toList()));
-        } catch (FileNotContainsDotException e) {
-            throw new ClientException(BAD_PIC_EX_MESSAGE);
+        if(dto.getStoredPic() != null && !dto.getStoredPic().isEmpty()) {
+            try {
+                board.setBoardPicList(myFileUtils.savePic(dto.getStoredPic(), "board", stringId)
+                        .stream()
+                        .map(picName -> BoardPic.builder()
+                                .board(board)
+                                .storedPic(picName)
+                                .build()).collect(Collectors.toList()));
+            } catch (FileNotContainsDotException e) {
+                throw new ClientException(BAD_PIC_EX_MESSAGE);
+            }
         }
-    }
-    return new ResVo((long)boardPicInsDto.getIboard());
+        return new ResVo((long)boardPicInsDto.getIboard());
     }
 
     public List<BoardListSelVo> getBoardList (BoardListSelDto dto){
-        dto.setLoginIuser(authenticationFacade.getLoginUserPk());
-        if(dto.getLoginIuser() > 0) {
-        }
-            return null;
-        }
+        List<BoardListSelVo> list = mapper.selBoardList(dto);
+        System.out.println(list);
+        return list;
+    }
 
-        public BoardSelVo getBoard ( int iboard){
-            BoardSelVo vo = mapper.selBoard(iboard);
-            return BoardSelVo.builder()
-                    .nick(vo.getNick())
-                    .userPic(vo.getUserPic())
-                    .iboard(vo.getIboard())
-                    .title(vo.getTitle())
-                    .contents(vo.getContents())
-                    .view(vo.getView())
-                    .createdAt(vo.getCreatedAt())
-                    .pic(vo.getPic())
-                    .comments(vo.getComments())
-                    .build();
-        }
+    public BoardSelVo getBoard (int iboard){
+        BoardSelVo vo = mapper.selBoard(iboard);
+        List<String> boardPicList = mapper.selBoardPicList(iboard);
+        List<String> boardCommentList = commentMapper.selCommentList(iboard);
+        mapper.viewCount(iboard);
 
-        public ResVo delBoard (int iboard){
-            long result = mapper.delBoard(iboard);
-            return new ResVo(result);
-        }
+        vo.setPic(boardPicList);
+        vo.setComments(boardCommentList);
 
-        public ResVo toggleLike ( int iboard){
-            long loginIuser = authenticationFacade.getLoginUserPk();
+        return vo;
+    }
+
+    @Transactional
+    public ResVo delBoard (long iboard){
+        Board board = boardRepository.getReferenceById(iboard);
+        board.setStatus(BoardStatus.DELETED);
+        //board.setStatus(BoardStatus.DELETED);
+            /*long result = mapper.delBoard(iboard);
+            return new ResVo(result);*/
+        return new ResVo(Const.SUCCESS);
+    }
+
+    public ResVo toggleLike (long iboard) {
+        User user = userRepository.getReferenceById(authenticationFacade.getLoginUserPk());
+        return null;
+
+            /*long loginIuser = authenticationFacade.getLoginUserPk();
             BoardToggleLikeDto likeDto = new BoardToggleLikeDto();
             likeDto.setIboard(iboard);
             likeDto.setLoginIuser(loginIuser);
@@ -126,7 +136,8 @@ public class BoardService {
             if (affectedRow == 0) {
                 mapper.insLike(likeDto);
             }
-            return new ResVo(affectedRow);
-        }
+            return new ResVo(affectedRow);*/
+        //return null;
     }
+}
 
