@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class DelSelProcVo {
-    private long ipayment;
+    private Long ipayment;
     private String status;
+    private Long iuser;
 }

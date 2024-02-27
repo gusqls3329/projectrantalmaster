@@ -243,7 +243,7 @@
     </update>
 
     <select id="selStatusPay">
-        SELECT distinct pr.iproduct, pa.ipayment, pa.iuser, pai.`status`
+        SELECT pr.iproduct, pa.ipayment, pai.`status`, pai.iuser
         FROM `user` u
         left JOIN product pr
         ON pr.iuser = u.iuser
@@ -254,10 +254,10 @@
         WHERE u.iuser = #{iuser}
     </select>
     <select id="selStatusPro">
-        SELECT distinct pa.ipayment, pai.`status`
+        SELECT pa.ipayment, pai.`status`, pai.iuser
         from payment pa
         JOIN payment_info pai
-        ON pa.iuser = pai.iuser
-        WHERE pa.iuser = #{iuser}
+        ON pa.ipayment = pai.ipayment
+        WHERE pa.iuser = #{iuser} AND pai.iuser = #{iuser}
     </select>
 </mapper>

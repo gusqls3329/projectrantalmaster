@@ -438,31 +438,45 @@ UserService {
         List<DelSelVo> vo = mapper.selStatusPay(loginUserPk);
         List<DelSelProcVo> procVo = mapper.selStatusPro(loginUserPk);
         Review review = reviewRepository.findByUser(user);
-        DelRivewDto reviewDto = new DelRivewDto();
-        reviewDto.setIreview(review.getId().intValue());
-        reviewDto.setIreview(review.getId().intValue());
-        paymentReviewService.delReview(reviewDto);
-
+        if(review != null) {
+            DelRivewDto reviewDto = new DelRivewDto();
+            reviewDto.setIreview(review.getId().intValue());
+            reviewDto.setIreview(review.getId().intValue());
+            paymentReviewService.delReview(reviewDto);
+        }
         Board board = boardRepository.findByUser(user);
-        BoardDelDto delDto = new BoardDelDto();
-        delDto.setIboard(board.getId().intValue());
-        boardService.delBoard(delDto.getIboard());
-
+        if(board != null) {
+            BoardDelDto delDto = new BoardDelDto();
+            delDto.setIboard(board.getId().intValue());
+            boardService.delBoard(delDto.getIboard());
+        }
         for (DelSelVo list : vo) {
-            if(list.getStatus().equals(PaymentInfoStatus.ACTIVATED.name())) {
-               throw new ClientException(CAN_NOT_DEL_USER_EX_MESSAGE);
+            if(list == null) {
+                Optional<Product> product = productRepository.findById(list.getIproduct());
+                product.get().setStatus(ProductStatus.DELETED);
             }
-            Optional<Product> product = productRepository.findById(list.getIproduct());
-            product.get().setStatus(ProductStatus.DELETED);
+            if(list.getStatus()!= null && list.getStatus().equals(PaymentInfoStatus.ACTIVATED.name())){
+                throw new IllegalException(CAN_NOT_DEL_USER_EX_MESSAGE);
+            }
+
+                Optional<Product> product = productRepository.findById(list.getIproduct());
+                product.get().setStatus(ProductStatus.DELETED);
         }
 
         for (DelSelProcVo list : procVo) {
-            if(list.getStatus().equals(PaymentInfoStatus.ACTIVATED.name())) {
-                throw new IllegalException(CAN_NOT_DEL_USER_EX_MESSAGE);
+            if(list == null) {
+                Optional<Payment> payment = paymentRepository.findById(list.getIpayment());
+                PaymentInfo paymentInfo = paymentInfoRepository.findByPaymentAndUser(payment.get(), user);
+                paymentInfo.setStatus(PaymentInfoStatus.DELETED);
             }
-            Optional<Payment> payment = paymentRepository.findById(list.getIpayment());
-            PaymentInfo paymentInfo = paymentInfoRepository.findByPaymentAndUser(payment.get(), user);
-            paymentInfo.setStatus(PaymentInfoStatus.DELETED);
+            if(list != null) {
+                if (list.getStatus() != null && list.getStatus().equals(PaymentInfoStatus.ACTIVATED.name())) {
+                    throw new IllegalException(CAN_NOT_DEL_USER_EX_MESSAGE);
+                }
+                Optional<Payment> payment = paymentRepository.findById(list.getIpayment());
+                PaymentInfo paymentInfo = paymentInfoRepository.findByPaymentAndUser(payment.get(), user);
+                paymentInfo.setStatus(PaymentInfoStatus.DELETED);
+            }
         }
         return (int)Const.SUCCESS;
 
