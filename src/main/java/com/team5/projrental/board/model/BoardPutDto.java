@@ -31,5 +31,5 @@ public class BoardPutDto {
     private String contents;
 
     @JsonIgnore
-    private List<MultipartFile> multipartFiles;
+    private List<MultipartFile> storedPic;
 }

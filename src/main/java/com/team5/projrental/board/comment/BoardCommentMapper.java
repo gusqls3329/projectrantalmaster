@@ -16,5 +16,5 @@ public interface BoardCommentMapper {
 
     int patchBoardComment(BoardCommentPatchDto dto);
 
-    int delBoardComment(int iboardComment);
+    int delBoardComment(int iboardComment, long loginIuser);
 }

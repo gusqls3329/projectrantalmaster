@@ -89,7 +89,8 @@ public class BoardController {
             @Parameter(name = "storedPic", description = "수정할 게시글 사진")})
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResVo putBoard(@RequestPart(required = false) List<MultipartFile> storedPic, @RequestPart @Validated BoardPutDto dto) {
-        return null;
+        //dto.setGetStoredPic(storedPic);
+        return service.putBoard(dto);
     }
 
 

@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
-import static com.team5.projrental.entities.QAdmin.admin;
 
 @Slf4j
 @RequiredArgsConstructor
