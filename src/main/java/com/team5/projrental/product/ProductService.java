@@ -276,7 +276,7 @@ public class ProductService implements RefProductService {
 
         // 해시태그 개수 검증
         CommonUtils.checkSizeIfOverLimitNumThrow(ClientException.class,
-                ErrorCode.ILLEGAL_EX_MESSAGE, "해시태그는 5개까지 가능합니다.", dto.getHashTags().stream(), 5);
+                ErrorCode.ILLEGAL_EX_MESSAGE, "해시태그는 5개까지 가능합니다.", dto.getHashTags().stream(), Const.HASH_TAG_MAX_SIZE);
 
         // 카테고리 검증 - 예외 코드, 메시지 를 위해 직접 검증 (!@Validated)
         CommonUtils.ifCategoryNotContainsThrow(dto.getIcategory());

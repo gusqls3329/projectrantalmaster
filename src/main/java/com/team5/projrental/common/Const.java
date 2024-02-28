@@ -121,5 +121,5 @@ public interface Const {
     String CATEGORY_PRODUCT_MAIN = "prod/main";
 
 
-
+    int HASH_TAG_MAX_SIZE = 10;
 }

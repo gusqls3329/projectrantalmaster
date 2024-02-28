@@ -49,6 +49,7 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
     private final ProductLikeRepository productLikeRepository;
     private final ProductLikeMapper productLikeMapper;
     private final JdbcTemplate jdbcTemplate;
+    private final HashTagRepository hashTagRepository;
 
     public Map<Long, List<ActivatedStock>> getActivatedStock(LocalDateTime refDate) {
 
@@ -100,21 +101,26 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
     @Override
     public List<ProductListVo> findAllBy(Integer sort, String search, ProductMainCategory mainCategory,
                                          ProductSubCategory subCategory, String addr, int page, Long iuser, int limit) {
-
-        return query.select(product)
+        List<Product> findProducts = query.select(product)
                 .from(product)
                 .where(whereSearchForFindAllBy(search, mainCategory, subCategory, addr)
                         .and(product.status.in(ProductStatus.ACTIVATED)))
                 .offset(page)
                 .limit(limit)
                 .orderBy(orderByForFindAllBy(sort))
-                .fetch()
+                .fetch();
+
+        // hashTag 가져오기
+        List<HashTag> findHashTags = hashTagRepository.findByOpt(findProducts, search);
+
+        return findProducts
                 .stream()
                 .map(productEntity -> {
                     int prodLikeCount = productLikeRepository.countByProdLikeIds(ProdLikeIds.builder()
                             .iuser(productEntity.getUser().getId())
                             .iproduct(productEntity.getId())
                             .build());
+
                     return ProductListVo.builder()
                             .iuser(productEntity.getUser().getId())
                             .nick(productEntity.getUser().getNick())
@@ -131,7 +137,9 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
                             //FIXME -> enum 숫자 2차때랑 동일하게 변경. (ordinal 로 불가능한것은 value 설정 하기
                             .istatus(productEntity.getStatus().getNum())
                             .inventory(stockRepository.countById(productEntity.getId()))
-                            .hashTags(productEntity.getHashTags().stream().map(HashTag::getTag).collect(Collectors.toList()))
+                            .hashTags(findHashTags.stream()
+                                    .filter(hash -> Objects.equals(hash.getProduct().getId(), productEntity.getId()))
+                                    .map(HashTag::getTag).collect(Collectors.toList()))
                             .isLiked(prodLikeCount == 1 ? 1 : 0)
                             .view(productEntity.getView())
                             .categories(Categories.builder()
@@ -314,7 +322,7 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
 
     private BooleanBuilder whereFindAllLimitPage(Integer type, String search) {
         BooleanBuilder builder = new BooleanBuilder();
-        if(type == null) return builder;
+        if (type == null) return builder;
         if (type == 1) {
             builder.and(product.user.nick.like("%" + search + "%"));
         }
@@ -344,7 +352,7 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
     private BooleanBuilder whereSearchForFindAllBy(String search, ProductMainCategory mainCategory,
                                                    ProductSubCategory subCategory) {
         BooleanBuilder booleanBuilder = new BooleanBuilder();
-        if (search != null) {
+        if (search != null && !(search.charAt(0) == '#')) {
             booleanBuilder.and(product.title.like("%" + search + "%"));
         }
 
@@ -369,6 +377,8 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
             likeAddr += "%";
             booleanBuilder.and(product.address.addr.like(likeAddr));
         }
+
+
         return booleanBuilder;
     }
 
