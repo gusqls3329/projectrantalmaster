@@ -36,6 +36,7 @@ import static com.team5.projrental.entities.QPayment.payment;
 import static com.team5.projrental.entities.QPaymentInfo.paymentInfo;
 import static com.team5.projrental.entities.QProduct.product;
 import static com.team5.projrental.entities.QReview.review;
+import static com.team5.projrental.entities.QUser.user;
 import static com.team5.projrental.entities.enums.PaymentInfoStatus.*;
 
 @Slf4j
@@ -342,10 +343,18 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
 
         return query.select(product.count())
                 .from(product)
-                .join(product.user).fetchJoin()
+                .join(user).on(product.user.eq(user))
                 .where(product.status.notIn(ProductStatus.DELETED), searchCategoryFindAllLimitPage(type, search))
                 .fetchOne();
 
+    }
+
+    @Override
+    public Optional<Product> findByIdFetchUser(Long iproduct) {
+        return Optional.ofNullable(query.selectFrom(product)
+                .join(product.user).fetchJoin()
+                .where(product.id.eq(iproduct))
+                .fetchOne());
     }
 
 

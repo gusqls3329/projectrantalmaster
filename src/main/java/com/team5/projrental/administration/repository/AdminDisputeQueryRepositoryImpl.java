@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.team5.projrental.entities.QDispute.dispute;
+import static com.team5.projrental.entities.QUser.user;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -24,6 +25,8 @@ public class AdminDisputeQueryRepositoryImpl implements AdminDisputeQueryReposit
     public List<Dispute> findByLimitPage(int page, Integer div, String search, Integer category, Integer status) {
 
         return query.selectFrom(dispute)
+                .leftJoin(dispute.reporter)
+                .leftJoin(dispute.reportedUser)
                 .where(whereFindByLimitPage(div, search, category, status))
                 .offset(page)
                 .limit(Const.ADMIN_PER_PAGE)

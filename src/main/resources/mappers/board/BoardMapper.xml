@@ -18,22 +18,39 @@
     <select id="selBoardList">
         SELECT A.nick, B.title, B.iboard, B.view
         , B.created_at AS createdAt
+        , if(C.iuser is null, 0, 1) AS isLiked
         FROM user A
         JOIN board B
         ON A.iuser = B.iuser
-        ORDER BY B.iboard DESC
+        <choose>
+            <when test="sort == 1">
+                INNER JOIN board_like C
+            </when>
+            <when test="sort == 0 or sort == 2">
+                LEFT JOIN board_like C
+            </when>
+        </choose>
+        ON B.iboard = C.board_iboard
+        <choose>
+            <when test="sort == 0 or sort == 1">
+                ORDER BY B.iboard DESC
+            </when>
+            <when test="sort == 2">
+                ORDER BY B.view DESC
+            </when>
+        </choose>
         LIMIT #{startIdx}, #{rowCount}
     </select>
 
     <select id="selBoard">
-        SELECT A.nick, A.stored_pic, B.iboard, B.title, B.contents
-        , B.view, B.created_at
+        SELECT A.nick, A.stored_pic, B.iboard
+        , B.title, B.contents, B.view, B.created_at, if(C.iuser is null, 0, 1) AS isLiked
         FROM user A
         JOIN board B
         ON A.iuser = B.iuser
-        WHERE B.iboard = #{iboard]
-        ORDER BY B.iboard DESC
-        LIMIT #{startIdx}, #{rowCount}
+        LEFT JOIN board_like C
+        ON B.iboard = C.board_iboard
+        WHERE B.iboard = #{iboard}
     </select>
 
     <!-- 특정 게시글의 사진들 -->
@@ -78,7 +95,8 @@
     <insert id="insLike">
         INSERT INTO board_like
         SET board_iboard = #{iboard}
-        and iuser = #{loginIuser}
+        , iuser = #{loginIuser}
+        , created_at = #{createdAt}
     </insert>
 
     <delete id="delLike">
@@ -86,5 +104,12 @@
         WHERE board_iboard = #{iboard}
         and iuser = #{loginIuser}
     </delete>
+
+    <select id="selLike">
+        select iuser, board_iboard AS iboard
+        from board_like
+        where iuser = #{iuser}
+        and board_iboard = #{iboard}
+    </select>
 
 </mapper>

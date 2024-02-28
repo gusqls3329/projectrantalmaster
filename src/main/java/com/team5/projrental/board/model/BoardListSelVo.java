@@ -14,6 +14,9 @@ public class BoardListSelVo {
 
     private String nick;
 
+    private int favIuser;
+    private int favIboard;
+
     private int isLiked; // 0: 좋아요 안함 // 1: 좋아요 누름
 
     private int iboard;

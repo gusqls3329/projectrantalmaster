@@ -429,12 +429,5 @@ public class AdministrationService {
     }
 
 
-    @Transactional
-    public ResVo delChat(Long ichat) {
-        Chat findChat = chatRepository.findById(ichat).orElseThrow(() -> new ClientException(ErrorCode.ILLEGAL_EX_MESSAGE,
-                "잘못된 식별 번호 입니다. (ichat)"));
-        chatRepository.delete(findChat);
 
-        return new ResVo(1L);
-    }
 }

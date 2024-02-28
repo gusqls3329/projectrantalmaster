@@ -9,6 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardCommentPatchDto {
+    private long loginIuser;
     private int iboardComment;
     private String comment;
 }
