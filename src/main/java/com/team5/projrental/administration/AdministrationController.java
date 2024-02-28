@@ -232,15 +232,7 @@ public class AdministrationController {
         return administrationService.getAllChats(page);
     }
 
-    // ???
 
-    @Operation(summary = "운영자 권한 신고된 채팅 삭제",
-            description = "[필수: [v]]<br>" +
-                          "[v] ichat: 삭제할 채팅 <br>")
-    @Validated
-    @DeleteMapping("chat/{ichat}")
-    public ResVo delChat(@PathVariable Long ichat) {
-        return administrationService.delChat(ichat);
-    }
+
 
 }
