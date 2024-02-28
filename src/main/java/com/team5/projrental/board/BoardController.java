@@ -48,10 +48,6 @@ public class BoardController {
             @Parameter(name = "type", description = "type 은 search 하는 조건임\n" +
                     "type 에는 user, contents, nick 의 3종류가 있음 (숫자로 받고, 백엔드에서 해석할것임)\n" +
                     "type=1 이면 1에 해당하는 종류중 search 에 해당하는 키워드가 포함되어 있는 게시물을 페이징해서 넘겨주는 개념임."),
-            @Parameter(name = "targetIuser", description = "이때, targetIuser 가 제공되면\n" +
-                    "targetIuser가 0일경우 로그인유자가 작성한 게시글중 + 검색조건 ,\n" +
-                    "targetIuser 가 1 이상일 경우, targetIuser 에 해당하는 iuser 를 가진 유저가 작성한 게시글중 + 검색조건 \n" +
-                    "으로 조회함."),
             @Parameter(name = "sort", description = "sort:0 (default) - 최신순<br>sort:1 - 좋아요순<br>sort:2 - 조회수 많은순")})
     @Validated
     @GetMapping
