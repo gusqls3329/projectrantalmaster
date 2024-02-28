@@ -4,12 +4,15 @@ package com.team5.projrental.board.comment;
 import com.team5.projrental.board.comment.model.BoardCommentPatchDto;
 import com.team5.projrental.board.comment.model.BoardCommentInsDto;
 import com.team5.projrental.common.model.ResVo;
+import com.team5.projrental.common.security.AuthenticationFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 
 @Slf4j
@@ -26,7 +29,6 @@ public class BoardCommentController {
     public ResVo postComment(@RequestBody BoardCommentInsDto dto) {
         return service.postComment(dto);
     }
-
 
     @Operation(summary = "댓글 수정", description = "수정할 댓글 등록")
     @Parameters(value = {

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.team5.projrental.board.comment.BoardCommentMapper">
-    <insert id="insBoardComment" useGeneratedKeys="true" keyProperty="iboardComment">
+    <insert id="insBoardComment" useGeneratedKeys="true" keyProperty="iboardComment" keyColumn="iboard_comment">
         INSERT INTO board_comment
         SET comment = #{comment}
         , iboard = #{iboard}
         , iuser = #{loginIuser}
+        , created_at = #{createdAt}
     </insert>
 
     <select id="selCommentList">

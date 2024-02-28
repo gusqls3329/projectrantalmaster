@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -95,21 +96,23 @@ public class BoardService {
         return new ResVo((long)boardPicInsDto.getIboard());
     }
 
-    public List<BoardListSelVo> getBoardList (BoardListSelDto dto){
+    public List<BoardListSelVo> getBoardList (BoardListSelDto dto){ //전체 게시글
+        long loginIuser = authenticationFacade.getLoginUserPk();
+        dto.setLoginIuser(loginIuser);
         List<BoardListSelVo> list = mapper.selBoardList(dto);
-        System.out.println(list);
+
         return list;
     }
 
     public BoardSelVo getBoard (int iboard){
-        BoardSelVo vo = mapper.selBoard(iboard);
-        List<String> boardPicList = mapper.selBoardPicList(iboard);
-        List<String> boardCommentList = commentMapper.selCommentList(iboard);
         mapper.viewCount(iboard);
-
+        BoardSelVo vo = mapper.selBoard(iboard);
+        /*List<String> boardPicList = mapper.selBoardPicList(iboard);
         vo.setPic(boardPicList);
-        vo.setComments(boardCommentList);
 
+        List<String> boardCommentList = commentMapper.selCommentList(iboard);
+        vo.setComments(boardCommentList);
+*/
         return vo;
     }
 
@@ -124,19 +127,18 @@ public class BoardService {
     }
 
     public ResVo toggleLike (long iboard) {
-        User user = userRepository.getReferenceById(authenticationFacade.getLoginUserPk());
-        return null;
-
-            /*long loginIuser = authenticationFacade.getLoginUserPk();
-            BoardToggleLikeDto likeDto = new BoardToggleLikeDto();
-            likeDto.setIboard(iboard);
-            likeDto.setLoginIuser(loginIuser);
-
-            long affectedRow = mapper.delLike(likeDto);
+        /*User user = userRepository.getReferenceById(authenticationFacade.getLoginUserPk());
+        return null;*/
+            long loginIuser = authenticationFacade.getLoginUserPk();
+            BoardToggleLikeDto dto = new BoardToggleLikeDto();
+            dto.setIboard(iboard);
+            dto.setLoginIuser(loginIuser);
+            int affectedRow = mapper.delLike(dto);
             if (affectedRow == 0) {
-                mapper.insLike(likeDto);
+                mapper.insLike(dto);
             }
-            return new ResVo(affectedRow);*/
+            long result = 0;
+            return new ResVo(result);
         //return null;
     }
 }
