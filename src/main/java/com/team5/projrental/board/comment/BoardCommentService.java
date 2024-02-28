@@ -6,6 +6,8 @@ import com.team5.projrental.board.comment.model.BoardCommentInsDto;
 import com.team5.projrental.board.comment.model.BoardCommentPatchDto;
 import com.team5.projrental.common.model.ResVo;
 import com.team5.projrental.common.security.AuthenticationFacade;
+import com.team5.projrental.entities.Board;
+import com.team5.projrental.entities.enums.BoardStatus;
 import com.team5.projrental.entities.enums.ProductStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,16 +33,22 @@ public class BoardCommentService {
         ProductStatus status = ProductStatus.getByNum(1);
         String name = status.name();// "ACTIVATED" //enum 문자열로
 
+        BoardStatus boardStatus = BoardStatus.getByNum(1);
+        boardStatus.name();
+
         return new ResVo(dto.getIboardComment());
     }
 
     public ResVo patchComment(BoardCommentPatchDto dto) {
+        long loginIuser = authenticationFacade.getLoginUserPk();
+        dto.setLoginIuser(loginIuser);
         long result = mapper.patchBoardComment(dto);
         return new ResVo(result);
     }
 
     public ResVo delComment(int iboardComment) {
-        long result = mapper.delBoardComment(iboardComment);
+        long loginIuser = authenticationFacade.getLoginUserPk();
+        long result = mapper.delBoardComment(iboardComment, loginIuser);
         return new ResVo(result);
     }
 }

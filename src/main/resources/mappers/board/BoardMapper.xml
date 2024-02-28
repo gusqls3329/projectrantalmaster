@@ -51,7 +51,6 @@
         LEFT JOIN board_like C
         ON B.iboard = C.board_iboard
         WHERE B.iboard = #{iboard}
-        LIMIT #{startIdx}, #{rowCount}
     </select>
 
     <!-- 특정 게시글의 사진들 -->
@@ -96,7 +95,8 @@
     <insert id="insLike">
         INSERT INTO board_like
         SET board_iboard = #{iboard}
-        and iuser = #{loginIuser}
+        , iuser = #{loginIuser}
+        , created_at = #{createdAt}
     </insert>
 
     <delete id="delLike">

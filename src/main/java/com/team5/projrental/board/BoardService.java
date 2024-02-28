@@ -5,6 +5,7 @@ import com.team5.projrental.board.comment.BoardCommentMapper;
 import com.team5.projrental.board.model.*;
 import com.team5.projrental.common.Const;
 import com.team5.projrental.common.exception.BadWordException;
+import com.team5.projrental.common.exception.NoSuchUserException;
 import com.team5.projrental.common.exception.checked.FileNotContainsDotException;
 import com.team5.projrental.common.exception.thrid.ClientException;
 import com.team5.projrental.common.model.ResVo;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 
 import static com.team5.projrental.common.exception.ErrorCode.BAD_PIC_EX_MESSAGE;
 import static com.team5.projrental.common.exception.ErrorCode.BAD_WORD_EX_MESSAGE;
+import static com.team5.projrental.common.exception.ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE;
 
 @Slf4j
 @Service
@@ -117,6 +119,36 @@ public class BoardService {
     }
 
     @Transactional
+    public ResVo putBoard (BoardPutDto dto) {
+        Board board = boardRepository.getReferenceById((long)dto.getIboard());
+
+        if(dto.getTitle() != null && dto.getTitle() != "") {
+            board.setTitle(dto.getTitle());
+        }
+        if(dto.getContents() != null && dto.getContents() != "") {
+            board.setContents(dto.getTitle());
+        }
+
+        String stringId= String.valueOf(board.getId());
+        BoardPicInsDto boardPicInsDto = new BoardPicInsDto();
+        boardPicInsDto.setIboard(board.getId().intValue());
+        if(dto.getStoredPic() != null && !dto.getStoredPic().isEmpty()) {
+            try {
+                board.setBoardPicList(myFileUtils.savePic(dto.getStoredPic(), "board", stringId)
+                        .stream()
+                        .map(picName -> BoardPic.builder()
+                                .board(board)
+                                .storedPic(picName)
+                                .build()).collect(Collectors.toList()));
+            } catch (FileNotContainsDotException e) {
+                throw new ClientException(BAD_PIC_EX_MESSAGE);
+            }
+        }
+        return new ResVo(Const.SUCCESS);
+    }
+
+
+    @Transactional
     public ResVo delBoard (long iboard){
         Board board = boardRepository.getReferenceById(iboard);
         board.setStatus(BoardStatus.DELETED);
@@ -133,9 +165,11 @@ public class BoardService {
             BoardToggleLikeDto dto = new BoardToggleLikeDto();
             dto.setIboard(iboard);
             dto.setLoginIuser(loginIuser);
+
             int affectedRow = mapper.delLike(dto);
             if (affectedRow == 0) {
                 mapper.insLike(dto);
+                return new ResVo(Const.SUCCESS);
             }
             long result = 0;
             return new ResVo(result);
