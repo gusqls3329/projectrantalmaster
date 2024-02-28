@@ -107,6 +107,7 @@ public class BoardController {
     @GetMapping("/like/{iboard}")
     public ResVo toggleLike(@PathVariable long iboard) {
         return service.toggleLike(iboard);
+        //dfdfdf
     }
 
 

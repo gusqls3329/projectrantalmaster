@@ -104,7 +104,7 @@ public class BoardService {
 
         BoardStatus boardStatus = BoardStatus.ACTIVATED;
         String status = boardStatus.name();
-        //asdf
+        //asdf123
         dto.setStatus(status);
 
         List<BoardListSelVo> list = mapper.selBoardList(dto);
