@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.Optional;
 
-import static com.team5.projrental.entities.QBoard.board;
 
 @Slf4j
 @RequiredArgsConstructor

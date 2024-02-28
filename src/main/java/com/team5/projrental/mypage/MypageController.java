@@ -10,11 +10,9 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Range;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 import static com.team5.projrental.common.exception.ErrorMessage.ILLEGAL_EX_MESSAGE;
@@ -72,16 +70,17 @@ public class MypageController {
     @GetMapping("/dispute")
     @Operation(summary = "신고한 목록", description = "로그인 유저가 신고한 목록")
     @Parameters(value = {@Parameter(name = "page", description = "페이지")})
-    public List<MyDisputeVo> getDispute(@RequestParam(defaultValue = "1") @Range(min = 1) int page) {
-
-        return null;
+    public DisputeByMyPageVo getDispute(@RequestParam(defaultValue = "1") @Range(min = 1) int page) {
+        MyBuyReviewListSelDto dto = new MyBuyReviewListSelDto();
+        dto.setPage(page);
+        return service.getDispute(dto);
     }
 
     @PatchMapping("/dispute")
     @Operation(summary = "신고 철회", description = "로그인 유저가 신고한 목록")
     @Parameters(value = {@Parameter(name = "idispute", description = "철회 할 분쟁pk")})
-    public ResVo cancelDispute(@RequestBody int idispute) {
-        return null;
+    public ResVo cancelDispute(@RequestBody Long idispute) {
+        return service.cancelDispute(idispute);
     }
 
 
@@ -89,7 +88,19 @@ public class MypageController {
     @GetMapping("/board")
     @Operation(summary = "내가 쓴 게시글", description = "내가 작성한 자유게시글 조회")
     @Parameters(value = {@Parameter(name = "page", description = "페이지")})
-    public List<MyBoardListVo> getBoard(@RequestParam(defaultValue = "1") @Min(1) int page) {
-        return null;
+    public MyBoardListVo getBoard(@RequestParam(defaultValue = "1") @Min(1) int page) {
+        BoardDto dto = new BoardDto();
+        dto.setPage(page);
+        return service.getBoard(dto);
+    }
+
+    @Validated
+    @GetMapping("/board")
+    @Operation(summary = "내가 쓴 게시글", description = "내가 작성한 자유게시글 조회")
+    @Parameters(value = {@Parameter(name = "page", description = "페이지")})
+    public MyProductListVo getBoard(@RequestParam(defaultValue = "1") @Min(1) int page) {
+        BoardDto dto = new BoardDto();
+        dto.setPage(page);
+        return service.getBoard(dto);
     }
 }

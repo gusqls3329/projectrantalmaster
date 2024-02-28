@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 @Getter
 public enum DisputeStatus {
-    ACCEPTED(1), STAND_BY(0), DENIED(-1);
+    ACCEPTED(1), STAND_BY(0), DENIED(-1), CANCELED(-2);
 
     private int num;
 
