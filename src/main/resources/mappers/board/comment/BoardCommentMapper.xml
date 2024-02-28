@@ -21,11 +21,11 @@
     <update id="patchBoardComment">
         UPDATE board_comment
         SET comment = #{comment}
-        WHERE iboard_comment = #{iboardComment}
+        WHERE iboard_comment = #{iboardComment} and iuser = #{loginIuser}
     </update>
 
     <delete id="delBoardComment">
         DELETE FROM board_comment
-        WHERE iboard_comment = #{iboardComment}
+        WHERE iboard_comment = #{iboardComment} and iuser = #{loginIuser}
     </delete>
 </mapper>
