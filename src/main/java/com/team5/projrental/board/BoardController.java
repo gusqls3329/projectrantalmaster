@@ -46,7 +46,7 @@ public class BoardController {
             @Parameter(name = "search", description = "search 가 제공될 경우 해당 키워드가 포함된 게시글만 조회\n" +
                     "search 와 type 은 항상 동시에 값이 있거나 동시에 값이 없어야함."),
             @Parameter(name = "type", description = "type 은 search 하는 조건임\n" +
-                    "type 에는 user, contents, nick 의 3종류가 있음 (숫자로 받고, 백엔드에서 해석할것임)\n" +
+                    "type 에는 title, title+contents, nick 의 3종류가 있음 (숫자로 받고, 백엔드에서 해석할것임)\n" +
                     "type=1 이면 1에 해당하는 종류중 search 에 해당하는 키워드가 포함되어 있는 게시물을 페이징해서 넘겨주는 개념임."),
             @Parameter(name = "sort", description = "sort:0 (default) - 최신순<br>sort:1 - 좋아요순<br>sort:2 - 조회수 많은순")})
     @Validated
@@ -61,7 +61,7 @@ public class BoardController {
                                              Integer type)
     {
         BoardListSelDto dto = new BoardListSelDto();
-        //asdf
+        //qwerwq
         dto.setPage(page);
         dto.setSort(sort);
         return service.getBoardList(dto);
