@@ -400,9 +400,11 @@ public class ProductService implements RefProductService {
                 dto.getRestAddr() == null ? "" : dto.getRestAddr());
 
         // 작업을 위한 Product 엔티티 가져오기
-        Product findProduct = productRepository.findById(dto.getIproduct()).orElseThrow(() -> new ClientException(NO_SUCH_PRODUCT_EX_MESSAGE,
+        Product findProduct =
+                productRepository.findByIdFetchUser(dto.getIproduct()).orElseThrow(() -> new ClientException(NO_SUCH_PRODUCT_EX_MESSAGE,
                 "잘못된 제품 정보 (iproduct)"));
-        if (Objects.equals(findProduct.getUser().getId(), getLoginUserPk())) {
+        Long loginUserPk = getLoginUserPk();
+        if (!Objects.equals(findProduct.getUser().getId(), loginUserPk)) {
             throw new ClientException(ErrorCode.NO_SUCH_USER_EX_MESSAGE, "잘못된 유저정보 (iuser)");
         }
 

@@ -103,7 +103,7 @@ public class MockDataRepository {
                         break;
                     }
                 }
-                while (findUser2 == null) {
+                while (findUser3 == null) {
                     int rNum2 = (int) (Math.random() * 100) + 1;
                     findUser3 = em.find(User.class, rNum2);
                     if (findUser3 != null && !Objects.equals(user.getId(), findUser3.getId())) {
@@ -208,7 +208,8 @@ public class MockDataRepository {
                 if (findUser2 != null && !Objects.equals(product.getUser().getId(), findUser2.getId())) {
                     break;
                 }
-
+            }
+            while (findUser3 == null) {
                 int rNum2 = (int) (Math.random() * 100) + 1;
                 findUser3 = em.find(User.class, rNum2);
                 if (findUser3 != null && !Objects.equals(product.getUser().getId(), findUser3.getId())) {
@@ -261,7 +262,7 @@ public class MockDataRepository {
                         break;
                     }
                 }
-                while (findUser2 == null) {
+                while (findUser5 == null) {
                     int rNum2 = (int) (Math.random() * 100) + 1;
                     findUser5 = em.find(User.class, rNum2);
                     if (findUser5 != null && !Objects.equals(product.getUser().getId(), findUser5.getId())) {
@@ -423,7 +424,7 @@ public class MockDataRepository {
                         break;
                     }
                 }
-                while (findUser2 == null) {
+                while (findUser3 == null) {
                     int rNum2 = (int) (Math.random() * 100) + 1;
                     findUser3 = em.find(User.class, rNum2);
                     if (findUser3 != null && !Objects.equals(paymentInfo.getPaymentInfoIds().getIuser(), findUser3.getId())) {
@@ -536,7 +537,7 @@ INSERT INTO board_pic (`created_at`, `iboard`, `ipics`, `stored_pic`) VALUES ('2
                         break;
                     }
                 }
-                while (findUser2 == null) {
+                while (findUser3 == null) {
                     int rNum2 = (int) (Math.random() * 100) + 1;
                     findUser3 = em.find(User.class, rNum2);
                     if (findUser3 != null && !Objects.equals(saveBoard.getId(), findUser3.getId())) {
