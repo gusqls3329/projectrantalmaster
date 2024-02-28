@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +34,7 @@ public class BoardController {
     @Parameters(value = {
             @Parameter(name = "title", description = "제목"),
             @Parameter(name = "contents", description = "내용")})
+    @Validated
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResVo postBoard(@RequestPart(required = false) List<MultipartFile> storedPic, @RequestPart @Validated BoardInsDto dto) {
         dto.setStoredPic(storedPic);
@@ -43,10 +45,10 @@ public class BoardController {
     @Operation(summary = "전체 게시글 목록", description = "게시판 목록")
     @Parameters(value = {
             @Parameter(name = "page", description = "페이지, min:1"),
-            @Parameter(name = "search", description = "search 가 제공될 경우 해당 키워드가 포함된 게시글만 조회\n" +
+            @Parameter(name = "search", description = "search(검색어)가 제공될 경우 해당 키워드가 포함된 게시글만 조회<br>" +
                     "search 와 type 은 항상 동시에 값이 있거나 동시에 값이 없어야함."),
-            @Parameter(name = "type", description = "type 은 search 하는 조건임\n" +
-                    "type 에는 user, contents, nick 의 3종류가 있음 (숫자로 받고, 백엔드에서 해석할것임)\n" +
+            @Parameter(name = "type", description = "type 은 search 하는 조건임<br>" +
+                    "type 에는 title:1, title+contents:2, nick:3 (제목, 제목+내용, 닉네임)의 3종류가 있음 (숫자로 받고, 백엔드에서 해석할것임)<br>" +
                     "type=1 이면 1에 해당하는 종류중 search 에 해당하는 키워드가 포함되어 있는 게시물을 페이징해서 넘겨주는 개념임."),
             @Parameter(name = "sort", description = "sort:0 (default) - 최신순<br>sort:1 - 좋아요순<br>sort:2 - 조회수 많은순")})
     @Validated
@@ -58,14 +60,14 @@ public class BoardController {
                                              @RequestParam(name = "search", required = false)
                                              String search,
                                              @RequestParam(name = "type", required = false)
-                                             Integer type,
-                                             @RequestParam(name = "targetIuser", required = false) @Nullable
-                                             Integer targetIuser)
+                                             Integer type)
     {
         BoardListSelDto dto = new BoardListSelDto();
-        //asdf
+
         dto.setPage(page);
         dto.setSort(sort);
+        dto.setSearch(search); //값을 받아왔으면 꼭 넣어주자
+        dto.setType(type);
         return service.getBoardList(dto);
     }
 
@@ -78,7 +80,7 @@ public class BoardController {
         return service.getBoard(iboard);
     }
 
-    @Operation(summary = "게시글 수정", description = "특정 게시글 수정")
+    @Operation(summary = "게시글 수정", description = "특정 게시글 수정<br>result:1(수정 성공)")
     @Parameters(value = {
             @Parameter(name = "iboard", description = "수정 할 게시글pk"),
             @Parameter(name = "title", description = "수정 할 게시글 제목"),
@@ -92,7 +94,7 @@ public class BoardController {
 
 
     @Operation(summary = "게시글 삭제", description = "내가 쓴 게시글 삭제(- ACTIVED (0) :존재함(default)\n" +
-            "- DELETE (-1): 삭제됨(숨김))")
+            "- DELETE (-1): 삭제됨(숨김))<br> result:1 삭제됨")
     @Parameters(value = {
             @Parameter(name = "iboard", description = "삭제 할 게시글pk")})
     @DeleteMapping("/{iboard}")
@@ -101,7 +103,7 @@ public class BoardController {
     }
 
 
-    @Operation(summary = "게시글 좋아요 처리", description = "게시글 좋아요 토글")
+    @Operation(summary = "게시글 좋아요 처리", description = "게시글 좋아요 토글<br> result:1(좋아요 누름), result:0(좋아요 취소)")
     @Parameters(value = {
             @Parameter(name = "iboard", description = "좋아요 처리 할 게시판pk")})
     @GetMapping("/like/{iboard}")

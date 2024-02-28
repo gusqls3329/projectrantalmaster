@@ -10,17 +10,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardListSelVo {
-    private int totalBoardCount;
+    //private int totalBoardCount;
 
     private String nick;
-
-    private int favIuser;
-    private int favIboard;
 
     private int isLiked; // 0: 좋아요 안함 // 1: 좋아요 누름
 
     private int iboard;
     private String title;
     private int view;
-    private String createdAt;
+    private LocalDateTime createdAt;
 }

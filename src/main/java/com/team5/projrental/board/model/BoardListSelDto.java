@@ -17,16 +17,13 @@ import javax.annotation.Nullable;
 @AllArgsConstructor
 public class BoardListSelDto {
 
-    private Integer targetIuser;
 
     @JsonIgnore
     private long loginIuser;
 
-    private Integer type;
+    private Integer type; // 1:제목 , 2: 제목+내용, 3:닉네임
 
-    private String search;
-
-
+    private String search; // 검색어
 
     private int sort; // 0:최신순 ,1:좋아요순, 2:조회수순
 

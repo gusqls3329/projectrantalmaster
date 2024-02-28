@@ -27,6 +27,7 @@ public class BoardInsDto {
     @Length(min = 2, max = 2000)
     private String contents;
 
+
     @JsonIgnore
     private List<MultipartFile> storedPic;
 }

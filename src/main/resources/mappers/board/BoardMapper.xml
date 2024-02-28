@@ -5,6 +5,7 @@
         INSERT INTO board
         SET title = #{title}
         , contents = #{contents}
+        , view = #{view}
     </insert>
 
     <insert id="insBoardPics" useGeneratedKeys="true" keyProperty="ipics">
@@ -16,7 +17,7 @@
     </insert>
 
     <select id="selBoardList">
-        SELECT A.nick, B.title, B.iboard, B.view
+        SELECT A.nick, A.stored_pic AS userPic, B.title, B.iboard, B.view
         , B.created_at AS createdAt
         , if(C.iuser is null, 0, 1) AS isLiked
         FROM user A
@@ -33,6 +34,24 @@
         ON B.iboard = C.board_iboard
         WHERE B.status = #{status}
         <choose>
+            <when test="type == 1">
+                <if test="search != null and search != ''">
+                    AND B.title LIKE CONCAT('%', #{search}, '%')
+                </if>
+            </when>
+            <when test="type == 2">
+                <if test="search != null and search != ''">
+                    AND (B.title LIKE CONCAT('%', #{search}, '%')
+                    OR B.contents LIKE CONCAT('%', #{search}, '%'))
+                </if>
+            </when>
+            <when test="type == 3">
+                <if test="search != null and search != ''">
+                    AND A.nick LIKE CONCAT('%', #{search}, '%')
+                </if>
+            </when>
+        </choose>
+        <choose>
             <when test="sort == 0 or sort == 1">
                 ORDER BY B.iboard DESC
             </when>
@@ -40,13 +59,12 @@
                 ORDER BY B.view DESC
             </when>
         </choose>
-
         LIMIT #{startIdx}, #{rowCount}
     </select>
 
     <select id="selBoard">
-        SELECT A.nick, A.stored_pic, B.iboard
-        , B.title, B.contents, B.view, B.created_at, if(C.iuser is null, 0, 1) AS isLiked
+        SELECT A.nick, A.stored_pic AS userPic, B.iboard
+        , B.title, B.contents, B.view, B.created_at AS createdAt, if(C.iuser is null, 0, 1) AS isLiked
         FROM user A
         JOIN board B
         ON A.iuser = B.iuser
@@ -57,7 +75,7 @@
 
     <!-- 특정 게시글의 사진들 -->
     <select id="selBoardPicList">
-        SELECT stored_pic
+        SELECT stored_pic AS boardPic
         FROM board_pic
         WHERE iboard = #{iboard}
     </select>

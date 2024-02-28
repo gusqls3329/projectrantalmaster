@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -25,16 +26,18 @@ public class BoardCommentController {
     @Operation(summary = "댓글 등록", description = "게시글에 댓글 등록")
     @Parameters(value = {
             @Parameter(name = "comment", description = "댓글 내용")})
+    @Validated
     @PostMapping
-    public ResVo postComment(@RequestBody BoardCommentInsDto dto) {
+    public ResVo postComment(@RequestBody @Validated BoardCommentInsDto dto) {
         return service.postComment(dto);
     }
 
     @Operation(summary = "댓글 수정", description = "수정할 댓글 등록")
     @Parameters(value = {
             @Parameter(name = "comment", description = "댓글 내용")})
+    @Validated
     @PatchMapping
-    public ResVo patchComment(@RequestBody BoardCommentPatchDto dto) {
+    public ResVo patchComment(@RequestBody @Validated BoardCommentPatchDto dto) {
         return service.patchComment(dto);
     }
 
