@@ -6,9 +6,12 @@ import com.team5.projrental.board.comment.model.BoardCommentInsDto;
 import com.team5.projrental.board.comment.model.BoardCommentPatchDto;
 import com.team5.projrental.common.model.ResVo;
 import com.team5.projrental.common.security.AuthenticationFacade;
+import com.team5.projrental.entities.enums.ProductStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 
 @Slf4j
@@ -21,8 +24,13 @@ public class BoardCommentService {
 
     public ResVo postComment(BoardCommentInsDto dto) {
         long loginIuser = authenticationFacade.getLoginUserPk();
-        long result = mapper.insBoardComment(dto);
         dto.setLoginIuser(loginIuser);
+        long result = mapper.insBoardComment(dto);
+        //dto.setCreatedAt(LocalDateTime.now()); // createdAt 현재시각
+
+        ProductStatus status = ProductStatus.getByNum(1);
+        String name = status.name();// "ACTIVATED" //enum 문자열로
+
         return new ResVo(dto.getIboardComment());
     }
 
@@ -35,7 +43,4 @@ public class BoardCommentService {
         long result = mapper.delBoardComment(iboardComment);
         return new ResVo(result);
     }
-
-
-
 }

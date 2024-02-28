@@ -22,4 +22,8 @@ public interface BoardMapper {
     int delLike(BoardToggleLikeDto dto);
 
     int insLike(BoardToggleLikeDto dto);
+
+    List<BoardFavVo> selLike (long iboard,long iuser);
+
+
 }

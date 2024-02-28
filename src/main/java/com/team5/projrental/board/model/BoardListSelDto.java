@@ -18,6 +18,9 @@ public class BoardListSelDto {
 
     private Integer targetIuser;
 
+    @JsonIgnore
+    private long loginIuser;
+
     private Integer type;
 
     private String search;

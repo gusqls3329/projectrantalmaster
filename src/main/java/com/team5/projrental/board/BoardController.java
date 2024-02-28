@@ -57,6 +57,8 @@ public class BoardController {
     @GetMapping
     public List<BoardListSelVo> getBoardList(@RequestParam(defaultValue = "1") @Min(1)
                                              int page,
+                                             @RequestParam(defaultValue = "0")
+                                             int sort,
                                              @RequestParam(name = "search", required = false)
                                              String search,
                                              @RequestParam(name = "type", required = false)
@@ -66,6 +68,7 @@ public class BoardController {
     {
         BoardListSelDto dto = new BoardListSelDto();
         dto.setPage(page);
+        dto.setSort(sort);
         return service.getBoardList(dto);
     }
 
@@ -73,7 +76,7 @@ public class BoardController {
     @Operation(summary = "게시글 입장", description = "특정 게시글 입장")
     @Parameters(value = {
             @Parameter(name = "iboard", description = "입장 할 게시글pk")})
-    @GetMapping("{iboard}")
+    @GetMapping("/{iboard}")
     public BoardSelVo getBoard(@PathVariable int iboard) {
         return service.getBoard(iboard);
     }

@@ -5,6 +5,7 @@ import com.team5.projrental.board.comment.model.BoardCommentInsDto;
 import com.team5.projrental.board.comment.model.BoardCommentPatchDto;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
