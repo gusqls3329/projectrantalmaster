@@ -58,9 +58,7 @@ public class BoardController {
                                              @RequestParam(name = "search", required = false)
                                              String search,
                                              @RequestParam(name = "type", required = false)
-                                             Integer type,
-                                             @RequestParam(name = "targetIuser", required = false) @Nullable
-                                             Integer targetIuser)
+                                             Integer type)
     {
         BoardListSelDto dto = new BoardListSelDto();
         //asdf

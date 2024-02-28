@@ -107,6 +107,8 @@ public class BoardService {
         //asdf123
         dto.setStatus(status);
 
+        //if() {}
+
         List<BoardListSelVo> list = mapper.selBoardList(dto);
 
         return list;
@@ -126,7 +128,7 @@ public class BoardService {
     }
 
     @Transactional
-    public ResVo putBoard (BoardPutDto dto) {
+    public ResVo putBoard (BoardPutDto dto) { //123
         Board board = boardRepository.getReferenceById((long)dto.getIboard());
 
         if(dto.getTitle() != null && dto.getTitle() != "") {

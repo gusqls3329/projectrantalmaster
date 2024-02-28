@@ -17,8 +17,6 @@ import javax.annotation.Nullable;
 @AllArgsConstructor
 public class BoardListSelDto {
 
-    private Integer targetIuser;
-
     @JsonIgnore
     private long loginIuser;
 
