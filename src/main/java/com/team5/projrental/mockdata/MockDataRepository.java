@@ -102,7 +102,8 @@ public class MockDataRepository {
                     if (findUser2 != null && !Objects.equals(user.getId(), findUser2.getId())) {
                         break;
                     }
-
+                }
+                while (findUser2 == null) {
                     int rNum2 = (int) (Math.random() * 100) + 1;
                     findUser3 = em.find(User.class, rNum2);
                     if (findUser3 != null && !Objects.equals(user.getId(), findUser3.getId())) {
@@ -174,19 +175,21 @@ public class MockDataRepository {
 
                 User findUser2 = null;
                 User findUser3 = null;
-                while (findUser2 == null) {
+                while (true) {
                     int rNum1 = (int) (Math.random() * 100) + 1;
                     findUser2 = em.find(User.class, rNum1);
                     if (findUser2 != null && !Objects.equals(product.getUser().getId(), findUser2.getId())) {
                         break;
                     }
-
+                }
+                while (true) {
                     int rNum2 = (int) (Math.random() * 100) + 1;
                     findUser3 = em.find(User.class, rNum2);
                     if (findUser3 != null && !Objects.equals(product.getUser().getId(), findUser3.getId())) {
                         break;
                     }
                 }
+
                 disputeProduct.setReportedUser(findUser2);
                 disputeProduct.setReporter(findUser3);
                 disputeProduct.setDetails("Seatset" + i);
@@ -236,12 +239,11 @@ public class MockDataRepository {
             saveChatMsg2.setChatUser(saveChatUser2);
 
 
-
             em.persist(saveChatMsg1);
             em.persist(saveChatMsg2);
             em.flush();
 
-            if(i % 5 == 0) {
+            if (i % 5 == 0) {
                 DisputeReason reason = DisputeReason.getByNum(i % 3);
                 DisputeChatUser disputeChatUser = new DisputeChatUser();
                 disputeChatUser.setChatUser(saveChatUser1);
@@ -258,7 +260,8 @@ public class MockDataRepository {
                     if (findUser4 != null && !Objects.equals(product.getUser().getId(), findUser4.getId())) {
                         break;
                     }
-
+                }
+                while (findUser2 == null) {
                     int rNum2 = (int) (Math.random() * 100) + 1;
                     findUser5 = em.find(User.class, rNum2);
                     if (findUser5 != null && !Objects.equals(product.getUser().getId(), findUser5.getId())) {
@@ -419,7 +422,8 @@ public class MockDataRepository {
                     if (findUser2 != null && !Objects.equals(paymentInfo.getPaymentInfoIds().getIuser(), findUser2.getId())) {
                         break;
                     }
-
+                }
+                while (findUser2 == null) {
                     int rNum2 = (int) (Math.random() * 100) + 1;
                     findUser3 = em.find(User.class, rNum2);
                     if (findUser3 != null && !Objects.equals(paymentInfo.getPaymentInfoIds().getIuser(), findUser3.getId())) {
@@ -531,7 +535,8 @@ INSERT INTO board_pic (`created_at`, `iboard`, `ipics`, `stored_pic`) VALUES ('2
                     if (findUser2 != null && !Objects.equals(saveBoard.getId(), findUser2.getId())) {
                         break;
                     }
-
+                }
+                while (findUser2 == null) {
                     int rNum2 = (int) (Math.random() * 100) + 1;
                     findUser3 = em.find(User.class, rNum2);
                     if (findUser3 != null && !Objects.equals(saveBoard.getId(), findUser3.getId())) {
@@ -560,8 +565,6 @@ INSERT INTO board_pic (`created_at`, `iboard`, `ipics`, `stored_pic`) VALUES ('2
         em.clear();
 
 //        em.find(Board.class);
-
-
 
 
     }
