@@ -28,6 +28,7 @@ public class BoardCommentService {
         long loginIuser = authenticationFacade.getLoginUserPk();
         dto.setLoginIuser(loginIuser);
         long result = mapper.insBoardComment(dto);
+
         //dto.setCreatedAt(LocalDateTime.now()); // createdAt 현재시각
 
         ProductStatus status = ProductStatus.getByNum(1);

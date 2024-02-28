@@ -101,6 +101,12 @@ public class BoardService {
     public List<BoardListSelVo> getBoardList (BoardListSelDto dto){ //전체 게시글
         long loginIuser = authenticationFacade.getLoginUserPk();
         dto.setLoginIuser(loginIuser);
+
+        BoardStatus boardStatus = BoardStatus.ACTIVATED;
+        String status = boardStatus.name();
+
+        dto.setStatus(status);
+
         List<BoardListSelVo> list = mapper.selBoardList(dto);
 
         return list;
@@ -173,7 +179,6 @@ public class BoardService {
             }
             long result = 0;
             return new ResVo(result);
-        //return null;
     }
 }
 

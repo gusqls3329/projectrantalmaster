@@ -31,6 +31,7 @@
             </when>
         </choose>
         ON B.iboard = C.board_iboard
+        WHERE B.status = #{status}
         <choose>
             <when test="sort == 0 or sort == 1">
                 ORDER BY B.iboard DESC
@@ -39,6 +40,7 @@
                 ORDER BY B.view DESC
             </when>
         </choose>
+
         LIMIT #{startIdx}, #{rowCount}
     </select>
 
@@ -104,12 +106,5 @@
         WHERE board_iboard = #{iboard}
         and iuser = #{loginIuser}
     </delete>
-
-    <select id="selLike">
-        select iuser, board_iboard AS iboard
-        from board_like
-        where iuser = #{iuser}
-        and board_iboard = #{iboard}
-    </select>
 
 </mapper>
