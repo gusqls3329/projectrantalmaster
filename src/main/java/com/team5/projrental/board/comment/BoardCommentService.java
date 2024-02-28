@@ -24,18 +24,18 @@ public class BoardCommentService {
     private final BoardCommentMapper mapper;
     private final AuthenticationFacade authenticationFacade;
 
-    public ResVo postComment(BoardCommentInsDto dto) {
+    public ResVo postComment(BoardCommentInsDto dto) {  //삭제된 게시글 댓글 다는거 막아야됨
         long loginIuser = authenticationFacade.getLoginUserPk();
         dto.setLoginIuser(loginIuser);
         long result = mapper.insBoardComment(dto);
 
         //dto.setCreatedAt(LocalDateTime.now()); // createdAt 현재시각
 
-        ProductStatus status = ProductStatus.getByNum(1);
-        String name = status.name();// "ACTIVATED" //enum 문자열로
+        //ProductStatus status = ProductStatus.getByNum(1);
+        //String name = status.name();// "ACTIVATED" //enum 문자열로
 
-        BoardStatus boardStatus = BoardStatus.getByNum(1);
-        boardStatus.name();
+        //BoardStatus boardStatus = BoardStatus.getByNum(0);
+        //boardStatus.name();
 
         return new ResVo(dto.getIboardComment());
     }

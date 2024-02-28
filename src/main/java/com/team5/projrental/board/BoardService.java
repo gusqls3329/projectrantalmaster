@@ -49,7 +49,7 @@ public class BoardService {
     @Transactional
     public ResVo postBoard(BoardInsDto dto) {
         CommonUtils.ifContainsBadWordThrow(BadWordException.class, BAD_WORD_EX_MESSAGE,
-                dto.getTitle(), dto.getContents());
+                dto.getTitle(), dto.getContents()); //욕설 필터링
         /*int result = mapper.insBoard(dto);
         BoardPicInsDto pDto = new BoardPicInsDto();
         if (dto.getStoredPic() != null && !dto.getStoredPic().isEmpty()) {
@@ -66,12 +66,13 @@ public class BoardService {
             int result2 = mapper.insBoardPics(pDto);
         }
         return new ResVo((long)dto.getIboard());*/
-
+        long zero = 0;
         User user = userRepository.getReferenceById(authenticationFacade.getLoginUserPk());
         Board board = Board.builder()
                 .user(user)
                 .title(dto.getTitle())
                 .contents(dto.getContents())
+                .view(zero)
                 .status(BoardStatus.ACTIVATED)
                 .build();
         boardRepository.save(board);
@@ -99,12 +100,11 @@ public class BoardService {
     }
 
     public List<BoardListSelVo> getBoardList (BoardListSelDto dto){ //전체 게시글
-        long loginIuser = authenticationFacade.getLoginUserPk();
+        long loginIuser = authenticationFacade.getLoginUserPk();    // 좋아요 많이 받은순을 좋아요리스트로 해버림 수정 필요
         dto.setLoginIuser(loginIuser);
 
         BoardStatus boardStatus = BoardStatus.ACTIVATED;
-        String status = boardStatus.name();
-        //asdf123
+        String status = boardStatus.name(); //enum을 문자열로
         dto.setStatus(status);
 
         List<BoardListSelVo> list = mapper.selBoardList(dto);
@@ -116,11 +116,11 @@ public class BoardService {
         mapper.viewCount(iboard);
         BoardSelVo vo = mapper.selBoard(iboard);
 
-       /* List<String> boardPicList = mapper.selBoardPicList(iboard);
-        vo.setPic(boardPicList);
+        List<BoardPicSelVo> picList = mapper.selBoardPicList(iboard);
+        vo.setPic(picList);
 
-        List<String> boardCommentList = commentMapper.selCommentList(iboard);
-        vo.setComments(boardCommentList);*/
+       List<BoardCommentSelVo> boardCommentList = commentMapper.selCommentList(iboard);
+        vo.setComments(boardCommentList);
 
         return vo;
     }

@@ -13,7 +13,7 @@ public interface BoardMapper {
 
     List<BoardListSelVo> selBoardList (BoardListSelDto dto); //게시판 전체글 리스트
     BoardSelVo selBoard (int iboard); //특정 게시글 입장
-    List<String> selBoardPicList(int iboard); //특정 게시판의 사진들
+    List<BoardPicSelVo> selBoardPicList(int iboard); //특정 게시판의 사진들
     int viewCount(int iboard); //조회수
     int putboard(BoardPutDto dto);
 
@@ -23,7 +23,8 @@ public interface BoardMapper {
 
     int insLike(BoardToggleLikeDto dto);
 
-    List<BoardFavVo> selLike (long iboard,long iuser);
+    //List<BoardFavVo> selLike (long iboard,long iuser);
+
 
 
 }

@@ -21,11 +21,11 @@ public class BoardSelVo {
     private String title;
     private String contents;
     private int view;
-    private String createdAt;
+    private LocalDateTime createdAt;
 
-    private List<String> pic;
+    private List<BoardPicSelVo> pic;
 
-    private List<String> comments;
+    private List<BoardCommentSelVo> comments;
 
 
 }

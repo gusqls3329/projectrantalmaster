@@ -10,8 +10,8 @@
     </insert>
 
     <select id="selCommentList">
-        SELECT u.iuser, u.nick, u.stored_pic AS storedPic
-        , comment, created_at AS createAt
+        SELECT u.iuser, u.nick, u.stored_pic AS userPic
+        , comment, created_at AS createdAt
         FROM board_comment c
         JOIN user u
         ON c.iuser = u.iuser
