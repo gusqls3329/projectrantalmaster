@@ -8,14 +8,14 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 public class Initializr {
 
     private final ChatBotRepository chatBotRepository;
 
     @Transactional
-    @EventListener(ApplicationReadyEvent.class)
+//    @EventListener(ApplicationReadyEvent.class)
     public void init() {
 
         chatBotRepository.save(ChatBot.builder()

@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.team5.projrental.common.exception.ErrorMessage.ILLEGAL_EX_MESSAGE;
 import static com.team5.projrental.entities.QDisputeProduct.disputeProduct;
@@ -98,67 +99,69 @@ public class MypageService {
     }*/
     @Transactional
     public DisputeByMyPageVo getDispute(MyBuyReviewListSelDto dto) {
+
+
         Long loginUserPk = authenticationFacade.getLoginUserPk();
-        dto.setIuser(loginUserPk);
-        List<Dispute> disputes = myPageDisputeRepository.getDisputeList(loginUserPk);
-        List<MyDisputeVo> myDisputeVo = disputes.stream().map(dispute -> {
-            DisputeKind kind = null;
-            DisputeBoard disputeBoard = null;
-            DisputePayment disputePayment = null;
-            DisputeProduct disputeProduct = null;
-            DisputeChatUser disputeChat = null;
-            if (dispute instanceof DisputeBoard) {
-                disputeBoard = (DisputeBoard) dispute;
-                kind = DisputeKind.BOARD;
-            }
 
-            Optional<DisputeBoard> board = disputeBoardRepository.findById(dispute.getId());
+        Long totalCount = myPageDisputeRepository.totalCountByOptions(loginUserPk);
+        List<Dispute> findDisputes = myPageDisputeRepository.getDisputeList(loginUserPk, dto.getStartIdx(), dto.getRowCount());
 
-            if (dispute instanceof DisputePayment) {
-                disputePayment = (DisputePayment) dispute;
-                kind = DisputeKind.PAYMENT;
-            }
-            Optional<DisputePayment> payment = disputePaymentRepository.findById(dispute.getId());
+        return DisputeByMyPageVo.builder()
+                .totalUserCount(totalCount)
+                .disputes(
+                        findDisputes.stream()
+                                .map(dispute -> {
+                                    MyDisputeVo vo = MyDisputeVo.builder()
+                                            .idispute(dispute.getId())
+                                            .ireporter(dispute.getReporter().getId())
+                                            .category(dispute.getReason())
+                                            .details(dispute.getDetails())
+                                            .createdAt(dispute.getCreatedAt().toLocalDate())
+                                            .status(dispute.getStatus())
+                                            .penalty(dispute.getPenalty())
+                                            .ireportedUser(dispute.getReportedUser().getId())
+                                            .reportedUserNick(dispute.getReportedUser().getNick())
+                                            .build();
 
-            if (dispute instanceof DisputeProduct) {
-                disputeProduct = (DisputeProduct) dispute;
-                kind = DisputeKind.PRODUCT;
-            }
-            Optional<DisputeProduct> product = disputeProductRepository.findById(dispute.getId());
+                                    if (dispute instanceof DisputeUser) {
+                                        DisputeUser disputeUser = (DisputeUser) dispute;
+                                        vo.setPic(disputeUser.getReportedUser().getBaseUser().getStoredPic());
+                                        vo.setKind(DisputeKind.USER.getNum());
+                                        vo.setPk(disputeUser.getReportedUser().getId());
+                                    }
 
-            if (dispute instanceof DisputeChatUser) {
-                disputeChat = (DisputeChatUser) dispute;
-                kind = DisputeKind.CHAT;
-            }
-            Optional<DisputeChatUser> chatUser = disputeChatUserRepository.findById(dispute.getId());
+                                    if (dispute instanceof DisputeProduct) {
+                                        DisputeProduct disputeProduct = (DisputeProduct) dispute;
+                                        vo.setTilte(disputeProduct.getProduct().getTitle());
 
-            Optional<User> user = userRepository.findById(loginUserPk);
-            return MyDisputeVo.builder()
-                    .idispute(dispute.getId())
-                    .ireporter(user.get().getId())
-                    .ireportedUser(dispute.getReportedUser().getId())
-                    .category(dispute.getReason())
-                    .details(dispute.getDetails())
-                    .penality(dispute.getPenalty())
-                    .createdAt(LocalDate.from(dispute.getCreatedAt()))
-                    .status(dispute.getStatus())
-                    .kind(kind != null ? kind.getNum() : null)
-                    .nick(dispute.getReportedUser().getNick())
-                    .profPic(dispute.getReportedUser().getBaseUser().getStoredPic())
-                    .iproduct(kind == DisputeKind.PRODUCT ? product.get().getProduct().getId() : null)
-                    .tilte(kind == DisputeKind.PRODUCT ? product.get().getProduct().getTitle() : null)
-                    .prodPic(kind == DisputeKind.PRODUCT ? product.get().getProduct().getStoredPic() : null)
-                    .ipayment(kind == DisputeKind.PAYMENT ? payment.get().getId() : null)
-                    .code(kind == DisputeKind.PAYMENT ? payment.get().getPaymentInfo().getCode() : null)
-                    .ichat(kind == DisputeKind.CHAT ? chatUser.get().getId() : null)
-                    .lastMsgAt(kind == DisputeKind.CHAT ? chatUser.get().getChatUser().getChat().getLastMsgAt() : null)
-                    .lastMsg(kind == DisputeKind.CHAT ? chatUser.get().getChatUser().getChat().getLastMsg() : null)
-                    .iboard(kind == DisputeKind.BOARD ? board.get().getBoard().getId() : null)
-                    .boardTitle(kind == DisputeKind.BOARD ? board.get().getBoard().getTitle() : null)
-                    .build();
-        }).toList();
-        return DisputeByMyPageVo.builder().disputes(myDisputeVo).build();
+                                        vo.setKind(DisputeKind.PRODUCT.getNum());
+                                        vo.setPk(disputeProduct.getProduct().getId());
+                                    }
+                                    if (dispute instanceof DisputePayment) {
+                                        DisputePayment disputePayment = (DisputePayment) dispute;
+                                        vo.setCode(disputePayment.getPaymentInfo().getPayment().getCode());
+                                        vo.setKind(DisputeKind.PAYMENT.getNum());
+                                        vo.setPk(disputePayment.getPaymentInfo().getPayment().getId());
+                                    }
+                                    if (dispute instanceof DisputeChatUser) {
+                                        DisputeChatUser disputeChatUser = (DisputeChatUser) dispute;
+                                        vo.setLastMsg(disputeChatUser.getChatUser().getChat().getLastMsg());
+                                        vo.setLastMsgAt(disputeChatUser.getChatUser().getChat().getLastMsgAt());
+                                        vo.setKind(DisputeKind.CHAT.getNum());
+                                        vo.setPk(disputeChatUser.getChatUser().getChat().getId());
 
+                                    }
+                                    if (dispute instanceof DisputeBoard) {
+                                        DisputeBoard disputeBoard = (DisputeBoard) dispute;
+                                        vo.setBoardTitle(disputeBoard.getBoard().getTitle());
+                                        vo.setKind(DisputeKind.BOARD.getNum());
+                                        vo.setPk(disputeBoard.getBoard().getId());
+
+                                    }
+                                    return vo;
+                                })
+                                .collect(Collectors.toList()))
+                .build();
     }
 
     @Transactional

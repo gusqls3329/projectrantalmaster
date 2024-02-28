@@ -23,9 +23,10 @@ public class MyPageDisputeQueryRepositoryImpl implements MyPageDisputeQueryRepos
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<Dispute> getDisputeList(Long loginUserPk) {
+    public List<Dispute> getDisputeList(Long loginUserPk, int startIdx, int rowCount) {
         return jpaQueryFactory.selectFrom(dispute)
                 .join(dispute.reporter)
+                .where(dispute.reporter.id.eq(loginUserPk))
                 .fetch();
     }
 

@@ -26,7 +26,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Profile({"default", "hyunmin", "prod"})
-@Component
+//@Component
 @RequiredArgsConstructor
 public class MockDataRepository {
 
@@ -34,7 +34,7 @@ public class MockDataRepository {
     private final JPAQueryFactory query;
 
 
-    @EventListener(ApplicationReadyEvent.class)
+//    @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void init() throws InterruptedException {
 

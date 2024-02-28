@@ -9,7 +9,7 @@ import java.util.Arrays;
 
 @Getter
 public enum DisputeKind {
-    BOARD(1), CHAT(2), PAYMENT(3), PRODUCT(4);
+    BOARD(1), CHAT(2), PAYMENT(3), PRODUCT(4), USER(5);
 
     private int num;
 

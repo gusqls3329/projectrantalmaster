@@ -199,13 +199,13 @@ public class CommonAspect {
 //        });
 //    }
 
-    // FIXME -> FIXED
-    @EventListener(ApplicationReadyEvent.class)
-    public void initCacheData() {
-        LocalDateTime now = LocalDateTime.now();
-        this.activatedStockCache.putAll(productRepositoryImpl.getActivatedStock(now));
-
-        log.debug("Cache init -> disabledCache {}", this.disabledCache);
-    }
+//    // FIXME -> FIXED
+//    @EventListener(ApplicationReadyEvent.class)
+//    public void initCacheData() {
+//        LocalDateTime now = LocalDateTime.now();
+//        this.activatedStockCache.putAll(productRepositoryImpl.getActivatedStock(now));
+//
+//        log.debug("Cache init -> disabledCache {}", this.disabledCache);
+//    }
 
 }

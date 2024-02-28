@@ -5,7 +5,7 @@ import com.team5.projrental.entities.Dispute;
 import java.util.List;
 
 public interface MyPageDisputeQueryRepository {
-    List<Dispute> getDisputeList(Long loginUserPk);
+    List<Dispute> getDisputeList(Long loginUserPk, int startIdx, int rowCout);
 
     Long totalCountByOptions(Long loginUserPk);
 }

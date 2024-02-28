@@ -29,11 +29,11 @@ public class MyDisputeVo {
     private String reportedUserNick;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    // 제품이면 mainPic, 유저면 mainPic, 나머지는 null (@JoinInclude)
+    // 제품이면 신고 당한 유저의 mainPic, 유저면 mainPic, 나머지는 null (@JoinInclude)
     private String pic;
 
     // 유저테이블
-
+    private String nick; //닉네임
 
     // 상품테이블
     private String tilte; //상품 이름
