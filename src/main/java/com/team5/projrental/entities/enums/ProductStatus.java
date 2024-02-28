@@ -6,7 +6,7 @@ import com.team5.projrental.common.exception.thrid.ServerException;
 import java.util.Arrays;
 
 public enum ProductStatus {
-    ACTIVATED(1), HIDDEN (-2), DELETED (-1), PRODUCT_OF_UNREGISTERED_USER(999);
+    ACTIVATED(1), HIDDEN (-2), DELETED (-1), PRODUCT_OF_UNREGISTERED_USER(0);
 
     private int num;
     ProductStatus(int num) {

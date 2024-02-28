@@ -117,7 +117,7 @@ public class MockDataRepository {
 
 
             em.persist(user);
-            Admin admin = new Admin("운영자", "asetaset", AdminStatus.ACTIVE);
+            Admin admin = new Admin("운영자", "asetaset");
             admin.setEmail(i * i + "test@test.com");
             admin.setPhone("010-1111-" + 1111 + i);
             admin.setUid(i + "test" + i);

@@ -18,7 +18,7 @@ public class Admin extends Users {
 
     private String storedAdminPic;
 
-    @Enumerated(EnumType.STRING)
-    private AdminStatus status;
+//    @Enumerated(EnumType.STRING)
+//    private AdminStatus status;
 
 }
