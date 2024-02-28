@@ -10,5 +10,6 @@ import java.util.List;
 @Builder
 @Getter
 public class DisputeByMyPageVo {
+    private Long totalUserCount;
     private List<MyDisputeVo> disputes;
 }

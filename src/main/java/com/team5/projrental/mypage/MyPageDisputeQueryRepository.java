@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface MyPageDisputeQueryRepository {
     List<Dispute> getDisputeList(Long loginUserPk);
+
+    Long totalCountByOptions(Long loginUserPk);
 }

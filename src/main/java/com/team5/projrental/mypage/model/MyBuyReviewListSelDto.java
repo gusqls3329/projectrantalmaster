@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Range;
 public class MyBuyReviewListSelDto {
     @Range(min = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
     private int page;
+    @JsonIgnore
     @Range(min = 1)
     private Long iuser;
     @JsonIgnore
