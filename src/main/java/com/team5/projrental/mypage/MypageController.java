@@ -28,7 +28,7 @@ public class MypageController {
     @GetMapping("/prod")
     @Operation(summary = "대여리스트", description = "대여관련 내역")
     @Parameters(value = {
-            @Parameter(name = "status", description = "status가 1이면 대여중(RESERVED, ACTIVATED, CANCELED ), -1이면 대여완료(EXPIRED, COMPLETED, HIDDEN)"),
+            @Parameter(name = "status", description = "status가 1이면 대여중(ACTIVATED), -1이면 대여완료(EXPIRED, COMPLETED, HIDDEN)"),
             @Parameter(name = "page", description = "페이지")
     , @Parameter(name = "role", description = "role:1 -> iuser 가 구매한 상품들\n" +
             "role:2 -> iuser 가 판매한 상품들")})
@@ -94,13 +94,33 @@ public class MypageController {
         return service.getBoard(dto);
     }
 
-    /*@Validated
-    @GetMapping("/board")
-    @Operation(summary = "내가 쓴 게시글", description = "내가 작성한 자유게시글 조회")
-    @Parameters(value = {@Parameter(name = "page", description = "페이지")})
-    public MyProductListVo getBoard(@RequestParam(defaultValue = "1") @Min(1) int page) {
-        BoardDto dto = new BoardDto();
+    @Validated
+    @GetMapping("/reserve")
+    @Operation(summary = "예약 내역 조회", description = "예약 내역 조회")
+    @Parameters(value = {
+            @Parameter(name = "page", description = "페이지")
+            , @Parameter(name = "role", description = "role:1 -> iuser 가 구매한 상품들\n" +
+            "role:2 -> iuser 가 판매한 상품들")})
+    public  List<BuyPaymentSelVo> getReserveList(@RequestParam(name = "role", defaultValue = "1") Long role,
+                                                 @RequestParam(defaultValue = "1") @Range(min = 1) int page) {
+        ReserveDto dto = new ReserveDto();
+        dto.setRole(role);
         dto.setPage(page);
-        return service.getBoard(dto);
-    }*/
+        return service.getReserveList(dto);
+    }
+
+    @Validated
+    @GetMapping("/prod2")
+    @Operation(summary = "내가 등록한 상품 조회", description = "내가 작성한 모든 상품조회(삭제 제외) / 남의 마이페이지일 경우(Active만 가능하도록)")
+    @Parameters(value = {
+            @Parameter(name = "targetIuser", description = "남이보는 마이페이지"),
+            @Parameter(name = "page", description = "페이지")})
+    public ProductListVo getProduct(@RequestParam(defaultValue = "1") Long targetIuser,
+                                               @RequestParam(defaultValue = "1") @Range(min = 1) int page) {
+        ProductListDto dto = new ProductListDto();
+        dto.setTargetIuser(targetIuser);
+        dto.setPage(page);
+
+        return service.getProduct(dto);
+    }
 }

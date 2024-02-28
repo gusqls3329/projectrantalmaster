@@ -14,7 +14,9 @@ import com.team5.projrental.dispute.repository.DisputeChatUserRepository;
 import com.team5.projrental.dispute.repository.DisputePaymentRepository;
 import com.team5.projrental.dispute.repository.DisputeProductRepository;
 import com.team5.projrental.entities.*;
+import com.team5.projrental.entities.enums.BoardStatus;
 import com.team5.projrental.entities.enums.DisputeStatus;
+import com.team5.projrental.entities.enums.ProductStatus;
 import com.team5.projrental.entities.inheritance.Users;
 import com.team5.projrental.mypage.model.*;
 import com.team5.projrental.payment.thirdproj.PaymentRepository;
@@ -23,6 +25,7 @@ import com.team5.projrental.user.UserRepository;
 import com.team5.projrental.user.UsersRepository;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +35,7 @@ import java.awt.print.Pageable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.team5.projrental.common.exception.ErrorMessage.ILLEGAL_EX_MESSAGE;
@@ -46,7 +50,7 @@ public class MypageService {
     private final UserRepository userRepository;
     private final UsersRepository usersRepository;
     private final MyPageBoardRepository myPageBoardRepository;
-
+    private final MyPageBoardComRepository myPageBoardComRepository;
 
     private final DisputeBoardRepository disputeBoardRepository;
     private final DisputePaymentRepository disputePaymentRepository;
@@ -59,13 +63,13 @@ public class MypageService {
 
     public List<BuyPaymentSelVo> getRentalList(PaymentSelDto dto) {
         Long loginUserPk = authenticationFacade.getLoginUserPk();
-        dto.setLoginedIuser(loginUserPk);
+        dto.setIuser(loginUserPk);
         if (dto.getRole() == 1) {
-            List<BuyPaymentSelVo> list = mapper.getPaymentList(loginUserPk);
+            List<BuyPaymentSelVo> list = mapper.getPaymentList(dto);
             return list;
         }
         if (dto.getRole() == 2) {
-            List<BuyPaymentSelVo> list = mapper.getProductList(loginUserPk);
+            List<BuyPaymentSelVo> list = mapper.getProductList(dto);
             return list;
         }
 
@@ -156,6 +160,7 @@ public class MypageService {
         return DisputeByMyPageVo.builder().disputes(myDisputeVo).build();
 
     }
+
     @Transactional
     public ResVo cancelDispute(Long idispute) {
         Long loginUserPk = authenticationFacade.getLoginUserPk();
@@ -164,29 +169,78 @@ public class MypageService {
         if (dispute.isEmpty() || !dispute.get().getReporter().getId().equals(loginUserPk)) {
             throw new ClientException(ILLEGAL_EX_MESSAGE);
         }
-        if (dispute.get().getStatus() == DisputeStatus.STAND_BY ) {
+        if (dispute.get().getStatus() == DisputeStatus.STAND_BY) {
             dispute.get().setStatus(DisputeStatus.CANCELED);
             return new ResVo(Const.SUCCESS);
         }
         throw new ClientException(ILLEGAL_EX_MESSAGE);
 
     }
+
     @Transactional
     public MyBoardListVo getBoard(BoardDto dto) {
         Long loginUserPk = authenticationFacade.getLoginUserPk();
         Optional<User> user = userRepository.findById(loginUserPk);
 
         List<Board> boards = myPageBoardRepository.findByUser(user.get(), dto.getPage());
-
-        return MyBoardListVo.builder().list(boards.stream().map(
+        return MyBoardListVo.builder().list(boards.stream().filter(prd -> prd.getStatus().equals(BoardStatus.ACTIVATED)).map(
                 board -> MyBoardVo.builder()
                         .iboard(board.getId().intValue())
                         .title(board.getTitle())
+                        .istatus(board.getStatus().getNum())
+                        .view(board.getView().intValue())
+                        .CommentCount(myPageBoardComRepository.findByBoard(board).getComment().length())
                         .createdAt(board.getCreatedAt().toString())
                         .build()
         ).toList(
         )).build();
     }
 
+    @Transactional
+    public List<BuyPaymentSelVo> getReserveList(ReserveDto dto) {
+        Long loginUserPk = authenticationFacade.getLoginUserPk();
+        dto.setIuser(loginUserPk);
+
+        if (dto.getRole() == 1) {
+            List<BuyPaymentSelVo> list = mapper.getReservePayList(dto);
+            return list;
+        }
+        if (dto.getRole() == 2) {
+            List<BuyPaymentSelVo> list = mapper.getReserveProcList(dto);
+            return list;
+        }
+
+        throw new ClientException(ILLEGAL_EX_MESSAGE);
+    }
+
+    public ProductListVo getProduct(ProductListDto dto) {
+        Long loginUserPk = authenticationFacade.getLoginUserPk();
+        Optional<User> user = userRepository.findById(dto.getTargetIuser());
+        if(Objects.equals(loginUserPk, dto.getTargetIuser())){
+            List<Product> products = productRepository.findByUser(user.get(), dto.getPage());
+            return ProductListVo.builder().vo(products.stream().filter(prd -> !prd.getStatus().equals(ProductStatus.DELETED)).map(
+                    productss -> MyPageProductVo.builder().iproduct(productss.getId().longValue())
+                            .tilte(productss.getTitle())
+                            .price(productss.getRentalPrice())
+                            .contents(productss.getContents())
+                            .updatedAt(productss.getUpdatedAt().toLocalDate())
+                            .build()
+            ).toList()).build();
+        }
+
+        if(!Objects.equals(loginUserPk, dto.getTargetIuser())){
+            List<Product> products = productRepository.findByUser(user.get(), dto.getPage());
+
+            return ProductListVo.builder().vo(products.stream().filter(prd -> prd.getStatus().equals(ProductStatus.ACTIVATED)).map(
+                    productss -> MyPageProductVo.builder().iproduct(productss.getId().longValue())
+                            .tilte(productss.getTitle())
+                            .price(productss.getRentalPrice())
+                            .contents(productss.getContents())
+                            .updatedAt(productss.getUpdatedAt().toLocalDate())
+                            .build()
+            ).toList()).build();
+        }
+        return null;
+    }
 
 }

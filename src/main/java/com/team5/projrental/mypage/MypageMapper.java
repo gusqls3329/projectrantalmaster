@@ -8,11 +8,15 @@ import java.util.List;
 @Mapper
 public interface MypageMapper {
 
-    List<BuyPaymentSelVo> getPaymentList(Long loginUserPk);
-    List<BuyPaymentSelVo> getProductList(Long loginUserPk);
+    List<BuyPaymentSelVo> getPaymentList(PaymentSelDto dto);
+    List<BuyPaymentSelVo> getProductList(PaymentSelDto dto);
     List<MyBuyReviewListSelVo> getIbuyerReviewList(MyBuyReviewListSelDto dto);
     List<MyFavListSelVo> getFavList(MyFavListSelDto dto);
 
     List<AllReviewsForMeResultDto> getAllReviewFromMyProduct(Long iuser);
+
+
+    List<BuyPaymentSelVo> getReservePayList(ReserveDto dto);
+    List<BuyPaymentSelVo> getReserveProcList(ReserveDto dto);
 
 }

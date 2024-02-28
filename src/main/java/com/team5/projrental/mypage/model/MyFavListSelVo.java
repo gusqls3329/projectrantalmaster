@@ -14,4 +14,8 @@ public class MyFavListSelVo {
     private String storedPic; // 물건등록한 상대유저사진
     private String nick; // 물건등록한 상대유저 프로필사진
 
+    private Categories icategory;
+    private int mainCategory;
+    private int subCategory;
+
 }

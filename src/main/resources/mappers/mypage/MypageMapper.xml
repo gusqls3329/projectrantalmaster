@@ -31,7 +31,7 @@
         SELECT distinct pr.iproduct, pa.ipayment, pp.stored_pic as ProStoredPic,
         pa.deposit, pa.total_price as totalPrice, pa.rental_end_date as rentalEndDate
         , pa.rental_start_date as rentalStartDate, pa.duration, pa.created_at as createdAt,
-        pai.`status`, pr.iuser, u.nick, u.stored_pic as userPic
+        pai.`status`, pa.iuser, u.nick, u.stored_pic as userPic
         FROM `user` u
         JOIN product pr
         ON u.iuser = pr.iuser
@@ -59,6 +59,7 @@
         FROM user A
         LEFT JOIN review B
         ON A.iuser = B.iuser
+        AND B.`status` = 'ACTIVATED'
         LEFT JOIN payment C
         ON B.ipayment = C.ipayment
         LEFT JOIN product D
@@ -71,6 +72,7 @@
     <select id="getFavList">
         SELECT A.iproduct, A.title, A.`contents`, A.stored_pic AS pic,
         A.rental_price AS rentalPrice, A.iuser, B.stored_pic, B.nick
+        , A.main_category as mainCategory, A.sub_category as subCategory
         FROM product A
         LEFT JOIN user B
         ON A.iuser = B.iuser
@@ -91,5 +93,44 @@
         JOIN user U on R.iuser = U.iuser
         where P.iuser = #{iuser} and R.contents != '' and R.rating > 0
     </select>
-
+    <select id="getReservePayList">
+        SELECT distinct pa.iproduct, pa.ipayment, pp.stored_pic as ProStoredPic,
+        pa.deposit, pa.total_price as totalPrice, pa.rental_end_date as rentalEndDate
+        , pa.rental_start_date as rentalStartDate, pa.duration, pa.created_at as createdAt,
+        pai.`status`, pr.iuser, u.nick, u.stored_pic as userPic
+        from payment pa
+        LEFT JOIN payment_info pai
+        ON pa.ipayment = pai.ipayment
+        LEFT JOIN product pr
+        ON pa.iproduct = pr.iproduct
+        LEFT JOIN prod_pics pp
+        ON pp.iproduct = pa.iproduct
+        JOIN `user` u
+        ON u.iuser = pr.iuser
+        WHERE pa.iuser = #{iuser}
+            and pai.`status` in ('RESERVED', 'CANCELED')
+        GROUP BY pa.ipayment
+        ORDER BY pa.ipayment DESC
+        LIMIT #{startIdx}, #{rowCount}
+    </select>
+    <select id="getReserveProcList">
+        SELECT distinct pr.iproduct, pa.ipayment, pp.stored_pic as ProStoredPic,
+        pa.deposit, pa.total_price as totalPrice, pa.rental_end_date as rentalEndDate
+        , pa.rental_start_date as rentalStartDate, pa.duration, pa.created_at as createdAt,
+        pai.`status`, pa.iuser, u.nick, u.stored_pic as userPic
+        FROM  product pr
+        LEFT JOIN prod_pics pp
+        ON pp.iproduct = pr.iproduct
+        JOIN payment pa
+        ON pa.iproduct = pr.iproduct
+        LEFT JOIN `user` u
+        ON pa.iuser = u.iuser
+        LEFT JOIN payment_info pai
+        ON pa.ipayment = pai.ipayment
+        WHERE pr.iuser = #{iuser}
+            and pai.`status` in ('RESERVED', 'CANCELED')
+        GROUP BY pr.iproduct
+        ORDER BY pr.iproduct DESC
+        LIMIT #{startIdx}, #{rowCount}
+    </select>
 </mapper>
