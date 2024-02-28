@@ -38,8 +38,6 @@ public class QAdmin extends EntityPathBase<Admin> {
     //inherited
     public final StringPath phone = _super.phone;
 
-    public final EnumPath<com.team5.projrental.entities.enums.AdminStatus> status = createEnum("status", com.team5.projrental.entities.enums.AdminStatus.class);
-
     public final StringPath storedAdminPic = createString("storedAdminPic");
 
     //inherited

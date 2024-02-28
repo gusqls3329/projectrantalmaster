@@ -24,6 +24,8 @@ public class AdminDisputeQueryRepositoryImpl implements AdminDisputeQueryReposit
     public List<Dispute> findByLimitPage(int page, Integer div, String search, Integer category, Integer status) {
 
         return query.selectFrom(dispute)
+                .join(dispute.reporter).fetchJoin()
+                .join(dispute.reportedUser).fetchJoin()
                 .where(whereFindByLimitPage(div, search, category, status))
                 .offset(page)
                 .limit(Const.ADMIN_PER_PAGE)
