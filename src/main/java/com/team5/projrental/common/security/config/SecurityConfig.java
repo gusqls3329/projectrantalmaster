@@ -50,21 +50,17 @@ public class SecurityConfig {
                         "/api/pay/**"
                 ).authenticated())
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
-                                HttpMethod.DELETE, "/api/prod"
-                        ).authenticated()
-                )
+                        HttpMethod.DELETE, "/api/prod"
+                ).authenticated())
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
-                                HttpMethod.POST, "/api/prod"
-                        ).authenticated()
-                )
+                        HttpMethod.POST, "/api/prod"
+                ).authenticated())
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
-                                HttpMethod.PUT, "/api/prod"
-                        ).authenticated()
-                )
+                        HttpMethod.PUT, "/api/prod"
+                ).authenticated())
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
-                                HttpMethod.PATCH, "/api/prod"
-                        ).authenticated()
-                        .anyRequest().permitAll())
+                        HttpMethod.PATCH, "/api/prod"
+                ).authenticated().anyRequest().permitAll())
                 .exceptionHandling(ex -> {
                     ex.authenticationEntryPoint(new JwtAuthenticationEntryPoint());
                     ex.accessDeniedHandler(new JwtAccessDeniedHandler());

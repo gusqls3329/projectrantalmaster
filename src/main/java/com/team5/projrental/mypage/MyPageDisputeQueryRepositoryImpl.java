@@ -19,15 +19,24 @@ import static com.team5.projrental.entities.QUser.user;
 
 @Slf4j
 @RequiredArgsConstructor
-public class MyPageDisputeQueryRepositoryImpl implements MyPageDisputeQueryRepository{
+public class MyPageDisputeQueryRepositoryImpl implements MyPageDisputeQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
     public List<Dispute> getDisputeList(Long loginUserPk) {
-       // JPAQuery<Dispute> jpaQuery = jpaQueryFactory.selectFrom(dispute)
+        return jpaQueryFactory.selectFrom(dispute)
+                .join(dispute.reporter)
+                .fetch();
+    }
 
+    @Override
+    public Long totalCountByOptions(Long loginUserPk) {
 
-        return null;//jpaQuery.fetch();
+        return jpaQueryFactory.select(dispute.count())
+                .from(dispute)
+                .join(dispute.reportedUser).fetchJoin()
+                .where(dispute.reportedUser.id.eq(loginUserPk))
+                .fetchOne();
 
     }
 }

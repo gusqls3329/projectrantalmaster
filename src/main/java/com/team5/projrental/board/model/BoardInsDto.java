@@ -19,6 +19,7 @@ public class BoardInsDto {
     private int iboard;
     @JsonIgnore
     private int iuser;
+
     @NotBlank(message = ErrorMessage.CAN_NOT_BLANK_EX_MESSAGE)
     @Length(min = 2, max = 50)
     private String title;

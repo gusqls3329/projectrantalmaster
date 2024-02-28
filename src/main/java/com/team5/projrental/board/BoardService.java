@@ -101,6 +101,12 @@ public class BoardService {
     public List<BoardListSelVo> getBoardList (BoardListSelDto dto){ //전체 게시글
         long loginIuser = authenticationFacade.getLoginUserPk();
         dto.setLoginIuser(loginIuser);
+
+        BoardStatus boardStatus = BoardStatus.ACTIVATED;
+        String status = boardStatus.name();
+        //asdf123
+        dto.setStatus(status);
+
         List<BoardListSelVo> list = mapper.selBoardList(dto);
 
         return list;
@@ -109,12 +115,13 @@ public class BoardService {
     public BoardSelVo getBoard (int iboard){
         mapper.viewCount(iboard);
         BoardSelVo vo = mapper.selBoard(iboard);
-        /*List<String> boardPicList = mapper.selBoardPicList(iboard);
+
+       /* List<String> boardPicList = mapper.selBoardPicList(iboard);
         vo.setPic(boardPicList);
 
         List<String> boardCommentList = commentMapper.selCommentList(iboard);
-        vo.setComments(boardCommentList);
-*/
+        vo.setComments(boardCommentList);*/
+
         return vo;
     }
 
@@ -126,7 +133,7 @@ public class BoardService {
             board.setTitle(dto.getTitle());
         }
         if(dto.getContents() != null && dto.getContents() != "") {
-            board.setContents(dto.getTitle());
+            board.setContents(dto.getContents());
         }
 
         String stringId= String.valueOf(board.getId());
@@ -173,7 +180,6 @@ public class BoardService {
             }
             long result = 0;
             return new ResVo(result);
-        //return null;
     }
 }
 
