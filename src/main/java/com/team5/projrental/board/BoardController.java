@@ -94,7 +94,8 @@ public class BoardController {
     }
 
 
-    @Operation(summary = "게시글 삭제", description = "내가 쓴 게시글 삭제(숨김:status를 2로 변경/default:1)")
+    @Operation(summary = "게시글 삭제", description = "내가 쓴 게시글 삭제(- ACTIVED (0) :존재함(default)\n" +
+            "- DELETE (-1): 삭제됨(숨김))")
     @Parameters(value = {
             @Parameter(name = "iboard", description = "삭제 할 게시글pk")})
     @DeleteMapping("/{iboard}")
