@@ -5,6 +5,7 @@ import com.team5.projrental.administration.enums.DisputeKind;
 import com.team5.projrental.administration.model.DisputeByAdminVo;
 import com.team5.projrental.administration.model.inner.DisputeInfoByAdmin;
 import com.team5.projrental.board.BoardRepository;
+import com.team5.projrental.common.Const;
 import com.team5.projrental.common.exception.thrid.ClientException;
 import com.team5.projrental.common.model.ResVo;
 import com.team5.projrental.common.security.AuthenticationFacade;
@@ -23,9 +24,11 @@ import com.team5.projrental.user.UsersRepository;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.awt.print.Pageable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +92,7 @@ public class MypageService {
         return null;
                 //mapper.getAllReviewFromMyProduct(authenticationFacade.getLoginUserPk());
     }*/
-
+    @Transactional
     public DisputeByMyPageVo getDispute(MyBuyReviewListSelDto dto) {
         Long loginUserPk = authenticationFacade.getLoginUserPk();
         dto.setIuser(loginUserPk);
@@ -153,21 +156,22 @@ public class MypageService {
         return DisputeByMyPageVo.builder().disputes(myDisputeVo).build();
 
     }
-
+    @Transactional
     public ResVo cancelDispute(Long idispute) {
         Long loginUserPk = authenticationFacade.getLoginUserPk();
         Optional<Dispute> dispute = myPageDisputeRepository.findById(idispute);
-        if (dispute.isEmpty() || dispute.get().getReportedUser().getId() != loginUserPk) {
-            throw new ClientException(ILLEGAL_EX_MESSAGE);
-        }
-        if (dispute.get().getStatus() == DisputeStatus.ACCEPTED || dispute.get().getStatus() == DisputeStatus.CANCELED) {
-            throw new ClientException(ILLEGAL_EX_MESSAGE);
-        }
 
-        dispute.get().setStatus(DisputeStatus.CANCELED);
-        return null;
+        if (dispute.isEmpty() || !dispute.get().getReporter().getId().equals(loginUserPk)) {
+            throw new ClientException(ILLEGAL_EX_MESSAGE);
+        }
+        if (dispute.get().getStatus() == DisputeStatus.STAND_BY ) {
+            dispute.get().setStatus(DisputeStatus.CANCELED);
+            return new ResVo(Const.SUCCESS);
+        }
+        throw new ClientException(ILLEGAL_EX_MESSAGE);
+
     }
-
+    @Transactional
     public MyBoardListVo getBoard(BoardDto dto) {
         Long loginUserPk = authenticationFacade.getLoginUserPk();
         Optional<User> user = userRepository.findById(loginUserPk);

@@ -79,7 +79,7 @@ public class MypageController {
     @PatchMapping("/dispute")
     @Operation(summary = "신고 철회", description = "로그인 유저가 신고한 목록")
     @Parameters(value = {@Parameter(name = "idispute", description = "철회 할 분쟁pk")})
-    public ResVo cancelDispute(@RequestBody Long idispute) {
+    public ResVo cancelDispute(@RequestParam(defaultValue = "1") @Range(min = 1) Long idispute) {
         return service.cancelDispute(idispute);
     }
 
@@ -94,7 +94,7 @@ public class MypageController {
         return service.getBoard(dto);
     }
 
-    @Validated
+    /*@Validated
     @GetMapping("/board")
     @Operation(summary = "내가 쓴 게시글", description = "내가 작성한 자유게시글 조회")
     @Parameters(value = {@Parameter(name = "page", description = "페이지")})
@@ -102,5 +102,5 @@ public class MypageController {
         BoardDto dto = new BoardDto();
         dto.setPage(page);
         return service.getBoard(dto);
-    }
+    }*/
 }
