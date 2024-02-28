@@ -48,4 +48,6 @@ public interface ProductQueryRepository {
     Optional<Product> findByIdJoinFetch(Long iproduct);
 
     Long totalCountByOptions(Integer type, String search);
+
+    Optional<Product> findByIdFetchUser(Long iproduct);
 }

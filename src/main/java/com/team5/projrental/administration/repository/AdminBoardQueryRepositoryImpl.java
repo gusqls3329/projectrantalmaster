@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.team5.projrental.entities.QBoard.board;
-
+import static com.team5.projrental.entities.QUser.user;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -38,8 +38,8 @@ public class AdminBoardQueryRepositoryImpl implements AdminBoardQueryRepository 
         return query.selectFrom(board)
                 .join(board.user).fetchJoin()
                 .where(whereFindAllLimitPage(type, search))
-//                .offset(page)
-//                .limit(Const.ADMIN_PER_PAGE)
+                .offset(page)
+                .limit(Const.ADMIN_PER_PAGE)
                 .orderBy(orderByFindAllLimitPage(sort))
                 .fetch();
 
@@ -49,7 +49,7 @@ public class AdminBoardQueryRepositoryImpl implements AdminBoardQueryRepository 
     public Long totalCountByOptions(Integer type, String search) {
         return query.select(board.count())
                 .from(board)
-                .join(board.user).fetchJoin()
+                .join(user).on(board.user.eq(user))
                 .where(whereFindAllLimitPage(type, search))
                 .fetchOne();
 
