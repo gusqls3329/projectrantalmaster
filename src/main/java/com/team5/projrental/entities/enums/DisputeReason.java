@@ -16,16 +16,16 @@ public enum DisputeReason {
     // todo 점수 제대로 책정
     DELETE_BY_ADMIN(0, 0),
     // 분쟁
-    CAN_NOT_CONTACT_BEFORE_ACTIVATE(1, -10),
-    CAN_NOT_CONTACT_AFTER_ACTIVATE(2, 999),
-    FALSE(3, 999),
-    DIF_PRODUCT(4, 999),
-    MANNER(5, 999),
-    LATE(6, 999),
+    CAN_NOT_CONTACT_BEFORE_ACTIVATE(1, -15),
+    CAN_NOT_CONTACT_AFTER_ACTIVATE(2, -15),
+    FALSE(3, -10),
+    DIF_PRODUCT(4, -30),
+    MANNER(5, -5),
+    LATE(6, -10),
 
     // 사고
     DAMAGED(-1, -20),
-    LOSE(-2, 999);
+    LOSE(-2, -30);
 
     private int num;
     private int penaltyScore;
