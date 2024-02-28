@@ -15,7 +15,7 @@ public class BoardSelVo {
     private String nick;
     private String userPic;
 
-    private int isLiked;
+    private int isLiked; // 0: 안누름 , 1: 좋아요
 
     private int iboard;
     private String title;
