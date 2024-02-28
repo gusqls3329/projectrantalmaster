@@ -63,6 +63,7 @@ public class BoardController {
                                              Integer targetIuser)
     {
         BoardListSelDto dto = new BoardListSelDto();
+        //asdf
         dto.setPage(page);
         dto.setSort(sort);
         return service.getBoardList(dto);
