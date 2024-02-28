@@ -8,6 +8,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -32,6 +34,7 @@ public class NamedLockAspect {
         this.dataSource = dataSource;
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Around("@annotation(namedLock)")
     public Object withLock(ProceedingJoinPoint joinPoint,
                            NamedLock namedLock) throws Throwable {
