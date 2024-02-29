@@ -68,7 +68,11 @@ public class PaymentService {
             throw new ClientException(RENTAL_DATE_MUST_BE_BEFORE_THAN_TODAY_EX_MESSAGE,
                     "잘못된 대여 날짜");
         }
-
+        // 이미 해당 날짜로 예약된 상품이 있는지 확인
+        if (paymentRepository.validateRentalDate(paymentInsDto.getIproduct(), paymentInsDto.getRentalStartDate(),
+                paymentInsDto.getRentalEndDate())) {
+            throw new ClientException(ILLEGAL_DATE_EX_MESSAGE, "이미 예약된 날짜입니다.");
+        }
 
         Long loginUserPk = getLoginUserPk();
 
@@ -83,11 +87,6 @@ public class PaymentService {
                 productRepository.findByIdJoinStock(paymentInsDto.getIproduct(), ProductStatus.ACTIVATED).orElseThrow(() -> new ClientException(NO_SUCH_PRODUCT_EX_MESSAGE,
                         "조회된 상품 정보가 없음. (iproduct)"));
 
-        // 이미 해당 날짜로 예약된 상품이 있는지 확인
-        if (paymentRepository.validateRentalDate(paymentInsDto.getIproduct(), paymentInsDto.getRentalStartDate(),
-                paymentInsDto.getRentalEndDate())) {
-            throw new ClientException(ILLEGAL_DATE_EX_MESSAGE, "이미 예약된 날짜입니다.");
-        }
 
         // 거래 시작일이 제품의 거래시작일짜보다 이전이거나, 거래 종료일이 제품의 거래종료일짜보다 이후면 예외 발생
         CommonUtils.ifBeforeThrow(BadDateInfoException.class, ILLEGAL_DATE_EX_MESSAGE,
