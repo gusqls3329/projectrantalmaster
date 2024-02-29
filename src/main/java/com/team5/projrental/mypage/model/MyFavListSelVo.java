@@ -18,4 +18,16 @@ public class MyFavListSelVo {
     private int mainCategory;
     private int subCategory;
 
+    public void setMainCategory(Integer mainCategory) {
+        if (this.icategory == null) {
+            this.icategory = new Categories();
+        }
+        icategory.setMainCategory(mainCategory);
+    }
+    public void setSubCategory(Integer subCategory) {
+        if (this.icategory == null) {
+            this.icategory = new Categories();
+        }
+        icategory.setSubCategory(subCategory);
+    }
 }

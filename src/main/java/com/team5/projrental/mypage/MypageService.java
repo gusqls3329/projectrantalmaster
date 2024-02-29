@@ -104,7 +104,7 @@ public class MypageService {
         Long loginUserPk = authenticationFacade.getLoginUserPk();
 
         Long totalCount = myPageDisputeRepository.totalCountByOptions(loginUserPk);
-        List<Dispute> findDisputes = myPageDisputeRepository.getDisputeList(loginUserPk, dto.getStartIdx(), dto.getRowCount());
+        List<Dispute> findDisputes = myPageDisputeRepository.getDisputeList(loginUserPk,dto.getStartIdx(), dto.getRowCount());
 
         return DisputeByMyPageVo.builder()
                 .totalUserCount(totalCount)
@@ -122,13 +122,6 @@ public class MypageService {
                                             .ireportedUser(dispute.getReportedUser().getId())
                                             .reportedUserNick(dispute.getReportedUser().getNick())
                                             .build();
-
-                                    if (dispute instanceof DisputeUser) {
-                                        DisputeUser disputeUser = (DisputeUser) dispute;
-                                        vo.setPic(disputeUser.getReportedUser().getBaseUser().getStoredPic());
-                                        vo.setKind(DisputeKind.USER.getNum());
-                                        vo.setPk(disputeUser.getReportedUser().getId());
-                                    }
 
                                     if (dispute instanceof DisputeProduct) {
                                         DisputeProduct disputeProduct = (DisputeProduct) dispute;

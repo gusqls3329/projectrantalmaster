@@ -33,11 +33,15 @@ public class MyPageDisputeQueryRepositoryImpl implements MyPageDisputeQueryRepos
     @Override
     public Long totalCountByOptions(Long loginUserPk) {
 
-        return jpaQueryFactory.select(dispute.count())
+        /*return jpaQueryFactory.select(dispute.count())
                 .from(dispute)
                 .join(dispute.reportedUser).fetchJoin()
                 .where(dispute.reportedUser.id.eq(loginUserPk))
-                .fetchOne();
+                .fetchOne();*/
+        return jpaQueryFactory.selectFrom(dispute)
+                .join(dispute.reportedUser).fetchJoin()
+                .where(dispute.reportedUser.id.eq(loginUserPk))
+                .fetchCount();
 
     }
 }
