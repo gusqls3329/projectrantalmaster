@@ -93,7 +93,10 @@ api:
       service-code-key: "serviceKey"
       service-code-value: "VUXEsrgmuyDberLO0pvh4iEQON2Apg6dFFxNMvxc5hAYZjC4XBmmNyxuWvgxfaQpZVNnP%2BVqKNgS1W1isULaQA%3D%3D"
 
-
+redis:
+  config:
+    host: 192.168.0.144
+    port: 6379
 
 ---
 
@@ -138,7 +141,6 @@ app: #속성을 바꿀 수 있는 부분 들은 상수 처럼 쓰기 편하도�
 logging:
   level:
     -com.team5.projrental: info
-
 
 
 

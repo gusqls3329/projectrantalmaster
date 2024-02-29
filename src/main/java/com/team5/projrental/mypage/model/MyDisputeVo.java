@@ -13,6 +13,7 @@ import java.util.List;
 
 @Data
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MyDisputeVo {
     private long idispute;
     private long ireporter;
@@ -22,6 +23,7 @@ public class MyDisputeVo {
     private LocalDate createdAt;
     private DisputeStatus status;
     private int penalty;
+    private int reason;
     private int kind;
     private Long pk;
 
@@ -33,19 +35,25 @@ public class MyDisputeVo {
     private String pic;
 
     // 유저테이블
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String nick; //닉네임
 
     // 상품테이블
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String tilte; //상품 이름
 
     // 결제테이블
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String code;
 
     //채팅
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String lastMsg;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String lastMsgAt;
 
     //보드
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String boardTitle;
 
 }
