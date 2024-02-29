@@ -1,5 +1,7 @@
 package com.team5.projrental.mypage.model;
 
+import com.team5.projrental.entities.enums.ProductMainCategory;
+import com.team5.projrental.entities.enums.ProductSubCategory;
 import com.team5.projrental.product.model.Categories;
 import lombok.Data;
 
@@ -15,19 +17,17 @@ public class MyFavListSelVo {
     private String nick; // 물건등록한 상대유저 프로필사진
 
     private Categories icategory;
-    private int mainCategory;
-    private int subCategory;
 
-    public void setMainCategory(Integer mainCategory) {
+    public void setMainCategory(ProductMainCategory mainCategory) {
         if (this.icategory == null) {
             this.icategory = new Categories();
         }
-        icategory.setMainCategory(mainCategory);
+        icategory.setMainCategory(mainCategory.getNum());
     }
-    public void setSubCategory(Integer subCategory) {
+    public void setSubCategory(ProductSubCategory subCategory) {
         if (this.icategory == null) {
             this.icategory = new Categories();
         }
-        icategory.setSubCategory(subCategory);
+        icategory.setSubCategory(subCategory.getNum());
     }
 }
