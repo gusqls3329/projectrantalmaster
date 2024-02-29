@@ -219,9 +219,15 @@ public class AdministrationService {
             }
             return DisputeInfoByAdmin.builder()
                     .idispute(dispute.getId())
+
                     .ireportedUser(dispute.getReportedUser().getId())
-                    .uid(dispute.getReportedUser().getUid())
-                    .nick(dispute.getReportedUser().getNick())
+                    .reportedUserNick(dispute.getReportedUser().getNick())
+                    .reportedUserUid(dispute.getReportedUser().getUid())
+
+                    .ireporter(dispute.getReporter().getId())
+                    .reporterUid(dispute.getReporter().getUid())
+                    .reporterNick(dispute.getReporter().getNick())
+
                     .category(dispute.getReason().getWord())
                     .createdAt(dispute.getCreatedAt())
                     .ireporter(dispute.getReporter().getId())
@@ -232,6 +238,7 @@ public class AdministrationService {
                     .pk(pk)
                     .build();
         }).toList();
+
 
         return DisputeByAdminVo.builder()
                 .totalDisputeCount(count)

@@ -20,6 +20,7 @@ public class Dispute extends CreatedAt {
     @Column(name = "idispute")
     private Long id;
 
+
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "iadmin")
     private Admin admin;
