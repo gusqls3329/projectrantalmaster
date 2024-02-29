@@ -28,6 +28,7 @@ import com.team5.projrental.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -54,7 +55,7 @@ public class PaymentService {
     private final PaymentInfoRepository paymentInfoRepository;
     private final RefundRepository refundRepository;
 
-    //    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @NamedLock("postPayment")
     public ResVo postPayment(PaymentInsDto paymentInsDto) {
 

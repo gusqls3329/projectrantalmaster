@@ -3,6 +3,7 @@ package com.team5.projrental.common.aop;
 import com.team5.projrental.common.aop.anno.NamedLock;
 import com.team5.projrental.common.exception.ErrorCode;
 import com.team5.projrental.common.exception.base.WrapRuntimeException;
+import com.team5.projrental.common.exception.thrid.ClientException;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -12,10 +13,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 @Aspect
 @Component
@@ -34,7 +32,7 @@ public class NamedLockAspect {
         this.dataSource = dataSource;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     @Around("@annotation(namedLock)")
     public Object withLock(ProceedingJoinPoint joinPoint,
                            NamedLock namedLock) throws Throwable {
@@ -67,6 +65,10 @@ public class NamedLockAspect {
             ps.setInt(2, timeoutSeconds);
             checkResultSet(userLockName, ps, "GetLock_");
             log.debug("NamedLockAspect.getLock() ps: {}", ps);
+        } catch (SQLTimeoutException e) {
+            log.debug("NamedLockAspect.getLock() SQLTimeoutException", e);
+            throw new ClientException(ErrorCode.ILLEGAL_EX_MESSAGE, "이미 처리중인 날짜입니다. 잠시 후 다시 시도해주세요.");
+
         }
     }
 
