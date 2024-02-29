@@ -12,7 +12,7 @@ import java.util.Arrays;
 //- FAILED(-2) : 회원가입 반려됨
 @Getter
 public enum UserStatus {
-    ACTIVATED(1), DELETED(-1), HIDDEN(999), FAILED(-2);
+    ACTIVATED(1), DELETED(-1), HIDDEN(-2), FAILED(-3);
     private int code;
     UserStatus(int code) {
         this.code = code;

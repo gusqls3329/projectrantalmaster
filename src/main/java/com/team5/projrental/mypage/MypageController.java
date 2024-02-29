@@ -68,7 +68,15 @@ public class MypageController {
 
     @Validated
     @GetMapping("/dispute")
-    @Operation(summary = "신고한 목록", description = "로그인 유저가 신고한 목록")
+    @Operation(summary = "신고한 목록", description = "로그인 유저가 신고한 목록"
+            + "ireporter: 신고자pk"+ "category : 신고사유(글자)" + "details : 신고 세부사유"
+            + "idispute : 신고pk" + "status : 신고상태"+ "penalty : 벌점점수" + "createdAt : 신고일자"
+            + "reason : category의 숫자버전(상태페이지에 있음)" + "kind : 신고 상태(종류)"
+            + "ireportedUser : 신고당한 유저pk" + "reportedUserNick :신고당한 유저 닉네임"
+            + "pic :(신고가 유저일때) 신고당한 유저의 사진" + "nick :(신고가 유저일때) 신고당한 유저 닉네임"
+            + "tilte :(신고가 상품 일때) 상품 이름" + "code :(신고가 결제 일때)  결제코드"
+            + "lastMsg :(신고가 채팅 일때) 마지막 메시지" + "lastMsgAt :(신고가 채팅 일때) 마지막 메시지 시간"
+            + "boardTitle : 보드 제목")
     @Parameters(value = {@Parameter(name = "page", description = "페이지")})
     public DisputeByMyPageVo getDispute(@RequestParam(defaultValue = "1") @Range(min = 1) int page) {
         MyBuyReviewListSelDto dto = new MyBuyReviewListSelDto();
@@ -77,7 +85,8 @@ public class MypageController {
     }
 
     @PatchMapping("/dispute")
-    @Operation(summary = "신고 철회", description = "로그인 유저가 신고한 목록")
+    @Operation(summary = "신고 철회", description = "로그인 유저가 신고한 목록"
+    + "상태가 STAND_BY일 경우만 철회가능")
     @Parameters(value = {@Parameter(name = "idispute", description = "철회 할 분쟁pk")})
     public ResVo cancelDispute(@RequestParam(defaultValue = "1") @Range(min = 1) Long idispute) {
         return service.cancelDispute(idispute);
@@ -96,7 +105,8 @@ public class MypageController {
 
     @Validated
     @GetMapping("/reserve")
-    @Operation(summary = "예약 내역 조회", description = "예약 내역 조회")
+    @Operation(summary = "예약 내역 조회", description = "예약 내역 조회"
+    + "결제의 상태가 'RESERVED', 'CANCELED' 일경우만 조회가능")
     @Parameters(value = {
             @Parameter(name = "page", description = "페이지")
             , @Parameter(name = "role", description = "role:1 -> iuser 가 구매한 상품들\n" +

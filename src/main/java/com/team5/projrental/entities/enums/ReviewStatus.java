@@ -8,7 +8,7 @@ import lombok.Getter;
  */
 @Getter
 public enum ReviewStatus {
-    ACTIVATED(1), TMP(999), DELETED(999);
+    ACTIVATED(1), DELETED(-1);
 
     private int code;
     ReviewStatus(int code) {
