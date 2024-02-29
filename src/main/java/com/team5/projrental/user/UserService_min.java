@@ -57,6 +57,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -117,7 +118,11 @@ UserService_min {
 
         // 만약 존재할 경우 update, 존재하지 않을경우 save
         tossVerificationRepository.findByUserNameAndUserPhoneAndUserBirthday(userInfo.getUserName(), userInfo.getUserPhone(),
-                userInfo.getUserBirthday()).ifPresentOrElse(verificationInfo -> verificationInfo.setTxId(dto.getTxid()),
+                userInfo.getUserBirthday()).ifPresentOrElse(verificationInfo -> {
+                    verificationInfo.setTxId(dto.getTxid());
+                    // redis에 저장
+                    redisTemplate.opsForValue().set(verificationInfo.getId(), verificationInfo, Duration.ofSeconds(300L));
+                },
                 () -> {
                     VerificationInfo info = VerificationInfo.builder()
                             .id(dto.getId())
@@ -125,6 +130,8 @@ UserService_min {
                             .userPhone(userInfo.getUserPhone())
                             .build();
                     tossVerificationRepository.save(info);
+                    // redis에 저장
+                    redisTemplate.opsForValue().set(info.getId(), info, Duration.ofSeconds(300L));
                 });
 
         if (id != null && id > 0) {
@@ -145,12 +152,16 @@ UserService_min {
 
     @Transactional
     public CheckResponseVo checkVerification(Long id) {
+        VerificationInfo baseInfo = redisTemplate.opsForValue().get(id);
+        if (baseInfo == null) {
+            throw new ClientException(ILLEGAL_EX_MESSAGE, "본인인증 내역이 없습니다.");
+        }
         VerificationInfo info = tossVerificationRepository.findById(id).orElseThrow(() -> new ClientException(ILLEGAL_EX_MESSAGE, "본인인증 내역이 없습니다."));
 
         CheckResponseVo responseVo = tossVerificationRequester.check(info);
 
-        info.setUserName(responseVo.getName());
-        info.setUserBirthday(responseVo.getBirthday());
+        info.setUserName(baseInfo.getUserName());
+        info.setUserBirthday(baseInfo.getUserBirthday());
 
         return responseVo;
     }
