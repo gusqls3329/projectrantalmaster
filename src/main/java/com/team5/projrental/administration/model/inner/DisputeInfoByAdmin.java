@@ -19,6 +19,7 @@ public class DisputeInfoByAdmin {
     private DisputeReason category;
     private LocalDateTime createdAt;
     private DisputeStatus status;
+    private String detail;
     private Integer penalty;
     private String kind;
     private String pk;

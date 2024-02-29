@@ -227,6 +227,7 @@ public class AdministrationService {
                     .ireporter(dispute.getReporter().getId())
                     .status(dispute.getStatus())
                     .penalty((int) dispute.getPenalty())
+                    .detail(dispute.getDetails())
                     .kind(kind != null ? kind.name() : null)
                     .pk(pk)
                     .build();
