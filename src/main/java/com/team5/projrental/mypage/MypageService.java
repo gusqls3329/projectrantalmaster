@@ -124,6 +124,13 @@ public class MypageService {
                                             .reason(dispute.getReason().getNum())
                                             .build();
 
+                                    if (dispute instanceof DisputeUser) {
+                                        DisputeUser disputeUser = (DisputeUser) dispute;
+                                        vo.setNick(disputeUser.getUser().getNick());
+
+                                        vo.setKind(DisputeKind.USER.getNum());
+                                        vo.setPk(disputeUser.getUser().getId());
+                                    }
                                     if (dispute instanceof DisputeProduct) {
                                         DisputeProduct disputeProduct = (DisputeProduct) dispute;
                                         vo.setTilte(disputeProduct.getProduct().getTitle());
