@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardListSelVo {
-    //private int totalBoardCount;
+    private int totalBoardCount;
 
     private String nick;
 
