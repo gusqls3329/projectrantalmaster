@@ -24,8 +24,4 @@ public class VerificationInfo extends CreatedAt {
     private String userName;
     private String userPhone;
     private String userBirthday;
-
-
-
-
 }
