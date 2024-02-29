@@ -8,12 +8,14 @@ import java.util.Arrays;
 
 @Getter
 public enum DisputeStatus {
-    ACCEPTED(1), STAND_BY(0), DENIED(-1), CANCELED(-2);
+    ACCEPTED(1, "수리됨"), STAND_BY(0, "대기중"), DENIED(-1,  "반려됨"), CANCELED(-2, "취소됨");
 
+    private String word;
     private int num;
 
-    DisputeStatus(int num) {
+    DisputeStatus(int num, String word) {
         this.num = num;
+        this.word = word;
     }
 
     public static DisputeStatus getByNum(int num) {

@@ -16,9 +16,9 @@ public class DisputeInfoByAdmin {
     private Long ireporter;
     private String uid;
     private String nick;
-    private DisputeReason category;
+    private String category;
     private LocalDateTime createdAt;
-    private DisputeStatus status;
+    private String status;
     private String detail;
     private Integer penalty;
     private String kind;
