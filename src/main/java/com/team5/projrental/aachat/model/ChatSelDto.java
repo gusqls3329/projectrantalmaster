@@ -1,8 +1,7 @@
-package com.team5.projrental.chat.model;
+package com.team5.projrental.aachat.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 

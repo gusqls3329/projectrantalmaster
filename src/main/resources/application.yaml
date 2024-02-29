@@ -29,11 +29,25 @@ spring:
 #  config:
 #    activate:
 #      on-profile: default
-#  rabbitmq:
-#    host: localhost
-#    port: 5672
-#    username: guest
-#    password: guest
+  rabbitmq:
+    #host: localhost
+    host: 192.168.0.144
+    port: 5672
+    username: admin
+    password: admin
+    virtual-host: /
+    chat-queue-name: chat.queue
+    chat-exchange-name: chat.exchange
+    chat-routing-key: room.*
+    stomp-relay-port: 61613
+    stomp-application-destination-prefixes:
+      - /pub
+    stomp-end-point:
+      - /ws
+    stomp-allowed-origin-patterns:
+      - "*"
+    stomp-broker-relay:
+      - /exchange
 
 logging:
   level:

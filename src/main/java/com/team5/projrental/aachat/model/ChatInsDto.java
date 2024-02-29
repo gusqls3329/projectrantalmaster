@@ -1,4 +1,4 @@
-package com.team5.projrental.chat.model;
+package com.team5.projrental.aachat.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.team5.projrental.common.exception.ErrorMessage;

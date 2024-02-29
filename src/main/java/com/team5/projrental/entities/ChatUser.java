@@ -3,11 +3,13 @@ package com.team5.projrental.entities;
 import com.team5.projrental.entities.enums.ChatUserStatus;
 import com.team5.projrental.entities.inheritance.Users;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class ChatUser {
 

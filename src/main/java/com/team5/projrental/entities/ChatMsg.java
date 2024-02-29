@@ -12,6 +12,9 @@ import lombok.Setter;
 public class ChatMsg extends CreatedAt {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long ichatMsg;
+
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "ichat_user")
     private ChatUser chatUser;

@@ -40,6 +40,8 @@ public interface Const {
     int TOTAL_REVIEW_PER_PAGE = 10;
     int MAIN_PROD_PER_PAGE = 8;
     int ADMIN_PER_PAGE = 12;
+    int CHAT_LIST_PER_PAGE = 10;
+    int CHAT_MSG_PER_PAGE = 30;
 
     long SUCCESS = 1;
     int FAIL = 0;
