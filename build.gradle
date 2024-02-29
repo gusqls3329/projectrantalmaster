@@ -108,6 +108,7 @@ dependencies {
 
 	implementation 'com.github.shin285:KOMORAN:3.3.9'
 
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 }
 

@@ -121,6 +121,7 @@ public class MypageService {
                                             .penalty(dispute.getPenalty())
                                             .ireportedUser(dispute.getReportedUser().getId())
                                             .reportedUserNick(dispute.getReportedUser().getNick())
+                                            .reason(dispute.getReason().getNum())
                                             .build();
 
                                     if (dispute instanceof DisputeProduct) {
