@@ -165,8 +165,20 @@ UserService {
 
         VerificationInfo info = tossVerificationRepository.findById(dto.getIverificationInfo()).orElseThrow(() -> new ClientException(AUTHENTICATION_FAIL_EX_MESSAGE,
                 "본인인증 후 진행해 주세요"));
+        User userInfo = userRepository.findByVerificationInfo(info);
+        if (userInfo != null) {
+            throw new ClientException(AUTHENTICATION_FAIL_EX_MESSAGE, "이미 가입된 회원입니다.");
+        }
 
-
+        User userEx = userRepository.exFindByVerificationInfo(info);
+        byte a = 0;
+        if (userEx != null) {
+            if (userEx.getStatus() == UserStatus.DELETED) {
+                throw new ClientException(AUTHENTICATION_FAIL_EX_MESSAGE, "벌점누적으로 인해 탈퇴된 회원입니다.");
+            }
+            a = userEx.getPenalty();
+            userEx.setPenalty((byte) 0);
+        }
         Addrs addrs = axisGenerator.getAxis(dto.getAddr());
         CommonUtils.ifAnyNullThrow(BadAddressInfoException.class, BAD_ADDRESS_INFO_EX_MESSAGE,
                 addrs, addrs.getAddress_name(), addrs.getX(), addrs.getY());
@@ -207,6 +219,7 @@ UserService {
         user.setPhone(dto.getPhone());
         user.setAuth(Auth.USER);
         user.setVerificationInfo(info);
+        user.setPenalty(a);
         userRepository.save(user);
 
         return (int) Const.SUCCESS;
@@ -322,16 +335,18 @@ UserService {
     public FindUidVo getFindUid(FindUidDto dto) {
         VerificationInfo info = tossVerificationRepository.findById(dto.getId()).orElseThrow(() -> new ClientException(AUTHENTICATION_FAIL_EX_MESSAGE,
                 "본인인증 후 진행해 주세요"));
-
-        if (info != null) {
-            //String phone = info.getUserPhone();
-            User user = userRepository.findByVerificationInfo(info);
-            log.info("{}", user);
-            return FindUidVo.builder().uid(user.getUid()).build();
-        } else {
-            // 본인인증 내역이 없으면 예외 발생
-            throw new ClientException(NO_SUCH_ID_EX_MESSAGE);
+        if (info == null) {
+            throw new ClientException(AUTHENTICATION_FAIL_EX_MESSAGE, "본인인증 내역이 없습니다.");
         }
+        User users = userRepository.findByVerificationInfo(info);
+        if (users == null) {
+            throw new ClientException(BAD_ID_EX_MESSAGE, "회원이 존재하지 않습니다.");
+        }
+        return FindUidVo.builder()
+                .uid(users.getUid())
+                .auth(users.getAuth().getIauth())
+                .iuser(users.getId().intValue())
+                .build();
     }
 
     @Transactional
@@ -453,38 +468,38 @@ UserService {
         List<DelSelVo> vo = mapper.selStatusPay(loginUserPk);
         List<DelSelProcVo> procVo = mapper.selStatusPro(loginUserPk);
         Review review = reviewRepository.findByUser(user);
-        if(review != null) {
+        if (review != null) {
             DelRivewDto reviewDto = new DelRivewDto();
             reviewDto.setIreview(review.getId().intValue());
             reviewDto.setIreview(review.getId().intValue());
             paymentReviewService.delReview(reviewDto);
         }
         Board board = boardRepository.findByUser(user);
-        if(board != null) {
+        if (board != null) {
             BoardDelDto delDto = new BoardDelDto();
             delDto.setIboard(board.getId().intValue());
             boardService.delBoard(delDto.getIboard());
         }
         for (DelSelVo list : vo) {
-            if(list == null) {
+            if (list == null) {
                 Optional<Product> product = productRepository.findById(list.getIproduct());
                 product.get().setStatus(ProductStatus.DELETED);
             }
-            if(list.getStatus()!= null && list.getStatus().equals(PaymentInfoStatus.ACTIVATED.name())){
+            if (list.getStatus() != null && list.getStatus().equals(PaymentInfoStatus.ACTIVATED.name())) {
                 throw new IllegalException(CAN_NOT_DEL_USER_EX_MESSAGE);
             }
 
-                Optional<Product> product = productRepository.findById(list.getIproduct());
-                product.get().setStatus(ProductStatus.DELETED);
+            Optional<Product> product = productRepository.findById(list.getIproduct());
+            product.get().setStatus(ProductStatus.DELETED);
         }
 
         for (DelSelProcVo list : procVo) {
-            if(list == null) {
+            if (list == null) {
                 Optional<Payment> payment = paymentRepository.findById(list.getIpayment());
                 PaymentInfo paymentInfo = paymentInfoRepository.findByPaymentAndUser(payment.get(), user);
                 paymentInfo.setStatus(PaymentInfoStatus.DELETED);
             }
-            if(list != null) {
+            if (list != null) {
                 if (list.getStatus() != null && list.getStatus().equals(PaymentInfoStatus.ACTIVATED.name())) {
                     throw new IllegalException(CAN_NOT_DEL_USER_EX_MESSAGE);
                 }
@@ -493,7 +508,7 @@ UserService {
                 paymentInfo.setStatus(PaymentInfoStatus.DELETED);
             }
         }
-        return (int)Const.SUCCESS;
+        return (int) Const.SUCCESS;
 
     }
 
@@ -566,7 +581,7 @@ UserService {
             vo.setPhone(null);
             vo.setEmail(null);
         }
-        if (vo.getAuth().equals(Auth.USER.name())){
+        if (vo.getAuth().equals(Auth.USER.name())) {
             vo.setIauth(Auth.USER.getIauth());
         }
         return vo;
