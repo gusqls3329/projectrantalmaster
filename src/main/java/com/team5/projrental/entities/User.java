@@ -18,7 +18,7 @@ public class User extends Users {
     @Embedded
     private BaseUser baseUser;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "iverification_info")
     private VerificationInfo verificationInfo;
 
