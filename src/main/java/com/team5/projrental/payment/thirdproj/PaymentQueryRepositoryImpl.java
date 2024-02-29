@@ -1,7 +1,9 @@
 package com.team5.projrental.payment.thirdproj;
 
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.team5.projrental.entities.Payment;
 import com.team5.projrental.entities.User;
@@ -11,6 +13,7 @@ import com.team5.projrental.payment.review.model.SelRatVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.team5.projrental.entities.QPayment.payment;
@@ -47,6 +50,7 @@ public class PaymentQueryRepositoryImpl implements PaymentQueryRepository {
 
         return user;*/
     }
+
     /*
      SELECT COUNT(R.ireview) as countIre, U.rating
         from product P
@@ -62,8 +66,8 @@ public class PaymentQueryRepositoryImpl implements PaymentQueryRepository {
     @Override
     public SelRatVo selRat(Long iuser) {
         SelRatVo vo = query.select(Projections.fields(SelRatVo.class,
-                review.id.count().as("countIre"),
-                baseUser.rating.as("rating")))
+                        review.id.count().as("countIre"),
+                        baseUser.rating.as("rating")))
                 .from(product)
                 .join(payment).on(product.id.eq(payment.product.id))
                 .join(review).on(payment.id.eq(review.payment.id))
@@ -83,6 +87,29 @@ public class PaymentQueryRepositoryImpl implements PaymentQueryRepository {
 
 
             return vo;*/
+
+    }
+
+    @Override
+    public boolean validateRentalDate(Long iproduct, LocalDate rentalStartDate, LocalDate rentalEndDate) {
+
+
+        Long result = query.select(payment.count())
+                .from(payment)
+                .join(payment.product)
+                .where(payment.product.id.eq(iproduct)
+                        .and(Expressions.stringTemplate("DATE_FORMAT({0}, {1})",
+                                        payment.rentalDates.rentalStartDate, ConstantImpl.create("%Y-%m-%d"))
+                                .goe(rentalStartDate.toString()).and(Expressions.stringTemplate("DATE_FORMAT({0}, {1})",
+                                        payment.rentalDates.rentalStartDate, ConstantImpl.create("%Y-%m-%d")).loe(rentalEndDate.toString())))
+                        .and(Expressions.stringTemplate("DATE_FORMAT({0}, {1})",
+                                        payment.rentalDates.rentalEndDate, ConstantImpl.create("%Y-%m-%d"))
+                                .goe(rentalStartDate.toString()).and(Expressions.stringTemplate("DATE_FORMAT({0}, {1})",
+                                        payment.rentalDates.rentalEndDate, ConstantImpl.create("%Y-%m-%d")).loe(rentalEndDate.toString()))))
+                .fetchOne();
+
+        return result != null && result > 0;
+
 
     }
 

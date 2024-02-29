@@ -33,7 +33,7 @@ public class RefundQueryRepositoryImpl implements RefundQueryRepository {
     @Override
     public Long totalCountByOptions(Integer status) {
         return query.select(refund.count())
-                .from()
+                .from(refund)
                 .where(whereFindAllLimitPage(status))
                 .fetchOne();
     }
