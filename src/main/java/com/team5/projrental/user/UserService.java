@@ -166,6 +166,7 @@ UserService {
         VerificationInfo info = tossVerificationRepository.findById(dto.getIverificationInfo()).orElseThrow(() -> new ClientException(AUTHENTICATION_FAIL_EX_MESSAGE,
                 "본인인증 후 진행해 주세요"));
 
+
         Addrs addrs = axisGenerator.getAxis(dto.getAddr());
         CommonUtils.ifAnyNullThrow(BadAddressInfoException.class, BAD_ADDRESS_INFO_EX_MESSAGE,
                 addrs, addrs.getAddress_name(), addrs.getX(), addrs.getY());
