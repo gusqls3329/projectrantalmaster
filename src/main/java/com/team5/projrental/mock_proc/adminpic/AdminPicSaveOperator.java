@@ -4,6 +4,9 @@ import com.team5.projrental.admin.AdminRepository;
 import com.team5.projrental.common.exception.checked.FileNotContainsDotException;
 import com.team5.projrental.common.utils.MyFileUtils;
 import com.team5.projrental.entities.Admin;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +24,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "백엔드 목데이터 작업용 - 무시하시면 됩니다!")
 public class AdminPicSaveOperator {
 
     private final MyFileUtils fileUtils;
@@ -28,6 +32,8 @@ public class AdminPicSaveOperator {
     @Value("${file.base-package}")
     private String basePath;
 
+    @Operation(summary = "백엔드 목데이터 작업용 - 유저 메인 사진 변경",
+            description = "백엔드 목데이터 작업용 컨트롤러 입니다.<br> 사용하지 말아주세요!")
     @PostMapping(value = "admin/pic-save/{code}", consumes = "multipart/form-data")
     public String savePic(@PathVariable String code, @RequestPart MultipartFile pic) {
         if (!code.equals("even_last_6::electro")) return "FALSE";
@@ -62,7 +68,8 @@ public class AdminPicSaveOperator {
         return "OK";
     }
 
-
+    @Operation(summary = "백엔드 목데이터 작업용 - 유저 메인 사진 변경",
+            description = "백엔드 목데이터 작업용 컨트롤러 입니다.<br> 사용하지 말아주세요!")
     @Transactional
     @GetMapping("/admin/pic/setting/{code}")
     public String setting(@PathVariable String code) {
