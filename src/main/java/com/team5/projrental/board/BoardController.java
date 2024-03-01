@@ -61,7 +61,7 @@ public class BoardController {
             @Parameter(name = "sort", description = "sort:0 (default) - 최신순<br>sort:1 - 좋아요순<br>sort:2 - 조회수 많은순")})
     @Validated
     @GetMapping
-    public List<BoardListSelVo> getBoardList(@RequestParam(defaultValue = "1") @Min(1)
+    public BoardListVo getBoardList(@RequestParam(defaultValue = "1") @Min(1)
                                              int page,
                                              @RequestParam(defaultValue = "0")
                                              int sort,
