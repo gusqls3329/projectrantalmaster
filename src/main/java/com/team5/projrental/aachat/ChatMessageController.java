@@ -8,6 +8,10 @@ import com.team5.projrental.common.security.model.SecurityPrincipal;
 import com.team5.projrental.common.security.oauth2.MyUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.ExchangeTypes;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -51,7 +55,12 @@ public class ChatMessageController {
         service.saveMsg(dto);
     }
 
-    @RabbitListener(queues = "${spring.rabbitmq.chat-queue-name}")
+//    @RabbitListener(queues = "${spring.rabbitmq.chat-queue-name}")
+    @RabbitListener(bindings = @QueueBinding(
+            exchange = @Exchange(name = "${spring.rabbitmq.chat-exchange-name}", type = ExchangeTypes.TOPIC),
+            value = @Queue(name = "${spring.rabbitmq.chat-queue-name}"),
+            key = "room.*"
+    ))
     public void receive(ChatMsgInsDto dto) {
         System.out.println("received : " + dto.getMessage());
     }
