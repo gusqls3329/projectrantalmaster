@@ -67,6 +67,7 @@ public class AdministrationService {
                 .totalPrice(findPaymentInfo.getPayment().getTotalPrice())
                 .deposit(findPaymentInfo.getPayment().getDeposit())
                 .createdAt(findPaymentInfo.getPayment().getCreatedAt())
+                .paymentStatus(findPaymentInfo.getStatus().getNum())
 
                 .iuser(findPaymentInfo.getUser().getId())
                 .myPaymentCode(findPaymentInfo.getCode())

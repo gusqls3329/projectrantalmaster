@@ -38,7 +38,9 @@ public class PaymentInsDto {
 //    @Range(min = 50, max = 100, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
 //    private Integer depositPer;
 
+    @Min(value = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
     private Long paymentDetailId;
+    @Min(value = 100, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
     private Integer pricePerDate;
     @JsonIgnore
     private Integer totalPrice;

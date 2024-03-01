@@ -3,9 +3,12 @@ package com.team5.projrental.administration;
 import com.team5.projrental.administration.model.*;
 import com.team5.projrental.common.Const;
 import com.team5.projrental.common.exception.ErrorCode;
+import com.team5.projrental.common.exception.ErrorMessage;
 import com.team5.projrental.common.exception.thrid.ClientException;
 import com.team5.projrental.common.model.ResVo;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,32 +28,37 @@ public class AdministrationController {
     @Operation(summary = "유저 특정 결제정보 조회",
             description = "<strong>유저 특정 결제정보 조회</strong><br>" +
                           "[ [v] : 필수값 ]" +
-                          "[v] ipayment: 제품의 PK<br>" +
+                          "[v] code: 제품의 코드<br>" +
                           "<br>" +
                           "성공시: <br>" +
                           "ipayment: 결제의 PK<br>" +
                           "iproduct: 제품의 PK<br>" +
                           "title: 제품의 제목<br>" +
-                          "pic: 제품의 대표사진<br>" +
-                          "price: 전체 대여 기간동안 필요한 가격<br>" +
+                          "prodMainPic: 제품의 대표사진<br>" +
                           "rentalStartDate: 대여 시작 일<br>" +
                           "rentalEndDate: 제품 반납 일<br>" +
                           "rentalDuration: 제품 대여 기간<br>" +
+                          "totalPrice: 결제 전체 가격 (보증금 제외)" +
                           "deposit: 보증금<br>" +
-                          "payment: 결제 수단 -> credit-card, kakao-pay<br>" +
-                          "istatus: 제품 상태<br>" +
-                          "code: 제품 고유 코드<br>" +
-                          "role: 로그인한 유저가 판매자인지 구매자인지 여부 (1: 판매자, 2: 구매자) - 리뷰 분기용" +
+                          "method: 결제 수단 -> credit-card, kakao-pay<br>" +
+                          "paymentStatus: 결제 상태 (PaymentInfoStatus) <br>" +
+                          "myPaymentCode: 해당 유저의 결제 고유 코드<br>" +
                           "createdAt: 결제 일자<br>" +
-                          "iuser: 거래 상대 유저의 PK<br>" +
+                          "iuser: 유저의 PK<br>" +
                           "nick: 거래 상대 유저의 닉네임<br>" +
-                          "phone: 거래 상대 유저의 핸드폰 번호<br>" +
-                          "userPic: 거래 상대 유저의 프로필 사진<br>" +
+                          "phone: 유저의 핸드폰 번호<br>" +
+                          "userStoredPic: 유저의 사진<br>" +
+                          "userRating: 유저의 별점<br>" +
+                          "status: 유저의 상태<br>" +
                           "<br>" +
                           "실패시: <br>" +
                           "message: 에러 발생 사유<br>errorCode: 에러 코드")
+    @Validated
     @GetMapping("payment")
-    public PaymentByAdminVo getPayment(@RequestParam String code) {
+    public PaymentByAdminVo getPayment(@RequestParam
+                                       @NotBlank(message = ErrorMessage.CAN_NOT_BLANK_EX_MESSAGE)
+                                       @Length(min = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
+                                       String code) {
 
         return administrationService.getPayment(code);
 
@@ -58,8 +66,14 @@ public class AdministrationController {
 
     @Operation(summary = "자유게시글 강제 삭제",
             description = "<strong>신고당한 자유게시글이나 잘못된 게시글 강제 삭제</strong><br>")
+    @Validated
     @DeleteMapping("board/{iboard}")
-    public ResVo delBoard(@PathVariable Long iboard, @RequestParam Integer reason) {
+    public ResVo delBoard(@PathVariable
+                          @Min(value = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
+                          Long iboard,
+                          @RequestParam
+                          @Range(min = -2, max = 6, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
+                          Integer reason) {
         return administrationService.delBoard(iboard, reason);
     }
 
@@ -76,12 +90,15 @@ public class AdministrationController {
                     """)
     @GetMapping("user")
     public UserByAdminVo getAllUsers(@RequestParam
+                                     @Min(value = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
                                      Integer page,
                                      @RequestParam(required = false)
+                                     @Range(min = 1, max = 3, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
                                      Integer type,
                                      @RequestParam(required = false)
                                      String search,
                                      @RequestParam(required = false)
+                                     @Range(min = 1, max = 3, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
                                      Integer status) {
         if (search != null && search.isEmpty()) {
             throw new ClientException(ErrorCode.CAN_NOT_BLANK_EX_MESSAGE,
@@ -94,7 +111,12 @@ public class AdministrationController {
     @Operation(summary = "회원 강제 탈퇴",
             description = "(자동화는 별도로 존재) 운영자 재량으로 유저 탈퇴")
     @DeleteMapping("user/{iuser}")
-    public ResVo delUser(@PathVariable Long iuser, @RequestParam Integer reason) {
+    public ResVo delUser(@PathVariable
+                         @Min(value = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
+                         Long iuser,
+                         @RequestParam
+                         @Range(min = -2, max = 6, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
+                         Integer reason) {
         return administrationService.delUser(iuser, reason);
     }
 
@@ -108,15 +130,16 @@ public class AdministrationController {
                           "    status: 상태 -> 1: 수리, 0: 미처리, -1: 반려")
     @Validated
     @GetMapping("/dispute")
-    public DisputeByAdminVo getAllDispute(@RequestParam Integer page,
-                                          @NotNull
-                                          @Range(min = -1, max = 1)
+    public DisputeByAdminVo getAllDispute(@RequestParam
+                                          @Min(value = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
+                                          Integer page,
+                                          @NotNull(message = ErrorMessage.CAN_NOT_BLANK_EX_MESSAGE)
+                                          @Range(min = -1, max = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
                                           @RequestParam Integer div,
-
                                           @RequestParam(required = false) String search,
-                                          @Range(min = -2, max = 6)
+                                          @Range(min = -2, max = 6, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
                                           @RequestParam(required = false) Integer category,
-                                          @Range(min = -1, max = 1)
+                                          @Range(min = -1, max = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
                                           @RequestParam(required = false) Integer status) {
         if (div == 0) throw new ClientException(ErrorCode.BAD_DIV_INFO_EX_MESSAGE,
                 "잘못된 div 값(1 또는 -1)");
@@ -138,8 +161,13 @@ public class AdministrationController {
                     type: 수리: 1, 반려: -1
                     """)
     @PostMapping("dispute/{idispute}")
-    public ResVo postDispute(@PathVariable Long idispute,
+    public ResVo postDispute(@PathVariable
+                             @Min(value = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
+                             Long idispute,
+                             @Range(min = -1, max = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
                              Integer type) {
+        if (type == 0) throw new ClientException(ErrorCode.ILLEGAL_RANGE_EX_MESSAGE,
+                "잘못된 type 값(1 또는 -1)");
         return administrationService.postDispute(idispute, type);
     }
 
@@ -151,12 +179,14 @@ public class AdministrationController {
                           "    sort: 제공하지 않으면 최신순, 1: 조회수 많은순 내림차순, (조회수 오름차순도 필요하면 말해주세요)")
     @Validated
     @GetMapping("product")
-    public ProductByAdminVo getAllProducts(@RequestParam Integer page,
-                                           @Range(min = 1, max = 2)
+    public ProductByAdminVo getAllProducts(@RequestParam
+                                           @Min(value = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
+                                           Integer page,
+                                           @Range(min = 1, max = 2, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
                                            @RequestParam(required = false) Integer type,
                                            @RequestParam(required = false) String search,
-                                           @Range(min = 1, max = 1)
-                                               @RequestParam(required = false) Integer sort) {
+                                           @Range(min = 1, max = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
+                                           @RequestParam(required = false) Integer sort) {
         if (search != null && search.isEmpty()) {
             throw new ClientException(ErrorCode.CAN_NOT_BLANK_EX_MESSAGE,
                     "search 는 빈 값일수 없습니다.");
@@ -168,7 +198,12 @@ public class AdministrationController {
     @Operation(summary = "상품 강제 숨김 처리",
             description = "운영자가 해당 상품을 강제 삭제(숨김처리)")
     @DeleteMapping("product/{iproduct}")
-    public ResVo patchProduct(@PathVariable Long iproduct, @RequestParam Integer reason) {
+    public ResVo patchProduct(@PathVariable
+                              @Min(value = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
+                              Long iproduct,
+                              @RequestParam
+                              @Range(min = -2, max = 6, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
+                              Integer reason) {
         return administrationService.patchProduct(iproduct, reason);
     }
 
@@ -180,12 +215,14 @@ public class AdministrationController {
                           "    sort: 제공하지 않으면 최신순, 1: 조회수 많은순 내림차순, (조회수 오름차순도 필요하면 말해주세요)")
     @Validated
     @GetMapping("board")
-    public BoardByAdminVo getAllBoards(@RequestParam Integer page,
-                                       @Range(min = 1, max = 2)
+    public BoardByAdminVo getAllBoards(@RequestParam
+                                       @Min(value = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
+                                       Integer page,
+                                       @Range(min = 1, max = 2, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
                                        @RequestParam(required = false) Integer type,
-                                       @Length(min = 2)
+                                       @Length(min = 2, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
                                        @RequestParam(required = false) String search,
-                                       @Range(min = 1, max = 1)
+                                       @Range(min = 1, max = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
                                        @RequestParam(required = false) Integer sort) {
         if (search != null && search.isEmpty()) {
             throw new ClientException(ErrorCode.CAN_NOT_BLANK_EX_MESSAGE,
@@ -201,8 +238,10 @@ public class AdministrationController {
                           "    status: 특정 상태로 조회(1: 처리됨, 0: 대기중, -1: 반려됨)")
     @Validated
     @GetMapping("refund")
-    public RefundByAdminVo getAllRefunds(@RequestParam Integer page,
-                                         @Range(min = -1, max = 1)
+    public RefundByAdminVo getAllRefunds(@RequestParam
+                                         @Min(value = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
+                                         Integer page,
+                                         @Range(min = -1, max = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
                                          @RequestParam(required = false) Integer status) {
         return administrationService.getAllRefunds(page, status);
     }
@@ -214,8 +253,10 @@ public class AdministrationController {
                           "성공시:<br>" +
                           "result: 환불 된 금액 (거절시 -1)")
     @DeleteMapping("refund/{irefund}")
-    public ResVo patchRefund(@PathVariable Long irefund,
-                             @Range(min = -1, max = 1)
+    public ResVo patchRefund(@PathVariable
+                             @Min(value = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
+                             Long irefund,
+                             @Range(min = -1, max = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
                              @RequestParam Integer div) {
         if (div == 0) throw new ClientException(ErrorCode.BAD_DIV_INFO_EX_MESSAGE,
                 "잘못된 div 값(1 또는 -1)");
@@ -228,11 +269,10 @@ public class AdministrationController {
                           "[v] page: 페이징 <br>")
     @Validated
     @GetMapping("chat")
-    public ChatByAdminVo getAllChats(@RequestParam Integer page) {
+    public ChatByAdminVo getAllChats(@RequestParam @Min(value = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
+                                     Integer page) {
         return administrationService.getAllChats(page);
     }
-
-
 
 
 }
