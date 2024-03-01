@@ -32,7 +32,7 @@ public class AdminPicSaveOperator {
     @Value("${file.base-package}")
     private String basePath;
 
-    @Operation(summary = "백엔드 목데이터 작업용 - 유저 메인 사진 변경",
+    @Operation(summary = "백엔드 목데이터 작업용 - 운영자 사진 저장",
             description = "백엔드 목데이터 작업용 컨트롤러 입니다.<br> 사용하지 말아주세요!<br><br><br>" +
                           "운영자 사진 저장 - 단일 파일만 저장 가능, 기존에 존재할 경우 기존 파일 삭제하고 새로 저장함. <br>" +
                           "파일명은 logo.jpg 로 저장됨. <br>")
@@ -71,9 +71,9 @@ public class AdminPicSaveOperator {
         return "OK";
     }
 
-    @Operation(summary = "백엔드 목데이터 작업용 - 유저 메인 사진 변경",
+    @Operation(summary = "백엔드 목데이터 작업용 - 운영자 계정에 사진 설정",
             description = "백엔드 목데이터 작업용 컨트롤러 입니다.<br> 사용하지 말아주세요!<br><br><br>" +
-                          "운영자 사진 설정 - 모든 운영자의 사진을 모두 /admin/0/logo.jpg 로 설정함.")
+                          "운영자 계정에 사진 설정 - 모든 운영자의 사진을 모두 /admin/0/logo.jpg 로 설정함.")
     @Transactional
     @GetMapping("/admin/pic/setting/{code}")
     public String setting(@PathVariable String code) {
