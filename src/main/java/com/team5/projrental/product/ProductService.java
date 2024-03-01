@@ -229,6 +229,11 @@ public class ProductService implements RefProductService {
                 .istatus(findProduct.getStatus().getNum())
                 .prodLike(findProduct.getProdLikes().size())
                 .isLiked(isLiked)
+                .hashTags(findProduct.getHashTags().stream().map(hash -> HashTags.builder()
+                        .id(hash.getId().intValue())
+                        .tag(hash.getTag())
+                        .build()).toList())
+
                 .categories(Categories.builder()
                         .mainCategory(findProduct.getMainCategory().getNum())
                         .subCategory(findProduct.getSubCategory().getNum())
@@ -276,7 +281,7 @@ public class ProductService implements RefProductService {
 
         // 해시태그 개수 검증
         CommonUtils.checkSizeIfOverLimitNumThrow(ClientException.class,
-                ErrorCode.ILLEGAL_EX_MESSAGE, "해시태그는 5개까지 가능합니다.", dto.getHashTags().stream(), Const.HASH_TAG_MAX_SIZE);
+                ErrorCode.ILLEGAL_EX_MESSAGE, "해시태그는 10개까지 가능합니다.", dto.getHashTags().stream(), Const.HASH_TAG_MAX_SIZE);
 
         // 카테고리 검증 - 예외 코드, 메시지 를 위해 직접 검증 (!@Validated)
         CommonUtils.ifCategoryNotContainsThrow(dto.getIcategory());
@@ -385,24 +390,26 @@ public class ProductService implements RefProductService {
             CommonUtils.ifCategoryNotContainsThrow(dto.getIcategory());
         }
         CommonUtils.ifAllNullThrow(BadInformationException.class, ALL_INFO_NOT_EXISTS_EX_MESSAGE,
+                dto.getHashTags().stream(),
                 dto.getIcategory(), dto.getAddr(),
                 dto.getRestAddr(), dto.getTitle(),
-                dto.getContents(), dto.getPrice(),
-                dto.getRentalPrice(), dto.getDeposit(),
-                dto.getBuyDate(), dto.getRentalStartDate(),
-                dto.getRentalEndDate(), dto.getDelPics(),
-                dto.getInventory(), mainPic, pics);
+                dto.getContents(), dto.getRentalPrice(),
+                dto.getRentalStartDate(), dto.getRentalEndDate(),
+                dto.getDelPics(),
+                mainPic, pics);
 
 
         CommonUtils.ifContainsBadWordThrow(BadWordException.class, BAD_WORD_EX_MESSAGE,
+                dto.getHashTags(),
                 dto.getTitle() == null ? "" : dto.getTitle(),
                 dto.getContents() == null ? "" : dto.getContents(),
                 dto.getRestAddr() == null ? "" : dto.getRestAddr());
 
+
         // 작업을 위한 Product 엔티티 가져오기
         Product findProduct =
                 productRepository.findByIdFetchUser(dto.getIproduct()).orElseThrow(() -> new ClientException(NO_SUCH_PRODUCT_EX_MESSAGE,
-                "잘못된 제품 정보 (iproduct)"));
+                        "잘못된 제품 정보 (iproduct)"));
         Long loginUserPk = getLoginUserPk();
         if (!Objects.equals(findProduct.getUser().getId(), loginUserPk)) {
             throw new ClientException(ErrorCode.NO_SUCH_USER_EX_MESSAGE, "잘못된 유저정보 (iuser)");
@@ -460,7 +467,23 @@ public class ProductService implements RefProductService {
                     .build());
         }
 
+        // 해시태그 개수 검증
+        if ((dto.getHashTags().size() - dto.getDelHashTags().size()) + findProduct.getHashTags().size() > 10) {
+            throw new ClientException(ErrorCode.ILLEGAL_EX_MESSAGE, "해시태그는 10개까지 가능합니다.");
+        }
+
+
         // 문제 없음.
+
+        // 해시태그 작업(삭제)
+        findProduct.getHashTags().stream().filter(hash -> dto.getHashTags().contains(hash.getTag()))
+                .forEach(findProduct.getHashTags()::remove);
+
+        // 해시태그 작업(추가)
+        findProduct.getHashTags().addAll(dto.getHashTags().stream().map(hash -> HashTag.builder()
+                .tag(hash)
+                .product(findProduct)
+                .build()).toList());
 
         // 삭제사진 필요시 삭제
         // 사진 작업은 최종적으로 되어야함 (오류 발생 가능성을 생각해야함)

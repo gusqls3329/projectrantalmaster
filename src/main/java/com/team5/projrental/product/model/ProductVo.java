@@ -3,7 +3,6 @@ package com.team5.projrental.product.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.team5.projrental.product.model.proc.GetProductResultDto;
 import com.team5.projrental.product.model.proc.PicsInfoVo;
 import com.team5.projrental.product.model.review.ReviewResultVo;
 import lombok.*;
@@ -35,12 +34,7 @@ public class ProductVo extends ProductListVo{
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<LocalDate> disabledDates;
 
-    public ProductVo(GetProductResultDto dto) {
-        super(dto);
 
-        this.contents = dto.getContents();
-        this.buyDate = dto.getBuyDate();
-        this.x = dto.getX();
-        this.y = dto.getY();
-    }
+
+
 }

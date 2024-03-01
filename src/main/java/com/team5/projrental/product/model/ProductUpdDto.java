@@ -37,38 +37,31 @@ public class ProductUpdDto {
     private String title;
     @Length(min = 2, max = 2000)
     private String contents;
-    //    @JsonIgnore
-//    private MultipartFile mainPic;
-//    @JsonIgnore
-//    private List<MultipartFile> pics;
-    @JsonIgnore // todo 삭제
-    @Range(min = 100, max = Integer.MAX_VALUE, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
-    private Integer price;
+
+
     @Range(min = 100, max = Integer.MAX_VALUE, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
     private Integer rentalPrice;
-    @JsonIgnore // todo 삭제
-    @Range(min = 50, max = 100, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
-    private Integer depositPer;
-    @JsonIgnore // todo 삭제
-    @Min(1)
-    private Integer inventory;
-    @JsonIgnore // todo 삭제
-    private LocalDate buyDate;
+
+
+
     private LocalDate rentalStartDate;
     private LocalDate rentalEndDate;
 
     // add
     @Size(max = 9, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
-    List<Long> delPics;
+    private List<Long> delPics;
 
 
-    @JsonIgnore
-    private String storedMainPic;
-    @JsonIgnore
-    private Integer deposit;
     @JsonIgnore
     private Double x;
     @JsonIgnore
     private Double y;
+
+    @Size(max = 10, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
+    private List<String> hashTags;
+
+    @Size(max = 10, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
+    private List<Integer> delHashTags;
+
 }
 

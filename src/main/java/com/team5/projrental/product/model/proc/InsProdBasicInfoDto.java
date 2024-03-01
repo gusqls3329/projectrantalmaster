@@ -56,21 +56,5 @@ public class InsProdBasicInfoDto {
         this.inventory = inventory;
     }
 
-    public InsProdBasicInfoDto(ProductInsDto dto, String addr, Double x, Double y, Integer inventory) {
-        this.iuser = dto.getIuser();
-        this.title = dto.getTitle();
-        this.contents = dto.getContents();
-        this.addr = addr;
-        this.restAddr = dto.getRestAddr();
-        this.price = dto.getPrice();
-        this.rentalPrice = dto.getRentalPrice();
-        this.deposit = CommonUtils.getDepositFromPer(dto.getPrice(), dto.getDepositPer());
-        this.buyDate = dto.getBuyDate();
-        this.rentalStartDate = dto.getRentalStartDate();
-        this.rentalEndDate = dto.getRentalEndDate();
-        this.icategory = dto.getIcategory();
-        this.x = x;
-        this.y = y;
-        this.inventory = inventory;
-    }
+
 }

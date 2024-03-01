@@ -43,14 +43,8 @@ public class ProductInsDto {
     @NotNull(message = ErrorMessage.CAN_NOT_BLANK_EX_MESSAGE)
     @Range(min = 100, max = Integer.MAX_VALUE, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
     private Integer rentalPrice;
-    @JsonIgnore // todo 삭제
-//    @NotNull(message = ErrorMessage.CAN_NOT_BLANK_EX_MESSAGE)
-//    @Range(min = 50, max = 100, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
-    private Integer depositPer;
-    @JsonIgnore // todo 삭제
-//    @NotNull(message = ErrorMessage.CAN_NOT_BLANK_EX_MESSAGE)
-//    @PastOrPresent(message = ErrorMessage.ILLEGAL_DATE_EX_MESSAGE)
-    private LocalDate buyDate;
+
+
     @NotNull(message = ErrorMessage.CAN_NOT_BLANK_EX_MESSAGE)
     @FutureOrPresent(message = ErrorMessage.ILLEGAL_DATE_EX_MESSAGE)
     private LocalDate rentalStartDate;
@@ -59,10 +53,7 @@ public class ProductInsDto {
     private LocalDate rentalEndDate;
     @NotNull(message = ErrorMessage.CAN_NOT_BLANK_EX_MESSAGE)
     private Categories icategory;
-    @JsonIgnore // todo 삭제
-//    @NotNull(message = ErrorMessage.CAN_NOT_BLANK_EX_MESSAGE)
-//    @Min(1)
-    private Integer inventory;
+
 
     private List<String> hashTags;
 }

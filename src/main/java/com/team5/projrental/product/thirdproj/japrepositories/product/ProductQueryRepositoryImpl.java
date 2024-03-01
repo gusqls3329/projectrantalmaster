@@ -14,6 +14,7 @@ import com.team5.projrental.entities.ids.ProdLikeIds;
 import com.team5.projrental.product.like.ProductLikeMapper;
 import com.team5.projrental.product.model.CanNotRentalDateVo;
 import com.team5.projrental.product.model.Categories;
+import com.team5.projrental.product.model.HashTags;
 import com.team5.projrental.product.model.ProductListVo;
 import com.team5.projrental.product.model.jpa.ActivatedStock;
 import com.team5.projrental.product.thirdproj.japrepositories.product.like.ProductLikeRepository;
@@ -140,7 +141,10 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
                             .inventory(stockRepository.countById(productEntity.getId()))
                             .hashTags(findHashTags.stream()
                                     .filter(hash -> Objects.equals(hash.getProduct().getId(), productEntity.getId()))
-                                    .map(HashTag::getTag).collect(Collectors.toList()))
+                                    .map(hash -> HashTags.builder()
+                                            .id(hash.getId().intValue())
+                                            .tag(hash.getTag())
+                                            .build()).collect(Collectors.toList()))
                             .isLiked(prodLikeCount == 1 ? 1 : 0)
                             .view(productEntity.getView())
                             .categories(Categories.builder()

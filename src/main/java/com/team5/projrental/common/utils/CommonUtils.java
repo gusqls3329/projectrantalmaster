@@ -55,6 +55,16 @@ public abstract class CommonUtils {
     public static void ifContainsBadWordThrow(Class<? extends RuntimeException> ex, ErrorCode err, String... words) {
         if (ifContainsBadWordTrue(words)) thrown(ex, err);
     }
+
+    public static void ifContainsBadWordThrow(Class<? extends RuntimeException> ex, ErrorCode err,
+                                              List<String> collectionWord, String... words) {
+        if (ifContainsBadWordTrue(words)) thrown(ex, err);
+        for (String word : collectionWord) {
+            if (ifContainsBadWordTrue(word)) thrown(ex, err);
+        }
+    }
+
+
     public static void ifContainsBadWordThrow(Class<? extends RuntimeException> ex, ErrorCode err, List<String> words) {
         for (String word : words) {
             ifContainsBadWordThrow(ex, err, word);
@@ -244,6 +254,16 @@ public abstract class CommonUtils {
     }
 
     public static void ifAllNullThrow(Class<? extends RuntimeException> ex, ErrorCode err, Object... objs) {
+        for (Object obj : objs) {
+            if (obj != null) {
+                return;
+            }
+        }
+        thrown(ex, err);
+    }
+
+    public static <T> void ifAllNullThrow(Class<? extends RuntimeException> ex, ErrorCode err, Stream<T> stream, Object... objs) {
+        if (stream.findAny().isPresent()) return;
         for (Object obj : objs) {
             if (obj != null) {
                 return;

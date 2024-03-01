@@ -48,7 +48,7 @@ public class ProductListVo {
     // enum 객체 따로존재
     private Categories categories;
 
-    private List<String> hashTags;
+    private List<HashTags> hashTags;
 
 
     public ProductListVo(GetProductListResultDto dto) {
