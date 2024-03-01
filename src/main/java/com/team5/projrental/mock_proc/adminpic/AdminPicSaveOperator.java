@@ -33,7 +33,9 @@ public class AdminPicSaveOperator {
     private String basePath;
 
     @Operation(summary = "백엔드 목데이터 작업용 - 유저 메인 사진 변경",
-            description = "백엔드 목데이터 작업용 컨트롤러 입니다.<br> 사용하지 말아주세요!")
+            description = "백엔드 목데이터 작업용 컨트롤러 입니다.<br> 사용하지 말아주세요!<br><br><br>" +
+                          "운영자 사진 저장 - 단일 파일만 저장 가능, 기존에 존재할 경우 기존 파일 삭제하고 새로 저장함. <br>" +
+                          "파일명은 logo.jpg 로 저장됨. <br>")
     @PostMapping(value = "admin/pic-save/{code}", consumes = "multipart/form-data")
     public String savePic(@PathVariable String code, @RequestPart MultipartFile pic) {
         if (!code.equals("even_last_6::electro")) return "FALSE";
@@ -46,20 +48,21 @@ public class AdminPicSaveOperator {
             }
         }
 
-        try {
-            fileUtils.savePic(pic, "admin", "0");
-        } catch (FileNotContainsDotException e) {
-            throw new RuntimeException(e);
-        }
+
         File pathAfterSave = new File(basePath + "/admin/0");
         File[] pathsAfterSave = path.listFiles();
         if (pathsAfterSave != null && pathsAfterSave.length > 0) {
-
             Path afterPath = Paths.get(basePath + "/admin/0/logo.jpg");
             try {
+                Path forSavePath = Paths.get(pathAfterSave.toString());
+                if (Files.exists(forSavePath)) {
+                    fileUtils.delFolderTrigger(pathAfterSave.toString());
+                }
+
+                fileUtils.savePic(pic, "admin", "0");
                 Path move = Files.move(pathsAfterSave[0].toPath(), afterPath);
                 System.out.println("move = " + move.getFileName());
-            } catch (IOException e) {
+            } catch (IOException | FileNotContainsDotException e) {
                 throw new RuntimeException(e);
             }
 
@@ -69,7 +72,8 @@ public class AdminPicSaveOperator {
     }
 
     @Operation(summary = "백엔드 목데이터 작업용 - 유저 메인 사진 변경",
-            description = "백엔드 목데이터 작업용 컨트롤러 입니다.<br> 사용하지 말아주세요!")
+            description = "백엔드 목데이터 작업용 컨트롤러 입니다.<br> 사용하지 말아주세요!<br><br><br>" +
+                          "운영자 사진 설정 - 모든 운영자의 사진을 모두 /admin/0/logo.jpg 로 설정함.")
     @Transactional
     @GetMapping("/admin/pic/setting/{code}")
     public String setting(@PathVariable String code) {

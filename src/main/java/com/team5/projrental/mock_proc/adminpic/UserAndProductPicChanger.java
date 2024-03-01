@@ -34,7 +34,8 @@ public class UserAndProductPicChanger {
     private final MyFileUtils fileUtils;
 
     @Operation(summary = "백엔드 목데이터 작업용 - 유저 메인 사진 변경",
-            description = "백엔드 목데이터 작업용 컨트롤러 입니다.<br> 사용하지 말아주세요!")
+            description = "백엔드 목데이터 작업용 컨트롤러 입니다.<br> 사용하지 말아주세요!<br><br><br" +
+                          "유저 메인 사진 변경 - 단일 파일만 저장 가능, 기존에 존재할 경우 기존 파일 삭제하고 새로 저장함. <br>")
     @Transactional
     @PostMapping(value = "user/main-pic-change/{iuser}/{code}", consumes = "multipart/form-data")
     public String changeMainPic(@RequestPart MultipartFile pic,
@@ -55,8 +56,10 @@ public class UserAndProductPicChanger {
 
         return "SAVE_SUCCESS::" + iuser;
     }
+
     @Operation(summary = "백엔드 목데이터 작업용 - 유저 메인 사진 변경",
-            description = "백엔드 목데이터 작업용 컨트롤러 입니다.<br> 사용하지 말아주세요!")
+            description = "백엔드 목데이터 작업용 컨트롤러 입니다.<br> 사용하지 말아주세요!<br><br><br>" +
+                          "상품 메인 사진 변경 - 단일 파일만 저장 가능, 기존에 존재할 경우 기존 파일 삭제하고 새로 저장함. <br>")
     @Transactional
     @PostMapping(value = "product/main-pic-change/{iproduct}/{code}", consumes = "multipart/form-data")
     public String changeProductPic(@RequestPart MultipartFile pic,
@@ -78,8 +81,10 @@ public class UserAndProductPicChanger {
 
         return "SAVE_SUCCESS::" + iproduct;
     }
+
     @Operation(summary = "백엔드 목데이터 작업용 - 유저 메인 사진 변경",
-            description = "백엔드 목데이터 작업용 컨트롤러 입니다.<br> 사용하지 말아주세요!")
+            description = "백엔드 목데이터 작업용 컨트롤러 입니다.<br> 사용하지 말아주세요!<br><br><br>" +
+                          "상품 서브 사진 변경 - 최대 9개의 파일만 저장 가능, 기존에 존재할 경우 기존 파일 '모두' 삭제하고 새로 저장함. <br>")
     @Transactional
     @PostMapping(value = "product/sub-pics-change/{iproduct}/{code}", consumes = "multipart/form-data")
     public String changeSubPics(@RequestPart List<MultipartFile> pics,
