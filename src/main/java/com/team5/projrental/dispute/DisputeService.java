@@ -43,18 +43,25 @@ public class DisputeService {
     @Transactional
     public ResVo postDisputeProduct(DisputeDto dto) {
 
-        User reporter =
-                userRepository.findById(getLoginUserPk()).orElseThrow(() -> new ClientException(ErrorCode.NO_SUCH_USER_EX_MESSAGE,
-                        "로그인 유저 정보가 올바르지 않음."));
+        User reporter = userRepository.findById(getLoginUserPk())
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.NO_SUCH_USER_EX_MESSAGE,
+                        "로그인 유저 정보가 올바르지 않음.")
+                );
 
-        Product findProduct = productRepository.findJoinFetchById(dto.getIdentity()).orElseThrow(() -> new ClientException(ErrorCode.ILLEGAL_EX_MESSAGE,
-                "잘못된 제품 정보 (identity)"));
+        Product findProduct = productRepository.findJoinFetchById(dto.getIdentity())
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.ILLEGAL_EX_MESSAGE,
+                        "잘못된 제품 정보 (identity)")
+                );
 
         User reportedUser = findProduct.getUser();
 
-        DisputeProduct saveDisputeProduct = getDisputeBaseEntity(reporter, reportedUser,
+        DisputeProduct saveDisputeProduct = getDisputeBaseEntity(
+                reporter, reportedUser,
                 DisputeReason.getByNum(dto.getReason()),
-                dto.getDetails(), new DisputeProduct());
+                dto.getDetails(), new DisputeProduct()
+        );
 
         saveDisputeProduct.setProduct(findProduct);
 
@@ -65,16 +72,26 @@ public class DisputeService {
 
     @Transactional
     public ResVo postDisputeUser(DisputeDto dto) {
-        User reporter =
-                userRepository.findById(getLoginUserPk()).orElseThrow(() -> new ClientException(ErrorCode.NO_SUCH_USER_EX_MESSAGE,
-                        "로그인 유저 정보가 올바르지 않음."));
+        User reporter = userRepository.findById(getLoginUserPk())
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.NO_SUCH_USER_EX_MESSAGE,
+                        "로그인 유저 정보가 올바르지 않음.")
+                );
 
-        User reportedUser = userRepository.findById(dto.getIdentity()).orElseThrow(() -> new ClientException(ErrorCode.ILLEGAL_EX_MESSAGE,
-                "잘못된 유저 정보 (identity)"));
+        User reportedUser = userRepository.findById(dto.getIdentity())
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.ILLEGAL_EX_MESSAGE,
+                        "잘못된 유저 정보 (identity)")
+                );
 
-        DisputeUser saveDisputeUser = getDisputeBaseEntity(reporter, reportedUser, DisputeReason.getByNum(dto.getReason()), dto.getDetails(), new DisputeUser());
+        DisputeUser saveDisputeUser = getDisputeBaseEntity(
+                reporter, reportedUser,
+                DisputeReason.getByNum(dto.getReason()),
+                dto.getDetails(), new DisputeUser()
+        );
 
         saveDisputeUser.setUser(reportedUser);
+
         disputeUserRepository.save(saveDisputeUser);
 
         return new ResVo(1L);
@@ -82,14 +99,23 @@ public class DisputeService {
 
     @Transactional
     public ResVo postDisputeChat(DisputeDto dto) {
-        User reporter =
-                userRepository.findById(getLoginUserPk()).orElseThrow(() -> new ClientException(ErrorCode.NO_SUCH_USER_EX_MESSAGE,
-                        "로그인 유저 정보가 올바르지 않음."));
-        ChatUser findChatUser = chatUserRepository.findByIchatAndNeUser(dto.getIdentity(), reporter).orElseThrow(() -> new ClientException(ErrorCode.ILLEGAL_EX_MESSAGE,
-                "해당 채팅방이 존재하지 않거나, 채팅방에 참여하지 않은 유저입니다."));
+        User reporter = userRepository.findById(getLoginUserPk())
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.NO_SUCH_USER_EX_MESSAGE,
+                        "로그인 유저 정보가 올바르지 않음.")
+                );
+        ChatUser findChatUser = chatUserRepository.findByIchatAndNeUser(dto.getIdentity(), reporter)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.ILLEGAL_EX_MESSAGE,
+                        "해당 채팅방이 존재하지 않거나, 채팅방에 참여하지 않은 유저입니다.")
+                );
         User reportedUser = findChatUser.getUser();
 
-        DisputeChatUser saveDisputeChatUser = getDisputeBaseEntity(reporter, reportedUser, DisputeReason.getByNum(dto.getReason()), dto.getDetails(), new DisputeChatUser());
+        DisputeChatUser saveDisputeChatUser = getDisputeBaseEntity(
+                reporter, reportedUser,
+                DisputeReason.getByNum(dto.getReason()),
+                dto.getDetails(), new DisputeChatUser()
+        );
 
         saveDisputeChatUser.setChatUser(findChatUser);
 
@@ -101,18 +127,28 @@ public class DisputeService {
     @Transactional
     public ResVo postDisputeBoard(DisputeDto dto) {
 
-        User reporter =
-                userRepository.findById(getLoginUserPk()).orElseThrow(() -> new ClientException(ErrorCode.NO_SUCH_USER_EX_MESSAGE,
-                        "로그인 유저 정보가 올바르지 않음."));
-        Board findBoard =
-                boardRepository.findByIdJoinFetch(dto.getIdentity()).orElseThrow(() -> new ClientException(ErrorCode.ILLEGAL_EX_MESSAGE,
-                        "해당 게시물 존재하지 않습니다."));
+        User reporter = userRepository.findById(getLoginUserPk())
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.NO_SUCH_USER_EX_MESSAGE,
+                        "로그인 유저 정보가 올바르지 않음.")
+                );
+        Board findBoard = boardRepository.findByIdJoinFetch(dto.getIdentity())
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.ILLEGAL_EX_MESSAGE,
+                        "해당 게시물 존재하지 않습니다.")
+                );
         User reportedUser = findBoard.getUser();
 
-        DisputeBoard saveDisputeBoard = getDisputeBaseEntity(reporter, reportedUser, DisputeReason.getByNum(dto.getReason()), dto.getDetails(), new DisputeBoard());
+        DisputeBoard saveDisputeBoard = getDisputeBaseEntity(
+                reporter, reportedUser,
+                DisputeReason.getByNum(dto.getReason()),
+                dto.getDetails(), new DisputeBoard()
+        );
 
         saveDisputeBoard.setBoard(findBoard);
+
         disputeBoardRepository.save(saveDisputeBoard);
+
         return new ResVo(1L);
     }
 
@@ -122,36 +158,52 @@ public class DisputeService {
         만약 type 이 payment 일 경우, 해당 거래의 상태가 거래시작 or 만료됨일때만 가능하다.
         예약, 예약취소, 거래완료, 삭제됨, 숨김 시에는 신고가 불가능하다.
          */
-        User reporter =
-                userRepository.findById(getLoginUserPk()).orElseThrow(() -> new ClientException(ErrorCode.NO_SUCH_USER_EX_MESSAGE,
-                        "로그인 유저 정보가 올바르지 않음."));
+        User reporter = userRepository.findById(getLoginUserPk())
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.NO_SUCH_USER_EX_MESSAGE,
+                        "로그인 유저 정보가 올바르지 않음.")
+                );
+
         PaymentInfo findPaymentInfo;
+
         try {
             findPaymentInfo = paymentInfoRepository.findByIdJoinFetch(
                     dto.getIdentity(),
                     reporter,
                     List.of(PaymentInfoStatus.ACTIVATED, PaymentInfoStatus.EXPIRED)
-            ).orElseThrow(() -> new ClientException(ErrorCode.ILLEGAL_EX_MESSAGE,
-                    "해당 결제 정보가 존재하지 않습니다."));
+            ).orElseThrow(() -> new ClientException(
+                    ErrorCode.ILLEGAL_EX_MESSAGE,
+                    "해당 결제 정보가 존재하지 않습니다.")
+            );
         } catch (IncorrectResultSizeDataAccessException e) {
-            throw new ClientException(ErrorCode.ILLEGAL_EX_MESSAGE,
-                    "해당 결제 정보가 존재하지 않습니다.");
+            throw new ClientException(
+                    ErrorCode.ILLEGAL_EX_MESSAGE,
+                    "해당 결제 정보가 존재하지 않습니다."
+            );
 
         }
 
         User reportedUser = findPaymentInfo.getUser();
 
-        DisputePayment saveDisputePayment =
-                getDisputeBaseEntity(reporter, reportedUser, DisputeReason.getByNum(dto.getReason()), dto.getDetails(), new DisputePayment());
+        DisputePayment saveDisputePayment = getDisputeBaseEntity(
+                reporter, reportedUser,
+                DisputeReason.getByNum(dto.getReason()),
+                dto.getDetails(), new DisputePayment()
+        );
+
         saveDisputePayment.setPaymentInfo(findPaymentInfo);
+
         disputePaymentRepository.save(saveDisputePayment);
 
         return new ResVo(1L);
     }
 
-
     /* ------ Extracted Method ------ */
-    private <T extends Dispute> T getDisputeBaseEntity(User reporter, User reportedUser, DisputeReason reason, String details,
+
+    private <T extends Dispute> T getDisputeBaseEntity(User reporter,
+                                                       User reportedUser,
+                                                       DisputeReason reason,
+                                                       String details,
                                                        T base) {
         base.setReporter(reporter);
         base.setReportedUser(reportedUser);

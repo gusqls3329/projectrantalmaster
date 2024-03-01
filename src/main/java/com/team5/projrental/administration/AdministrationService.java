@@ -44,7 +44,6 @@ public class AdministrationService {
     private final ProductRepository productRepository;
     private final RefundRepository refundRepository;
     private final DisputeChatUserRepository disputeChatUserRepository;
-    private final AdminChatRepository chatRepository;
 
     @Transactional
     public PaymentByAdminVo getPayment(String code) {
@@ -52,8 +51,11 @@ public class AdministrationService {
         // user, product, payment, paymentInfo
         // user = 로그인 유져
 
-        PaymentInfo findPaymentInfo = paymentInfoRepository.findJoinFetchPaymentProductByUser(code).orElseThrow(() -> new ClientException(ErrorCode.BAD_INFO_EX_MESSAGE,
-                "잘못된 코드입니다."));
+        PaymentInfo findPaymentInfo = paymentInfoRepository.findJoinFetchPaymentProductByUser(code)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.BAD_INFO_EX_MESSAGE,
+                        "잘못된 코드입니다.")
+                );
 
         return PaymentByAdminVo.builder()
                 .iproduct(findPaymentInfo.getPayment().getProduct().getId())
@@ -86,12 +88,18 @@ public class AdministrationService {
     @Transactional
     public ResVo delBoard(Long iboard, Integer reason) {
 
-        Board findBoard = boardRepository.findActivatedById(iboard).orElseThrow(() -> new ClientException(ErrorCode.ILLEGAL_EX_MESSAGE,
-                "해당 게시물이 존재하지 않습니다."));
+        Board findBoard = boardRepository.findActivatedById(iboard)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.ILLEGAL_EX_MESSAGE,
+                        "해당 게시물이 존재하지 않습니다.")
+                );
 
         ResolvedBoard saveResolvedBoard = ResolvedBoard.builder()
-                .admin(adminRepository.findById(getLoginUserPk()).orElseThrow(() -> new ClientException(ErrorCode.SERVER_ERR_MESSAGE,
-                        "운영자 정보가 잘못되었습니다.")))
+                .admin(adminRepository.findById(getLoginUserPk())
+                        .orElseThrow(() -> new ClientException(
+                                ErrorCode.SERVER_ERR_MESSAGE,
+                                "운영자 정보가 잘못되었습니다.")
+                        ))
                 .board(findBoard)
                 .reason(DisputeReason.getByNum(reason))
                 .build();
@@ -100,9 +108,12 @@ public class AdministrationService {
 
         if (findUser.getPenalty() <= -50) changeUserWhenOverPenalty(
                 findUser,
-                adminRepository.findById(getLoginUserPk()).orElseThrow(() -> new ClientException(ErrorCode.NO_SUCH_USER_EX_MESSAGE,
-                        "운영자 정보가 잘못되었습니다.")),
-                DisputeReason.DELETE_BY_ADMIN);
+                adminRepository.findById(getLoginUserPk())
+                        .orElseThrow(() -> new ClientException(
+                                ErrorCode.NO_SUCH_USER_EX_MESSAGE,
+                                "운영자 정보가 잘못되었습니다.")),
+                DisputeReason.DELETE_BY_ADMIN
+        );
 
         findBoard.setStatus(BoardStatus.DELETED);
 
@@ -123,55 +134,67 @@ public class AdministrationService {
 
     @Transactional
     public UserByAdminVo getAllUsers(Integer page, Integer searchType, String search, Integer status) {
-        UserStatus userStatus = status == null || status == 1 ? null :
-                status == 2 ? UserStatus.ACTIVATED :
-                        status == 3 ? UserStatus.DELETED : null;
+        UserStatus userStatus =
+                status == null || status == 1 ? null :
+                        status == 2 ? UserStatus.ACTIVATED :
+                                status == 3 ? UserStatus.DELETED : null;
+
         Long totalCount = userRepository.totalCountByOptions(
                 searchType,
                 search == null ? "" : search,
-                userStatus);
+                userStatus
+        );
 
         List<User> findUser = userRepository.findUserByOptions(
                 page,
                 searchType,
                 search == null ? "" : search,
-                userStatus);
-
+                userStatus
+        );
 
 
         return UserByAdminVo.builder()
                 .totalUserCount(totalCount)
-                .users(findUser.stream()
-                        .map(user -> UserInfoByAdmin.builder()
-                                .iuser(user.getId())
-                                .uid(user.getUid())
-                                .nick(user.getNick())
-                                .createdAt(user.getCreatedAt())
-                                .email(user.getEmail())
-                                .penalty((int) user.getPenalty())
-                                .status(user.getStatus())
-                                .build()).collect(Collectors.toList())
-                )
+                .users(findUser.stream().map(user -> UserInfoByAdmin.builder()
+                        .iuser(user.getId())
+                        .uid(user.getUid())
+                        .nick(user.getNick())
+                        .createdAt(user.getCreatedAt())
+                        .email(user.getEmail())
+                        .penalty((int) user.getPenalty())
+                        .status(user.getStatus())
+                        .build()).collect(Collectors.toList()
+                ))
                 .build();
     }
 
     @Transactional
     public ResVo delUser(Long iuser, Integer reason) {
 
-        User findUser = userRepository.findById(iuser).orElseThrow(() -> new ClientException(ErrorCode.NO_SUCH_USER_EX_MESSAGE,
-                "존재하지 않는 유저입니다."));
-        Admin thisAdmin = adminRepository.findById(getLoginUserPk()).orElseThrow(() -> new ClientException(ErrorCode.NO_SUCH_USER_EX_MESSAGE,
-                "운영자 정보가 잘못되었습니다."));
+        User findUser = userRepository.findById(iuser)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.NO_SUCH_USER_EX_MESSAGE,
+                        "존재하지 않는 유저입니다.")
+                );
+
+        Admin thisAdmin = adminRepository.findById(getLoginUserPk())
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.NO_SUCH_USER_EX_MESSAGE,
+                        "운영자 정보가 잘못되었습니다.")
+                );
+
         ResolvedUser saveResolvedUser = ResolvedUser.builder()
                 .admin(thisAdmin)
                 .user(findUser)
                 .reason(DisputeReason.getByNum(reason))
                 .build();
+
         changeUserWhenOverPenalty(
                 findUser,
                 thisAdmin,
                 DisputeReason.getByNum(reason)
         );
+
         findUser.setStatus(UserStatus.DELETED);
 
         resolvedUserRepository.save(saveResolvedUser);
@@ -195,29 +218,35 @@ public class AdministrationService {
 
 
         List<DisputeInfoByAdmin> disputeInfoByAdmins = findDisputes.stream().map(dispute -> {
+
             DisputeKind kind = null;
             String pk = "";
+
             if (dispute instanceof DisputeBoard) {
                 DisputeBoard disputeBoard = (DisputeBoard) dispute;
                 kind = DisputeKind.BOARD;
                 pk = String.valueOf(disputeBoard.getBoard().getId());
             }
+
             if (dispute instanceof DisputePayment) {
                 DisputePayment disputePayment = (DisputePayment) dispute;
                 kind = DisputeKind.PAYMENT;
                 pk = "ipayment: " + disputePayment.getPaymentInfo().getPaymentInfoIds().getIpayment()
                      + ", iuser: " + disputePayment.getPaymentInfo().getPaymentInfoIds().getIuser();
             }
+
             if (dispute instanceof DisputeProduct) {
                 DisputeProduct disputeProduct = (DisputeProduct) dispute;
                 kind = DisputeKind.PRODUCT;
                 pk = String.valueOf(disputeProduct.getProduct().getId());
             }
+
             if (dispute instanceof DisputeChatUser) {
                 DisputeChatUser disputeChat = (DisputeChatUser) dispute;
                 kind = DisputeKind.CHAT;
                 pk = String.valueOf(disputeChat.getChatUser().getId());
             }
+
             return DisputeInfoByAdmin.builder()
                     .idispute(dispute.getId())
 
@@ -249,19 +278,29 @@ public class AdministrationService {
 
     @Transactional
     public ResVo postDispute(Long idispute, Integer type) {
-        Dispute findDispute =
-                adminDisputeRepository.findByIdAndStatus(idispute, DisputeStatus.STAND_BY).orElseThrow(() -> new ClientException(ErrorCode.ILLEGAL_EX_MESSAGE,
-                        "식별숫자에 해당하는 신고가 존재하지 않습니다."));
+        Dispute findDispute = adminDisputeRepository.findByIdAndStatus(idispute, DisputeStatus.STAND_BY)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.ILLEGAL_EX_MESSAGE,
+                        "식별숫자에 해당하는 신고가 존재하지 않습니다.")
+                );
+
         DisputeStatus changeDisputeStatus = DisputeStatus.getByNum(type);
+
         findDispute.setStatus(changeDisputeStatus);
 
         User penaltyUser = findDispute.getReportedUser();
+
         penaltyUser.setPenalty((byte) (penaltyUser.getPenalty() + findDispute.getPenalty()));
 
         if (penaltyUser.getPenalty() <= -50) {
-
-            changeUserWhenOverPenalty(penaltyUser, adminRepository.findById(getLoginUserPk()).orElseThrow(() -> new ClientException(ErrorCode.NO_SUCH_USER_EX_MESSAGE,
-                    "운영자 정보가 잘못되었습니다.")), DisputeReason.DELETE_BY_ADMIN);
+            changeUserWhenOverPenalty(
+                    penaltyUser,
+                    adminRepository.findById(getLoginUserPk())
+                            .orElseThrow(() -> new ClientException(
+                                    ErrorCode.NO_SUCH_USER_EX_MESSAGE,
+                                    "운영자 정보가 잘못되었습니다.")),
+                    DisputeReason.DELETE_BY_ADMIN
+            );
         }
 
         eventPublisher.publishEvent(SseMessageInfo.builder()
@@ -294,9 +333,6 @@ public class AdministrationService {
         Long count = productRepository.totalCountByOptions(type, search);
         List<Product> findProducts = productRepository.findAllLimitPage(page, type, search, sort);
 
-
-
-
         List<ProductInfoByAdmin> productResults = findProducts.stream().map(product -> ProductInfoByAdmin.builder()
                 .iproduct(product.getId())
                 .mainCategory(product.getMainCategory().getNum())
@@ -319,14 +355,21 @@ public class AdministrationService {
     @Transactional
     public ResVo patchProduct(Long iproduct, Integer reason) {
         Product findProduct =
-                productRepository.findByIdJoinFetch(iproduct).orElseThrow(() -> new ClientException(ErrorCode.NO_SUCH_PRODUCT_EX_MESSAGE,
-                        "잘못된 제품 식별 번호입니다. (iproduct)"));
+                productRepository.findByIdJoinFetch(iproduct)
+                        .orElseThrow(() -> new ClientException(
+                                ErrorCode.NO_SUCH_PRODUCT_EX_MESSAGE,
+                                "잘못된 제품 식별 번호입니다. (iproduct)")
+                        );
 
 
         findProduct.setStatus(ProductStatus.DELETED);
 
-        Admin thisAdmin = adminRepository.findById(getLoginUserPk()).orElseThrow(() -> new ClientException(ErrorCode.NO_SUCH_USER_EX_MESSAGE,
-                "운영자 정보가 잘못되었습니다."));
+        Admin thisAdmin = adminRepository.findById(getLoginUserPk())
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.NO_SUCH_USER_EX_MESSAGE,
+                        "운영자 정보가 잘못되었습니다.")
+                );
+
         ResolvedProduct saveResolvedProduct = ResolvedProduct.builder()
                 .admin(thisAdmin)
                 .product(findProduct)
@@ -335,6 +378,7 @@ public class AdministrationService {
 
         resolvedProductRepository.save(saveResolvedProduct);
         resolvedProductRepository.flush();
+
         eventPublisher.publishEvent(SseMessageInfo.builder()
                 .receiver(findProduct.getUser().getId())
                 .description("운영자에 의해 제품 게시글이 삭제됨.")
@@ -349,17 +393,25 @@ public class AdministrationService {
     @Transactional
     public ResVo patchRefund(Long irefund, Integer div) {
 
-        Refund findRefund = refundRepository.findById(irefund).orElseThrow(() -> new ClientException(ErrorCode.ILLEGAL_EX_MESSAGE,
-                "잘못된 식별숫자 입니다. (irefund)"));
+        Refund findRefund = refundRepository.findById(irefund)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.ILLEGAL_EX_MESSAGE,
+                        "잘못된 식별숫자 입니다. (irefund)")
+                );
 
         ResVo result = new ResVo((long) findRefund.getRefundAmount());
+
         if (div == 1) {
             result.setResult((long) -1);
             findRefund.setRefundAmount(0);
         }
         findRefund.setStatus(RefundStatus.getByNum(div));
-        findRefund.setAdmin(adminRepository.findById(getLoginUserPk()).orElseThrow(() -> new ClientException(ErrorCode.NO_SUCH_USER_EX_MESSAGE,
-                "운영자 정보가 잘못되었습니다.")));
+        findRefund.setAdmin(adminRepository.findById(getLoginUserPk())
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.NO_SUCH_USER_EX_MESSAGE,
+                        "운영자 정보가 잘못되었습니다."))
+        );
+
         return result;
     }
 
@@ -368,7 +420,6 @@ public class AdministrationService {
 
         Long count = boardRepository.totalCountByOptions(type, search);
         List<Board> findBoards = boardRepository.findAllLimitPage(page, type, search, sort);
-
 
         return BoardByAdminVo.builder()
                 .totalBoardCount(count)
@@ -385,8 +436,6 @@ public class AdministrationService {
     public RefundByAdminVo getAllRefunds(Integer page, Integer status) {
         Long count = refundRepository.totalCountByOptions(status);
         List<Refund> findRefunds = refundRepository.findAllLimitPage(page, status);
-
-
 
         return RefundByAdminVo.builder()
                 .totalRefundCount(count)
@@ -408,6 +457,7 @@ public class AdministrationService {
     public ChatByAdminVo getAllChats(Integer page) {
         Long count = disputeChatUserRepository.totalCountByOptions();
         List<ChatUser> findChatUser = disputeChatUserRepository.findAllLimitPage(page);
+
         return ChatByAdminVo.builder()
                 .totalChatCount(count)
                 .chats(findChatUser.stream().map(chatUser -> ChatInfoByAdmin.builder()
@@ -425,18 +475,19 @@ public class AdministrationService {
     @Transactional
     protected void changeUserWhenOverPenalty(User user, Admin admin, DisputeReason reason) {
         user.setStatus(UserStatus.DELETED);
+
         ResolvedUser saveResolvedUser = ResolvedUser.builder()
                 .admin(admin)
                 .user(user)
                 .reason(reason)
                 .build();
+
         resolvedUserRepository.save(saveResolvedUser);
     }
 
     private Long getLoginUserPk() {
         return facade.getLoginUserPk();
     }
-
 
 
 }
