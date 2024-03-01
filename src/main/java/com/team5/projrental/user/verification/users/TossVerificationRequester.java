@@ -27,11 +27,8 @@ import org.springframework.web.client.RestClient;
 public class TossVerificationRequester {
 
     private final TossCertSessionGenerator generator = new TossCertSessionGenerator();
-
     private final TossVerificationProperties tossVerificationProperties;
     private final ObjectMapper om;
-//    private final TossVerificationRepository repository;
-
 
     public VerificationReadyDto verificationRequest(VerificationUserInfo userInfo) {
 
@@ -39,17 +36,17 @@ public class TossVerificationRequester {
         VerificationRequestDto dto = encode(userInfo);
 
         // 요청
-        RestClient restClient = RestClient.builder()
+        String responseJSON = RestClient.builder()
                 .baseUrl(tossVerificationProperties.getReadyRequestUrl())
-                .build();
-
-        String responseJSON = restClient.post()
+                .build()
+                .post()
                 .header(tossVerificationProperties.getTokenKey(),
                         tossVerificationProperties.getTokenType() + tossVerificationProperties.getAccessToken())
                 .body(dto)
                 .contentType(MediaType.APPLICATION_JSON).retrieve().body(String.class);
 
         VerificationReadyResponse verificationReadyResponse;
+
         try {
             verificationReadyResponse = om.readValue(responseJSON, VerificationReadyResponse.class);
         } catch (JsonProcessingException e) {
@@ -59,11 +56,6 @@ public class TossVerificationRequester {
         VerificationInfo info = VerificationInfo.builder()
                 .txId(verificationReadyResponse.getSuccess().getTxId())
                 .build();
-//        if (verificationReadyResponse.getSuccess() != null) {
-//            repository.save(info);
-//        }
-
-
 
         return VerificationReadyDto.builder()
                 .id(info.getId())
@@ -87,8 +79,6 @@ public class TossVerificationRequester {
                 .successCallbackUrl(tossVerificationProperties.getSuccessCallbackUrl())
                 .failCallbackUrl(tossVerificationProperties.getFailCallbackUrl())
                 .build();
-
-
     }
 
     public CheckResponseVo check(VerificationInfo info) {
@@ -96,33 +86,32 @@ public class TossVerificationRequester {
         TossCertSession session = generator.generate();
         String sessionKey = session.getSessionKey();
 
-//        VerificationInfo info = repository.findById(id).orElseThrow(() -> new ClientException(ErrorCode.ILLEGAL_EX_MESSAGE, "존재하지 않는 결제건"));
-
         CheckRequestDto dto = CheckRequestDto.builder()
                 .txId(info.getTxId())
                 .sessionKey(sessionKey)
                 .build();
 
         // 요청
-        RestClient restClient = RestClient.builder()
+        String responseJSON = RestClient.builder()
                 .baseUrl(tossVerificationProperties.getCheckRequestUrl())
-                .build();
-
-        String responseJSON = restClient.post()
+                .build().post()
                 .header(tossVerificationProperties.getTokenKey(),
-                        tossVerificationProperties.getTokenType() + tossVerificationProperties.getAccessToken())
+                        tossVerificationProperties.getTokenType() +
+                        tossVerificationProperties.getAccessToken())
                 .body(dto)
                 .contentType(MediaType.APPLICATION_JSON).retrieve().body(String.class);
+
         CheckResultDto resultDto;
+
         try {
             resultDto = om.readValue(responseJSON, CheckResultDto.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+
         if (resultDto.getResultType().equalsIgnoreCase("FAIL")) {
             throw new ClientException(ErrorCode.BAD_INFO_EX_MESSAGE, "본인인증에 실패함");
         }
-
 
         return decode(session, resultDto);
     }
@@ -135,6 +124,4 @@ public class TossVerificationRequester {
                 .nationality(session.decrypt(dto.getSuccess().getPersonalData().getNationality()))
                 .build();
     }
-
-
 }
