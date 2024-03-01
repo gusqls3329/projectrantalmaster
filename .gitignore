@@ -20,6 +20,7 @@ bin/
 
 ### IntelliJ IDEA ###
 src/main/resources/application-hyunmin.yaml
+src/main/resources/application-sw.yaml
 .idea
 *.iws
 *.iml
