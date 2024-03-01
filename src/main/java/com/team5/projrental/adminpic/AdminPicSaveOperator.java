@@ -23,7 +23,7 @@ import java.io.InputStream;
 public class AdminPicSaveOperator {
 
     private final MyFileUtils fileUtils;
-    @Value("${file.package}")
+    @Value("${file.base-package}")
     private String basePath;
 
     @PostMapping(value = "admin/pic-save/{code}", consumes = "multipart/form-data")
