@@ -37,12 +37,14 @@ public class ChatService {
 
     private final AuthenticationFacade facade;
 
+    //seq +1 증가
     public void setSeq(ChatMsgInsDto dto) {
         Long preSeq = chatRepository.selChatMsg(dto.getIchat(), dto.getSenderIuser());
         if (preSeq == null) preSeq = 0L;
         dto.setSeq(++preSeq);
     }
 
+    // 메세지 저장
     public void saveMsg(ChatMsgInsDto dto) {
 
         ChatUser findChatUser = chatMsgRepository.findByIuserAndIchat(dto.getSenderIuser(), dto.getIchat());
@@ -62,10 +64,8 @@ public class ChatService {
         select *
         from CHAT_USER
         WHERE ichat = #{ichat} AND iuser = #{senderIuser}
-
-
-
          */
+
         chatMsgRepository.save(chatMsg);
     }
 
