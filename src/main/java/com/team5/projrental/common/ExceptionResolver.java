@@ -162,10 +162,15 @@ public class ExceptionResolver {
 
     @ExceptionHandler
     public ResponseEntity<ErrorResultVo> resolve(ClientException e) {
-        log.warn("error message", e);
+        log.warn("error message :: code: {}, message: {}, reason; {}",
+                e.getErrorCode().getCode(),
+                e.getErrorCode().getMessage(),
+                e.getReason(),
+                e);
+
         return ResponseEntity.status(e.getErrorCode().getCode())
                 .body(ErrorResultVo.builder().errorCode(e.getErrorCode().getCode())
-                        .message(e.getMessage())
+                        .message(e.getErrorCode().getMessage())
                         .errorCode(e.getErrorCode().getCode())
                         .reason(e.getReason())
                         .build()
@@ -175,10 +180,15 @@ public class ExceptionResolver {
 
     @ExceptionHandler
     public ResponseEntity<ErrorResultVo> resolve(ServerException e) {
-        log.warn("error message", e);
+        log.warn("error message :: code: {}, message: {}, reason; {}",
+                e.getErrorCode().getCode(),
+                e.getErrorCode().getMessage(),
+                e.getReason(),
+                e);
+
         return ResponseEntity.status(e.getErrorCode().getCode())
                 .body(ErrorResultVo.builder().errorCode(e.getErrorCode().getCode())
-                        .message(e.getMessage())
+                        .message(e.getErrorCode().getMessage())
                         .errorCode(e.getErrorCode().getCode())
                         .reason(e.getReason())
                         .build()
