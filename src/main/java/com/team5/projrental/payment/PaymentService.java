@@ -71,6 +71,7 @@ public class PaymentService {
         // 이미 해당 날짜로 예약된 상품이 있는지 확인
         if (paymentRepository.validateRentalDate(paymentInsDto.getIproduct(), paymentInsDto.getRentalStartDate(),
                 paymentInsDto.getRentalEndDate())) {
+
             throw new ClientException(ILLEGAL_DATE_EX_MESSAGE, "이미 예약된 날짜입니다.");
         }
 
@@ -245,6 +246,7 @@ public class PaymentService {
                 refundRepository.save(refundBuyer);
             }
             if (!isBuyer) {
+                // 만약 예약취소 요청자가 판매자인경우
                 Refund refundEntity = getRefundEntity(findBuyer,
                         basePrice + findPayment.getDeposit(),
                         findPayment);
