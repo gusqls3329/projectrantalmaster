@@ -24,6 +24,7 @@ public interface BoardMapper {
     int insLike(BoardToggleLikeDto dto);
 
     //List<BoardFavVo> selLike (long iboard,long iuser);
+    BoardAllCount selBoardCount(String status);
 
 
 
