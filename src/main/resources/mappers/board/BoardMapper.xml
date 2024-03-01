@@ -132,4 +132,10 @@
         and iuser = #{loginIuser}
     </delete>
 
+    <select id="selBoardCount">
+        select count(iboard) AS totalBoardCount
+        from board
+        where status = #{status};
+    </select>
+
 </mapper>

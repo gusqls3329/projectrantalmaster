@@ -99,7 +99,7 @@ public class BoardService {
         return new ResVo((long)boardPicInsDto.getIboard());
     }
 
-    public List<BoardListSelVo> getBoardList (BoardListSelDto dto){ //전체 게시글
+    public BoardListVo getBoardList (BoardListSelDto dto){ //전체 게시글
         long loginIuser = authenticationFacade.getLoginUserPk();    // 좋아요 많이 받은순을 좋아요리스트로 해버림 수정 필요
         dto.setLoginIuser(loginIuser);
 
@@ -107,9 +107,16 @@ public class BoardService {
         String status = boardStatus.name(); //enum을 문자열로
         dto.setStatus(status);
 
+        BoardAllCount count = mapper.selBoardCount(status);
         List<BoardListSelVo> list = mapper.selBoardList(dto);
 
-        return list;
+        BoardListVo vo = BoardListVo.builder()
+                .boardList(list)
+                .totalBoardCount(count.getTotalBoardCount())
+                .build();
+
+
+        return vo;
     }
 
     public BoardSelVo getBoard (int iboard){
