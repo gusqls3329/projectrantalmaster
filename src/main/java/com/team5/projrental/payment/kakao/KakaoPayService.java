@@ -49,24 +49,26 @@ public class KakaoPayService {
 
         PayReadyDto payReadyDto = requester.getReadyRequest(facade.getLoginUserPk(), dto);
 
-        RestClient restClient = RestClient.builder()
+        String response = RestClient.builder()
                 .baseUrl(payReadyDto.getRequestUrl())
-                .build();
-
-        String response = restClient
+                .build()
                 .post()
                 .header(property.getHeaderKey(), property.getHeaderValue())
                 .body(payReadyDto.getPayReadyBodyInfo())
                 .contentType(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .body(String.class);
+
         PayReadyResponseDto responseDto;
+
         try {
             responseDto = om.readValue(response, PayReadyResponseDto.class);
         } catch (JsonProcessingException e) {
             throw new ServerException(ErrorCode.SERVER_ERR_MESSAGE, "Api 통신과정에서 에러가 발생했습니다.");
         }
+
         PaymentDetail paymentDetail = null;
+
         if (responseDto.getTid() != null && !responseDto.getTid().isEmpty()) {
             paymentDetail = PaymentDetail.builder()
                     .tid(responseDto.getTid())
@@ -74,42 +76,44 @@ public class KakaoPayService {
                     .build();
             repository.save(paymentDetail);
         }
+
         return PayReadyVo.builder()
                 .id(paymentDetail == null ? null : paymentDetail.getId())
                 .nextRequestUrl(responseDto.getNext_redirect_pc_url())
                 .build();
-
     }
 
     @Transactional
     public PayApproveVo approve(String pgToken, Long id) {
-        Long loginUserPk = facade.getLoginUserPk();
-        PaymentDetail findPaymentDetail = repository.findById(id).orElseThrow(() -> new ClientException(ErrorCode.NO_SUCH_PAYMENT_EX_MESSAGE,
-                "잘못된 결제 정보 입니다."));
+
+        PaymentDetail findPaymentDetail = repository.findById(id)
+                .orElseThrow(() -> new ClientException(
+                        ErrorCode.NO_SUCH_PAYMENT_EX_MESSAGE,
+                        "잘못된 결제 정보 입니다.")
+                );
+
         String tid = findPaymentDetail.getTid();
 
-        PayApproveDto approveRequest = requester.getApproveRequest(tid, loginUserPk, pgToken);
-
-        RestClient restClient = RestClient.builder()
-                .baseUrl(approveRequest.getRequestUrl())
-                .build();
+        PayApproveDto approveRequest = requester.getApproveRequest(tid, facade.getLoginUserPk(), pgToken);
 
         PayApproveBodyInfo payApproveBodyInfo = approveRequest.getPayApproveBodyInfo();
-        RestClient.RequestBodySpec requestBodySpec = restClient
+
+        String response = RestClient.builder()
+                .baseUrl(approveRequest.getRequestUrl())
+                .build()
                 .post()
                 .header(property.getHeaderKey(), property.getHeaderValue())
                 .body(payApproveBodyInfo)
-                .contentType(MediaType.APPLICATION_JSON);
-        RestClient.ResponseSpec retrieve = requestBodySpec.retrieve();
-        String response = retrieve.body(String.class);
-
+                .contentType(MediaType.APPLICATION_JSON).retrieve().body(String.class);
 
         PayApproveResponseDto payApproveResponseDto;
+
         try {
             payApproveResponseDto = om.readValue(response, PayApproveResponseDto.class);
         } catch (JsonProcessingException e) {
             throw new ClientException(ErrorCode.BAD_INFO_EX_MESSAGE);
         }
+
         PayApproveVo result = PayApproveVo.builder()
                 .totalPrice(payApproveResponseDto.getAmount().getTotal())
                 .tax(payApproveResponseDto.getAmount().getTax())

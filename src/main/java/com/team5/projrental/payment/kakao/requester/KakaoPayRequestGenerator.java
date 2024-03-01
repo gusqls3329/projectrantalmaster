@@ -46,6 +46,7 @@ public class KakaoPayRequestGenerator {
                 .payReadyBodyInfo(payReadyBodyInfo)
                 .build();
     }
+
     public PayApproveDto getApproveRequest(String tidParam, Long id, String pgToken) {
 
         PayApproveBodyInfo payApproveBodyInfo = PayApproveBodyInfo.builder()
