@@ -32,5 +32,6 @@ public class Refund extends BaseAt {
 
     private Integer refundAmount;
 
+    @Enumerated(EnumType.STRING)
     private RefundStatus status;
 }

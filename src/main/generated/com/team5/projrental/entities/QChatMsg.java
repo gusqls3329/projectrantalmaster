@@ -29,7 +29,7 @@ public class QChatMsg extends EntityPathBase<ChatMsg> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
-    public final NumberPath<Long> ichatMsg = createNumber("ichatMsg", Long.class);
+    public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final StringPath msg = createString("msg");
 

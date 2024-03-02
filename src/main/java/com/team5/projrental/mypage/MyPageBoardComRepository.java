@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MyPageBoardComRepository  extends JpaRepository<BoardComment, Long> {
     BoardComment findByBoard(Board board);
+    Integer countBoardCommentByBoard(Board board);
 }

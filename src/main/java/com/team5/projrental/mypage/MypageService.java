@@ -191,9 +191,10 @@ public class MypageService {
                 board -> MyBoardVo.builder()
                         .iboard(board.getId().intValue())
                         .title(board.getTitle())
+                        .contents(board.getContents())
                         .istatus(board.getStatus().getNum())
                         .view(board.getView().intValue())
-                        .CommentCount(myPageBoardComRepository.findByBoard(board).getComment().length())
+                        .CommentCount(myPageBoardComRepository.countBoardCommentByBoard(board))
                         .createdAt(board.getCreatedAt().toString())
                         .build()
         ).toList(
