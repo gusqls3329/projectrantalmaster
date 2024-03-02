@@ -34,4 +34,13 @@ public class ChatUserQueryRepositoryImpl implements ChatUserQueryRepository{
                 .fetchOne()
                 ;
     }
+
+    @Override
+    public ChatUser delUserStatus(Long ichat, Long loginedIuser) {
+
+        return query.selectFrom(chatUser)
+                .where(chatUser.user.id.eq(loginedIuser).and(chatUser.chat.id.eq(ichat).and(chatUser.status.eq(ChatUserStatus.ACTIVE))))
+                .fetchOne();
+
+    }
 }
