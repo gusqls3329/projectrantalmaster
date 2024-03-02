@@ -10,6 +10,7 @@ import com.team5.projrental.common.exception.ErrorCode;
 import com.team5.projrental.common.exception.thrid.ClientException;
 import com.team5.projrental.common.model.ResVo;
 import com.team5.projrental.common.security.AuthenticationFacade;
+
 import com.team5.projrental.dispute.repository.ChatUserRepository;
 import com.team5.projrental.entities.Chat;
 import com.team5.projrental.entities.ChatMsg;
@@ -69,11 +70,10 @@ public class ChatService {
         chatMsgRepository.save(chatMsg);
     }
 
-
     //
 
-
     public List<ChatSelVo> getRoomList(Integer page) {
+        Long loginedIuser = facade.getLoginUserPk();
 
         // 전체 방 리스트.
         ChatSelDto dto = new ChatSelDto();
@@ -81,8 +81,10 @@ public class ChatService {
         dto.setLoginedIuser(getLoginUserPk());
 
         List<ChatSelVo> findChatSelVo = mapper.selChatAll(dto);
-        // todo 예외처리
 
+        // todo 예외처리
+        ChatSelVo selvo = new ChatSelVo();
+        selvo.setTotalChatCount(chatUserRepository.getChatCount(loginedIuser));
 
         return findChatSelVo;
     }
@@ -107,13 +109,13 @@ public class ChatService {
                 .product(productRepository.findById(iproduct).orElseThrow(() -> new ClientException(ErrorCode.NO_SUCH_PRODUCT_EX_MESSAGE,
                         "상품이 존재하지 않습니다.")))
                 .build();
-        User findUserMe = userRepository.findById(getLoginUserPk()).orElseThrow(() -> new ClientException(ErrorCode.ILLEGAL_STATUS_EX_MESSAGE, "로그인 유저가 존재하지 않습니다."));
+        //User findUserMe = userRepository.findById(getLoginUserPk()).orElseThrow(() -> new ClientException(ErrorCode.ILLEGAL_STATUS_EX_MESSAGE, "로그인 유저가 존재하지 않습니다."));
         User findUserTarget = userRepository.findById(targetIuser).orElseThrow(() -> new ClientException(ErrorCode.NO_SUCH_USER_EX_MESSAGE, "상대방 유저가 존재하지 않습니다."));
 
 
         chatUserRepository.save(ChatUser.builder()
                 .chat(saveChat)
-                .user(findUserMe)
+                //`1.user(findUserMe)
                 .status(ChatUserStatus.ACTIVE)
                 .build());
 
@@ -126,6 +128,25 @@ public class ChatService {
 
         return new ResVo(1L);
     }
+
+    public ResVo getChatCount() {
+
+        Long counter = chatUserRepository.getChatCount(getLoginUserPk());
+
+        return new ResVo(counter);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     // ex m
 

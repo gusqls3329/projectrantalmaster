@@ -1,10 +1,13 @@
 package com.team5.projrental.aachat.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.team5.projrental.entities.enums.ChatUserStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import static com.team5.projrental.entities.QChat.chat;
 import static com.team5.projrental.entities.QChatMsg.chatMsg;
+import static com.team5.projrental.entities.QChatUser.chatUser;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -24,6 +27,5 @@ public class ChatQdslRepositoryImpl implements ChatQdslRepository {
                 .limit(1)
                 .fetchOne();
     }
-
 
 }

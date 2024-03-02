@@ -7,4 +7,7 @@ import java.util.Optional;
 
 public interface ChatUserQueryRepository {
     Optional<ChatUser> findByIchatAndNeUser(Long identity, User reporter);
+
+    Long getChatCount(Long loginedIuser);
 }
+
