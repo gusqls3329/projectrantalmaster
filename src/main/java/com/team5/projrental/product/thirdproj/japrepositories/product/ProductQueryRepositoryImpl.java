@@ -315,9 +315,16 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
 
     private BooleanBuilder searchCategoryFindAllLimitPage(Integer type, String search) {
         BooleanBuilder builder = new BooleanBuilder();
-        if (type != null && type == 2) {
-            builder.and(product.subCategory.stringValue().like("%" + search + "%"));
+
+        if (type != null) {
+            if (type == 1) {
+                builder.and(product.user.nick.like("%" + search + "%"));
+            }
+            if (type == 2) {
+                builder.and(product.subCategory.stringValue().like("%" + search + "%"));
+            }
         }
+
         return builder;
     }
 

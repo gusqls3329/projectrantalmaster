@@ -47,7 +47,9 @@ public class UserAndProductPicChanger {
         String storedPicPath;
         try {
             String delPath = findUser.getBaseUser().getStoredPic();
-            fileUtils.delFolderTrigger(delPath.substring(0, delPath.lastIndexOf("/")));
+            if(delPath != null && (delPath.contains("/"))) {
+                fileUtils.delFolderTrigger(delPath.substring(0, delPath.lastIndexOf("/")));
+            }
             storedPicPath = fileUtils.savePic(pic, Const.CATEGORY_USER, String.valueOf(findUser.getId()));
         } catch (FileNotContainsDotException e) {
             throw new RuntimeException(e);
@@ -71,7 +73,9 @@ public class UserAndProductPicChanger {
         String storedPicPath;
         try {
             String delPath = findProduct.getStoredPic();
-            fileUtils.delFolderTrigger(delPath.substring(0, delPath.lastIndexOf("/")));
+            if(delPath != null && (delPath.contains("/"))) {
+                fileUtils.delFolderTrigger(delPath.substring(0, delPath.lastIndexOf("/")));
+            }
             storedPicPath = fileUtils.savePic(pic, Const.CATEGORY_PRODUCT_MAIN, String.valueOf(findProduct.getId()));
         } catch (FileNotContainsDotException e) {
             throw new RuntimeException(e);
@@ -99,7 +103,9 @@ public class UserAndProductPicChanger {
         try {
             findProduct.getPics().forEach(prodPics -> {
                 String delPath = prodPics.getStoredPic();
-                fileUtils.delFolderTrigger(delPath.substring(0, delPath.lastIndexOf("/")));
+                if(delPath != null && (delPath.contains("/"))) {
+                    fileUtils.delFolderTrigger(delPath.substring(0, delPath.lastIndexOf("/")));
+                }
             });
             savePicsPath = fileUtils.savePic(pics, Const.CATEGORY_PRODUCT_SUB, String.valueOf(findProduct.getId()));
         } catch (FileNotContainsDotException e) {

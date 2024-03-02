@@ -115,6 +115,8 @@ UserService {
                     verificationInfo.setTxId(dto.getTxid());
                     // redis에 저장
                     redisTemplate.opsForValue().set(verificationInfo.getId(), verificationInfo, Duration.ofSeconds(300L));
+                    // debug
+            log.debug("redis = {}", redisTemplate.opsForValue().get(verificationInfo.getId()));
                 },
                 () -> {
                     VerificationInfo info = VerificationInfo.builder()
@@ -125,6 +127,8 @@ UserService {
                     tossVerificationRepository.save(info);
                     // redis에 저장
                     redisTemplate.opsForValue().set(info.getId(), info, Duration.ofSeconds(300L));
+                    // debug
+                    log.debug("redis = {}", redisTemplate.opsForValue().get(info.getId()));
                 });
 
         if (id != null && id > 0) {
@@ -146,6 +150,9 @@ UserService {
     @Transactional
     public CheckResponseVo checkVerification(Long id) {
         VerificationInfo baseInfo = redisTemplate.opsForValue().get(id);
+        // debug
+        log.debug("baseInfo = {}", baseInfo);
+
         if (baseInfo == null) {
             throw new ClientException(ILLEGAL_EX_MESSAGE, "본인인증 내역이 없습니다.");
         }

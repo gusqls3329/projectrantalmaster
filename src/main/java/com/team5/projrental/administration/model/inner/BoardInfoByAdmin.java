@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 public class BoardInfoByAdmin {
     private Long iboard;
+    private String title;
     private String nick;
     private Long view;
     private LocalDateTime createdAt;
