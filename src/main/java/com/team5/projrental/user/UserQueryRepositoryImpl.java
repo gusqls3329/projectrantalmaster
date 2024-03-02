@@ -24,8 +24,8 @@ public class UserQueryRepositoryImpl implements UserQueryRepository {
     public User findByVerificationInfo(VerificationInfo info) {
         return jpaQueryFactory.selectFrom(user)
                 .join(user.verificationInfo).fetchJoin()
-                .on(user.verificationInfo.eq(info))
-                .where(user.status.eq(UserStatus.ACTIVATED))
+                .where(user.verificationInfo.eq(info)
+                        .and(user.status.eq(UserStatus.ACTIVATED)))
                 .fetchOne();
     }
 
@@ -33,8 +33,8 @@ public class UserQueryRepositoryImpl implements UserQueryRepository {
     public User exFindByVerificationInfo(VerificationInfo info) {
         return jpaQueryFactory.selectFrom(user)
                 .join(user.verificationInfo).fetchJoin()
-                .on(user.verificationInfo.eq(info))
-                .where(user.status.ne(UserStatus.ACTIVATED))
+                .where(user.verificationInfo.eq(info)
+                        .and(user.status.eq(UserStatus.ACTIVATED)))
                 .offset(0)
                 .limit(1)
                 .orderBy(user.penalty.asc())
