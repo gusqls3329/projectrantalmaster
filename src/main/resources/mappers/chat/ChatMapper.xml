@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.team5.projrental.chat.ChatMapper">
+<mapper namespace="com.team5.projrental.aachat.ChatMapper">
 
     <insert id="insChat" useGeneratedKeys="true" keyProperty="ichat"> <!--빈 채팅방 생성-->
         INSERT INTO chat
@@ -37,7 +37,7 @@
     </insert>
 
 
-    <select id="selChatAll">
+    <!--<select id="selChatAll">
         SELECT B.ichat, B.iuser, C.nick AS otherPersonNm, C.stored_pic AS otherPersonPic
         , D.last_msg AS lastMsg, D.last_msg_at AS lastMsgAt
         , E.iproduct, E.title, E.stored_pic AS prodPic
@@ -52,6 +52,19 @@
         ON D.iproduct = E.iproduct
         WHERE A.iuser = #{loginedIuser} AND A.istatus != -1 AND B.iuser != #{loginedIuser}
         ORDER BY D.last_msg_at DESC
+        LIMIT #{startIdx}, #{rowCount}
+    </select>-->
+
+    <select id="selChatAll">
+        SELECT
+        cu.ichat, ct.last_msg, ct.last_msg_at, cu.`status`, pd.iproduct, pd.stored_pic as prodPic, pd.title, ur.nick, ur.stored_pic as otherPersonPic
+        FROM chat_user cu
+        LEFT JOIN chat_msg cm ON cu.ichat_user = cm.ichat_user
+        LEFT JOIN chat ct ON cu.ichat = ct.ichat
+        LEFT JOIN product pd ON ct.iproduct = pd.iproduct
+        LEFT JOIN user ur ON cu.iuser = ur.iuser
+        WHERE cu.iuser = #{loginedIuser} AND cu.`status` = 'ACTIVE'
+        ORDER BY ct.last_msg_at DESC
         LIMIT #{startIdx}, #{rowCount}
     </select>
 

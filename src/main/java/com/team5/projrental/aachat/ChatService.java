@@ -6,10 +6,12 @@ import com.team5.projrental.aachat.model.ChatSelDto;
 import com.team5.projrental.aachat.model.ChatSelVo;
 import com.team5.projrental.aachat.repository.ChatMsgRepository;
 import com.team5.projrental.aachat.repository.ChatRepository;
+import com.team5.projrental.common.Const;
 import com.team5.projrental.common.exception.ErrorCode;
 import com.team5.projrental.common.exception.thrid.ClientException;
 import com.team5.projrental.common.model.ResVo;
 import com.team5.projrental.common.security.AuthenticationFacade;
+
 import com.team5.projrental.dispute.repository.ChatUserRepository;
 import com.team5.projrental.entities.Chat;
 import com.team5.projrental.entities.ChatMsg;
@@ -21,8 +23,10 @@ import com.team5.projrental.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -38,6 +42,7 @@ public class ChatService {
     private final AuthenticationFacade facade;
 
     //seq +1 증가
+    @Transactional
     public void setSeq(ChatMsgInsDto dto) {
         Long preSeq = chatRepository.selChatMsg(dto.getIchat(), dto.getSenderIuser());
         if (preSeq == null) preSeq = 0L;
@@ -45,6 +50,7 @@ public class ChatService {
     }
 
     // 메세지 저장
+    @Transactional
     public void saveMsg(ChatMsgInsDto dto) {
 
         ChatUser findChatUser = chatMsgRepository.findByIuserAndIchat(dto.getSenderIuser(), dto.getIchat());
@@ -69,11 +75,12 @@ public class ChatService {
         chatMsgRepository.save(chatMsg);
     }
 
-
     //
 
-
+    // 로그인한 유저의 채팅방 리스트
+    @Transactional
     public List<ChatSelVo> getRoomList(Integer page) {
+        Long loginedIuser = facade.getLoginUserPk();
 
         // 전체 방 리스트.
         ChatSelDto dto = new ChatSelDto();
@@ -81,35 +88,31 @@ public class ChatService {
         dto.setLoginedIuser(getLoginUserPk());
 
         List<ChatSelVo> findChatSelVo = mapper.selChatAll(dto);
-        // todo 예외처리
 
+        // todo 예외처리
+        ChatSelVo selvo = new ChatSelVo();
+        selvo.setTotalChatCount(chatUserRepository.getChatCount(loginedIuser));
 
         return findChatSelVo;
     }
 
-
+    // 방 들어갔을때 채팅글 리스트.
+    @Transactional
     public List<ChatMsgSelVo> getChatList(long ichat, Integer page) {
-
-        // 방 들어갔을때 채팅글 리스트.
-
         // todo 예외처리
-        List<ChatMsgSelVo> findChatMsgSelVo
-                = chatMsgRepository.findAllChatMsgByIchat(ichat, page);
+        List<ChatMsgSelVo> findChatMsgSelVo = chatMsgRepository.findAllChatMsgByIchat(ichat, page);
         return findChatMsgSelVo;
-
-
     }
 
+    // 방 새로 등록
+    @Transactional
     public ResVo postRoom(Long targetIuser, Long iproduct) {
-
-        // 방 새로 등록
         Chat saveChat = Chat.builder()
                 .product(productRepository.findById(iproduct).orElseThrow(() -> new ClientException(ErrorCode.NO_SUCH_PRODUCT_EX_MESSAGE,
                         "상품이 존재하지 않습니다.")))
                 .build();
-        User findUserMe = userRepository.findById(getLoginUserPk()).orElseThrow(() -> new ClientException(ErrorCode.ILLEGAL_STATUS_EX_MESSAGE, "로그인 유저가 존재하지 않습니다."));
+        User findUserMe = userRepository.findById(facade.getLoginUserPk()).orElseThrow(() -> new ClientException(ErrorCode.ILLEGAL_STATUS_EX_MESSAGE, "로그인 유저가 존재하지 않습니다."));
         User findUserTarget = userRepository.findById(targetIuser).orElseThrow(() -> new ClientException(ErrorCode.NO_SUCH_USER_EX_MESSAGE, "상대방 유저가 존재하지 않습니다."));
-
 
         chatUserRepository.save(ChatUser.builder()
                 .chat(saveChat)
@@ -126,6 +129,36 @@ public class ChatService {
 
         return new ResVo(1L);
     }
+
+    // 로그인한 유저의 채팅리스트 전체 카운트
+    @Transactional
+    public ResVo getChatCount() {
+
+        Long counter = chatUserRepository.getChatCount(getLoginUserPk());
+        return new ResVo(counter);
+    }
+
+    //채팅방 삭제(숨김)
+    @Transactional
+    public ResVo deleteChat(Long ichat) {
+        Long loginedIuser = facade.getLoginUserPk();
+        ChatUser chatUser = chatUserRepository.delUserStatus(ichat, loginedIuser);
+        chatUser.setStatus(ChatUserStatus.DELETE);
+
+        return new ResVo(Const.SUCCESS);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     // ex m
 
