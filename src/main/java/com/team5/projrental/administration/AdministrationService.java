@@ -427,6 +427,7 @@ public class AdministrationService {
                         .iboard(board.getId())
                         .nick(board.getUser().getNick())
                         .view(board.getView())
+                        .title(board.getTitle())
                         .createdAt(board.getCreatedAt())
                         .build()).collect(Collectors.toList()))
                 .build();
