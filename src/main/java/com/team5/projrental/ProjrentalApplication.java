@@ -23,21 +23,23 @@ import java.awt.print.Pageable;
 public class ProjrentalApplication {
 
 
+    public static void main(String[] args) {
+        SpringApplication.run(ProjrentalApplication.class, args);
+    }
 
-	public static void main(String[] args) {
-		SpringApplication.run(ProjrentalApplication.class, args);
-	}
+    @Bean
+    public PageableHandlerMethodArgumentResolverCustomizer customizer() {
+        return p -> p.setOneIndexedParameters(true);
+    }
 
-	@Bean
-	public PageableHandlerMethodArgumentResolverCustomizer customizer(){
-		return p -> p.setOneIndexedParameters(true);
-	}
+    @Bean
+    public InMemoryHttpExchangeRepository exchangeRepository() {
+        return new InMemoryHttpExchangeRepository();
+    }
 
-	@Bean
-	public InMemoryHttpExchangeRepository exchangeRepository() {
-		return new InMemoryHttpExchangeRepository();
-	}
-
-
+    @Bean
+    public JPAQueryFactory jpaQueryFactory(EntityManager em) {
+        return new JPAQueryFactory(em);
+    }
 
 }
