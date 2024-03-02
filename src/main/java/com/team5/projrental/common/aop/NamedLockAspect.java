@@ -32,7 +32,7 @@ public class NamedLockAspect {
         this.dataSource = dataSource;
     }
 
-    @Transactional
+//    @Transactional
     @Around("@annotation(namedLock)")
     public Object withLock(ProceedingJoinPoint joinPoint,
                            NamedLock namedLock) throws Throwable {

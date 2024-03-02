@@ -23,6 +23,7 @@ public class PaymentByAdminVo {
     private Integer totalPrice;
     private Integer deposit;
     private LocalDateTime createdAt;
+    private Integer paymentStatus;
 
     private Long iuser;
     private String myPaymentCode;

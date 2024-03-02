@@ -6,6 +6,7 @@ import com.team5.projrental.common.model.ResVo;
 import com.team5.projrental.payment.model.PaymentInsDto;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -85,7 +86,9 @@ public class PaymentController {
                           "<실패시><br>" +
                           "예외 발생")
     @GetMapping("/{ipayment}")
-    public PaymentInfoVo getPaymentInfo(@PathVariable Long ipayment) {
+    public PaymentInfoVo getPaymentInfo(@PathVariable
+                                        @Min(value = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
+                                        Long ipayment) {
         return paymentService.getPaymentInfo(ipayment);
     }
 
@@ -96,7 +99,9 @@ public class PaymentController {
                           "<실패시><br>" +
                           "예외 발생")
     @GetMapping("/code")
-    public ResVo patchPayInfo(@RequestParam String code) {
+    public ResVo patchPayInfo(@RequestParam
+                              @NotBlank(message = ErrorMessage.CAN_NOT_BLANK_EX_MESSAGE)
+                              String code) {
 
         return paymentService.patchPayInfo(code);
 
