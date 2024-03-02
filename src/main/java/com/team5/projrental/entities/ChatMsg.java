@@ -16,9 +16,6 @@ public class ChatMsg extends CreatedAt {
     @Column(name = "ichat_msg", columnDefinition = "BIGINT UNSIGNED")
     private Long id;
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ichatMsg;
-
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "ichat_user")
     private ChatUser chatUser;
