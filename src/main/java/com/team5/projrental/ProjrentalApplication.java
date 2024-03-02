@@ -2,6 +2,7 @@ package com.team5.projrental;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,6 +22,8 @@ import java.awt.print.Pageable;
 @EnableRedisRepositories
 public class ProjrentalApplication {
 
+
+
 	public static void main(String[] args) {
 		SpringApplication.run(ProjrentalApplication.class, args);
 	}
@@ -35,9 +38,6 @@ public class ProjrentalApplication {
 		return new InMemoryHttpExchangeRepository();
 	}
 
-	@Bean
-	public JPAQueryFactory jpaQueryFactory(EntityManager em) {
-		return new JPAQueryFactory(em);
-	}
+
 
 }
