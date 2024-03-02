@@ -13,6 +13,10 @@ public class ChatMsg extends CreatedAt {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ichat_msg", columnDefinition = "BIGINT UNSIGNED")
+    private Long id;
+
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ichatMsg;
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
