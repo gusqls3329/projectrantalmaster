@@ -14,7 +14,7 @@ public class InitJPAQueryFactory {
 
 
     @Bean
-    public JPAQueryFactory jpaQueryFactory(EntityManager em) {
+    public JPAQueryFactory jpaQueryFactory() {
         return new JPAQueryFactory(em);
     }
 
