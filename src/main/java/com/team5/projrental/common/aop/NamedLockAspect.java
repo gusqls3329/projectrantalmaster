@@ -32,7 +32,7 @@ public class NamedLockAspect {
         this.dataSource = dataSource;
     }
 
-    @Transactional
+//    @Transactional
     @Around("@annotation(namedLock)")
     public Object withLock(ProceedingJoinPoint joinPoint,
                            NamedLock namedLock) throws Throwable {
@@ -42,10 +42,16 @@ public class NamedLockAspect {
             try {
                 log.debug("NamedLockAspect.executeWithLock()");
                 getLock(conn, userLockName, timeoutSeconds);
+                conn.setAutoCommit(false);
                 Object result = joinPoint.proceed();
                 log.debug("NamedLockAspect.withLock() result: {}", result);
+                conn.commit();
                 return result;
+            } catch (Throwable e) {
+                conn.rollback();
+                throw e;
             } finally {
+                conn.setAutoCommit(true);
                 releaseLock(conn, userLockName);
             }
         } catch (Throwable e) {
