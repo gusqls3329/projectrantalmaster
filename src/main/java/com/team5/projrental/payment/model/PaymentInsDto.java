@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.team5.projrental.common.exception.ErrorMessage;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,10 +28,10 @@ public class PaymentInsDto {
 //    @NotEmpty(message = ErrorMessage.CAN_NOT_BLANK_EX_MESSAGE)
     private String paymentMethod;
     @NotNull(message = ErrorMessage.CAN_NOT_BLANK_EX_MESSAGE)
-    @FutureOrPresent(message = ErrorMessage.RENTAL_DATE_MUST_BE_BEFORE_THAN_TODAY_EX_MESSAGE)
+    @FutureOrPresent(message = ErrorMessage.RENTAL_DATE_MUST_BE_AFTER_THAN_TODAY_EX_MESSAGE)
     private LocalDate rentalStartDate;
     @NotNull(message = ErrorMessage.CAN_NOT_BLANK_EX_MESSAGE)
-    @FutureOrPresent(message = ErrorMessage.RENTAL_DATE_MUST_BE_BEFORE_THAN_TODAY_EX_MESSAGE)
+    @FutureOrPresent(message = ErrorMessage.RENTAL_DATE_MUST_BE_AFTER_THAN_TODAY_EX_MESSAGE)
     private LocalDate rentalEndDate;
 //    @NotNull(message = ErrorMessage.CAN_NOT_BLANK_EX_MESSAGE)
 //    @Range(min = 50, max = 100, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
