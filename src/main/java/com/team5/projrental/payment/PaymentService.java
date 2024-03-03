@@ -264,7 +264,7 @@ public class PaymentService {
                 .iuser(loginUserPk)
                 .ipayment(ipayment)
                 .build()).orElseThrow(() -> new ClientException(NO_SUCH_PAYMENT_EX_MESSAGE,
-                "잘못된 결제정보 입니다. (login user, ipayment"));
+                "잘못된 결제정보 입니다. (login user, ipayment)"));
 
         return PaymentInfoVo.builder()
                 .method(findPaymentInfo.getPayment().getPaymentDetail().getCategory().name())
@@ -277,7 +277,7 @@ public class PaymentService {
                 .title(findPaymentInfo.getPayment().getProduct().getTitle())
                 .prodMainPic(findPaymentInfo.getPayment().getProduct().getStoredPic())
                 .myPaymentCode(findPaymentInfo.getCode())
-                .paymentStatus(findPaymentInfo.getCode())
+                .paymentStatus(findPaymentInfo.getStatus().getNum())
                 .build();
 
     }
