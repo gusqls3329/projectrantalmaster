@@ -32,7 +32,7 @@ public class KakaoPayController {
                           "실패시: redirectUrl 에 .../payment/fail 이 담기고, id 가 null<br>" +
                           "취소시: redirectUrl 에 .../payment/cancel 이 담기고, id 가 null<br> ")
     @Schema(name = "kakaoPay")
-    @GetMapping("/ready")
+    @PostMapping("/ready")
     public PayReadyVo ready(@RequestBody PayInfoDto dto) {
         return kakaoPayService.ready(dto);
     }

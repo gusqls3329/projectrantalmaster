@@ -1,5 +1,6 @@
 package com.team5.projrental.user.verification.users.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +15,7 @@ public class VerificationUserInfo {
     private String userName;
     private String userPhone;
     private String userBirthday;
+    @JsonIgnore
     private String nationality;
     // 암호화 필요 데이터 끝
 }

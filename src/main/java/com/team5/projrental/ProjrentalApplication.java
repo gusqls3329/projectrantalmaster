@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.web.config.PageableHandlerMethodArgumentResolverCustomizer;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -19,7 +20,7 @@ import java.awt.print.Pageable;
 @SpringBootApplication
 @ConfigurationPropertiesScan
 @EnableConfigurationProperties
-@EnableRedisRepositories
+@EnableJpaRepositories
 public class ProjrentalApplication {
 
 

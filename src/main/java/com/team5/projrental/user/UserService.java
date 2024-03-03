@@ -36,6 +36,7 @@ import com.team5.projrental.payment.thirdproj.paymentinfo.PaymentInfoRepository;
 import com.team5.projrental.product.thirdproj.japrepositories.product.ProductRepository;
 import com.team5.projrental.user.model.*;
 import com.team5.projrental.user.verification.users.TossVerificationRequester;
+import com.team5.projrental.user.verification.users.model.VerificationRedisForm;
 import com.team5.projrental.user.verification.users.model.VerificationUserInfo;
 import com.team5.projrental.user.verification.users.model.check.CheckResponseVo;
 import com.team5.projrental.user.verification.users.model.ready.VerificationReadyDto;
@@ -94,7 +95,7 @@ UserService {
     //    @Value("${spring.config.activate.on-profile}")
     private String profile;
 
-    private final RedisTemplate<Long, VerificationInfo> redisTemplate;
+    private final RedisTemplate<String, VerificationRedisForm> redisTemplate;
 
     @Transactional
     public VerificationReadyVo readyVerification(VerificationUserInfo userInfo) {
@@ -113,20 +114,29 @@ UserService {
         tossVerificationRepository.findByUserNameAndUserPhoneAndUserBirthday(userInfo.getUserName(), userInfo.getUserPhone(),
                 userInfo.getUserBirthday()).ifPresentOrElse(verificationInfo -> {
                     verificationInfo.setTxId(dto.getTxid());
+                    dto.setId(verificationInfo.getId());
+
                     // redis에 저장
-                    redisTemplate.opsForValue().set(verificationInfo.getId(), verificationInfo, Duration.ofSeconds(300L));
+                    VerificationRedisForm redisForm = getVerificationRedisForm(verificationInfo);
+                    redisTemplate.opsForValue().set(redisForm.getId(), redisForm, Duration.ofSeconds(300L));
+
                     // debug
-            log.debug("redis = {}", redisTemplate.opsForValue().get(verificationInfo.getId()));
+                    log.debug("redis = {}", redisTemplate.opsForValue().get(verificationInfo.getId()));
                 },
                 () -> {
                     VerificationInfo info = VerificationInfo.builder()
-                            .id(dto.getId())
                             .txId(dto.getTxid())
+                            .userName(userInfo.getUserName())
+                            .userBirthday(userInfo.getUserBirthday())
                             .userPhone(userInfo.getUserPhone())
                             .build();
+
                     tossVerificationRepository.save(info);
+                    dto.setId(info.getId());
+
                     // redis에 저장
-                    redisTemplate.opsForValue().set(info.getId(), info, Duration.ofSeconds(300L));
+                    VerificationRedisForm redisForm = getVerificationRedisForm(info);
+                    redisTemplate.opsForValue().set(redisForm.getId(), redisForm, Duration.ofSeconds(300L));
                     // debug
                     log.debug("redis = {}", redisTemplate.opsForValue().get(info.getId()));
                 });
@@ -147,23 +157,45 @@ UserService {
                 .build();
     }
 
+    private static VerificationRedisForm getVerificationRedisForm(VerificationInfo verificationInfo) {
+        return VerificationRedisForm.builder()
+                .id(String.valueOf(verificationInfo.getId()))
+                .txId(verificationInfo.getTxId())
+                .userName(verificationInfo.getUserName())
+                .userPhone(verificationInfo.getUserPhone())
+                .userBirthday(verificationInfo.getUserBirthday())
+                .build();
+    }
+
     @Transactional
     public CheckResponseVo checkVerification(Long id) {
-        VerificationInfo baseInfo = redisTemplate.opsForValue().get(id);
+        VerificationRedisForm baseInfo = redisTemplate.opsForValue().get(String.valueOf(id));
         // debug
         log.debug("baseInfo = {}", baseInfo);
 
         if (baseInfo == null) {
             throw new ClientException(ILLEGAL_EX_MESSAGE, "본인인증 내역이 없습니다.");
         }
-        VerificationInfo info = tossVerificationRepository.findById(id).orElseThrow(() -> new ClientException(ILLEGAL_EX_MESSAGE, "본인인증 내역이 없습니다."));
+//        VerificationInfo info = tossVerificationRepository.findById(id).orElseThrow(() -> new ClientException(ILLEGAL_EX_MESSAGE, "본인인증 내역이 없습니다."));
+        VerificationInfo info = VerificationInfo.builder()
+                .id(Long.parseLong(baseInfo.getId()))
+                .userName(baseInfo.getUserName())
+                .userPhone(baseInfo.getUserPhone())
+                .userBirthday(baseInfo.getUserBirthday())
+                .txId(baseInfo.getTxId())
+                .build();
 
+        // txId 만 사용하므로 문제 없음.
         CheckResponseVo responseVo = tossVerificationRequester.check(info);
 
-        info.setUserName(baseInfo.getUserName());
-        info.setUserBirthday(baseInfo.getUserBirthday());
-
-        return responseVo;
+        // 토스 본인인증이 테스트라서 데이터를 redis 에 미리 저장해둔 데이터로 변경작업 필요. (성별, 지역은 토스 응답 그대로 사용)
+        return CheckResponseVo.builder()
+                .id(Long.valueOf(baseInfo.getId()))
+                .name(baseInfo.getUserName())
+                .birthday(baseInfo.getUserBirthday())
+                .gender(responseVo.getGender())
+                .nationality(responseVo.getNationality())
+                .build();
     }
 
 

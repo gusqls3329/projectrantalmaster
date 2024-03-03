@@ -48,6 +48,10 @@ spring:
       - "*"
     stomp-broker-relay:
       - /exchange
+  data:
+    redis:
+      repositories:
+        enabled: false
 
 logging:
   level:
@@ -106,7 +110,6 @@ api:
       base-url: "https://api.odcloud.kr/api/nts-businessman/v1/validate"
       service-code-key: "serviceKey"
       service-code-value: "VUXEsrgmuyDberLO0pvh4iEQON2Apg6dFFxNMvxc5hAYZjC4XBmmNyxuWvgxfaQpZVNnP%2BVqKNgS1W1isULaQA%3D%3D"
-
 redis:
   config:
     host: 192.168.0.144
