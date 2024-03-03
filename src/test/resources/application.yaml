@@ -1,0 +1,103 @@
+fcm:
+  certification: serviceAccountKey.json
+
+app: #속성을 바꿀 수 있는 부분 들은 상수 처럼 쓰기 편하도록 만들어놓음
+  jwt:
+    secret: akjw4egoiaj409gj2a094jg02984jgasegsegase9024jg09ftglk #JWT를 만들 때 쓰는 키, 길이가 짧으면 에러터짐
+    header-scheme-name: authorization
+    token-type: Bearer
+    access-token-expiry: 7200000 #단위 : 밀리세컨드 7200000은 7200초(2시간) 엑세스 토큰
+    refresh-token-expiry: 1296000000 # 15일 리프레시 토큰
+mybatis:
+  mapper-locations: mappers/**/*.xml
+springdoc:
+  swagger-ui:
+    path: /swagger.html
+spring:
+
+#  config:
+#    activate:
+#      on-profile: default
+  rabbitmq:
+    #host: localhost
+    host: 192.168.0.144
+    port: 5672
+    username: admin
+    password: admin
+    virtual-host: /
+    chat-queue-name: chat.queue
+    chat-exchange-name: chat.exchange
+    chat-routing-key: room.*
+    stomp-relay-port: 61613
+    stomp-application-destination-prefixes:
+      - /pub
+    stomp-end-point:
+      - /ws
+    stomp-allowed-origin-patterns:
+      - "*"
+    stomp-broker-relay:
+      - /exchange
+
+logging:
+  level:
+    -com.team5.projrental: DEBUG
+    org.hibernate.sql: trace
+    org.hibernate.orm.jdbc.bind: trace # 바인딩된 파라미터 정보 제공
+
+file:
+  base-package: D:/projrental/download/pics/
+server:
+  tomcat:
+    threads:
+      max: 200
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: "/monitor/actuator-private"
+  endpoint:
+    health:
+      show-details: always
+api:
+  verification:
+    toss:
+      access-token: "eyJraWQiOiJjZXJ0IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJ0ZXN0X2E4ZTIzMzM2ZDY3M2NhNzA5MjJiNDg1ZmU4MDZlYjJkIiwiYXVkIjoidGVzdF9hOGUyMzMzNmQ2NzNjYTcwOTIyYjQ4NWZlODA2ZWIyZCIsIm5iZiI6MTcwODE0NzY5NSwic2NvcGUiOlsiY2EiXSwiaXNzIjoiaHR0cHM6Ly9jZXJ0LnRvc3MuaW0iLCJleHAiOjE3Mzk2ODM2OTUsImlhdCI6MTcwODE0NzY5NSwianRpIjoiMjE1M2RhNzAtYTVlZS00NzVmLWJkMjYtMzM3NDk2OTUyMTkxIn0.bvCu3XMorb-EvZAIXVw0hWR0mZFtdq6NaOrR4wuPNtax-ne7xsrvGHepfHrnCyjk74_jNCDyWrL956CX4g21YXXzNX64u4kZ1BCLEWJk7Lc7lcET8_kI8E0of6fqCtqUImHuFM9uxC2jFMd9am30tkx23_QRYnocUjumNuI5o7Fmdjvs7B0nQV8myaVMuDaN8EQSajoXkC-utYOZaoxHsvadzzdYHfi2bfWVzEN4AKDR_YnxjvIQD-3PiZmlC11tIIB6qBxWXVxwySssEH2y_0X7R9fwwug5AbIcQ1bdWUzOJyU6pRk6eU7cGe1ux9OkwYbc43Au8hkwPQ4D7f7Jow"
+      scope: "ca"
+      token-key: "Authorization"
+      token-type: "Bearer "
+      request-type: "USER_PERSONAL" # ??? ??, ????, ???? ??? ???? ?? ??
+      success-callback-url: "/api/verification/toss/success"
+      fail-callback-url: "/api/verification/toss/fail"
+      ready-request-url: "https://cert.toss.im/api/v2/sign/user/auth/id/request"
+      check-request-url: "https://cert.toss.im/api/v2/sign/user/auth/id/result"
+      #      trigger-type: "APP_SCHEME"
+      trigger-type: "PUSH"
+  pay:
+    kakao:
+      cid: "TC0ONETIME"
+      secret-key: "DEV0ACCFBF114EDA9C83BAD136AEF11311D7DC4D"
+      header-key: "Authorization"
+      header-value: "SECRET_KEY DEV0ACCFBF114EDA9C83BAD136AEF11311D7DC4D"
+
+      success-redirect-url: "http://localhost:8080/payment/success"
+      cancel-redirect-url: "http://localhost:8080/payment/cancel"
+      fail-redirect-url: "http://localhost:8080/payment/fail"
+      request-url: "https://open-api.kakaopay.com/online/v1/payment/ready"
+      approve-url: "https://open-api.kakaopay.com/online/v1/payment/approve"
+  axis:
+    kakao:
+      url: "https://dapi.kakao.com/v2/local/search/address"
+      header-key: "Authorization"
+      header-value: "KakaoAK 7b5a7755251df2d95b48052980a5c025"
+  comp:
+    code:
+      base-url: "https://api.odcloud.kr/api/nts-businessman/v1/validate"
+      service-code-key: "serviceKey"
+      service-code-value: "VUXEsrgmuyDberLO0pvh4iEQON2Apg6dFFxNMvxc5hAYZjC4XBmmNyxuWvgxfaQpZVNnP%2BVqKNgS1W1isULaQA%3D%3D"
+
+redis:
+  config:
+    host: 192.168.0.144
+    port: 6379
+
