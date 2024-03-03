@@ -277,7 +277,7 @@ public class PaymentService {
                 .title(findPaymentInfo.getPayment().getProduct().getTitle())
                 .prodMainPic(findPaymentInfo.getPayment().getProduct().getStoredPic())
                 .myPaymentCode(findPaymentInfo.getCode())
-                .paymentStatus(findPaymentInfo.getStatus().name())
+                .paymentStatus(findPaymentInfo.getStatus().getNum())
                 .build();
 
     }
