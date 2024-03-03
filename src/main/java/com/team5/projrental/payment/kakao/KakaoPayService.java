@@ -19,6 +19,7 @@ import com.team5.projrental.payment.kakao.model.success.PayApproveDto;
 import com.team5.projrental.payment.kakao.property.ApiPayProperty;
 import com.team5.projrental.payment.kakao.requester.KakaoPayRequestGenerator;
 import com.team5.projrental.payment.thirdproj.paymentdetail.PaymentDetailRepository;
+import com.team5.projrental.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,9 @@ public class KakaoPayService {
     private final ApiPayProperty property;
     private final ObjectMapper om;
 
+
     private final PaymentDetailRepository repository;
+    private final UserRepository userRepository;
 
     @Transactional
     public PayReadyVo ready(PayInfoDto dto) {
@@ -71,9 +74,13 @@ public class KakaoPayService {
 
         if (responseDto.getTid() != null && !responseDto.getTid().isEmpty()) {
             paymentDetail = PaymentDetail.builder()
-                    .tid(responseDto.getTid())
-                    .category(PaymentDetailCategory.KAKAO_PAY)
-                    .build();
+                    .user(userRepository.findById(facade.getLoginUserPk())
+                            .orElseThrow(() -> new ClientException(
+                                    ErrorCode.NO_SUCH_USER_EX_MESSAGE,
+                                    "잘못된 사용자 정보 입니다.")))
+                            .tid(responseDto.getTid())
+                            .category(PaymentDetailCategory.KAKAO_PAY)
+                            .build();
             repository.save(paymentDetail);
         }
 

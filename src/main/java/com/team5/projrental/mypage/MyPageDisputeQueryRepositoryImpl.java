@@ -38,7 +38,5 @@ public class MyPageDisputeQueryRepositoryImpl implements MyPageDisputeQueryRepos
                 .join(dispute.reportedUser)
                 .where(dispute.reportedUser.id.eq(loginUserPk))
                 .fetchOne();
-
-
     }
 }
