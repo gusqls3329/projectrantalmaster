@@ -17,15 +17,18 @@ import lombok.experimental.SuperBuilder;
 public class Users extends BaseAt {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "iuser")
+    @Column(name = "iuser", columnDefinition = "BIGINT UNSIGNED", nullable = false)
     private Long id;
 
     @Enumerated(EnumType.STRING)
     private Auth auth;
 
-    @Column(unique = true)
+    @Column(unique = true, length = 20, nullable = false)
     private String uid;
+    @Column(length = 2100, nullable = false)
     private String upw;
+    @Column(length = 13, nullable = false)
     private String phone;
+    @Column(length = 30, nullable = false)
     private String email;
 }
