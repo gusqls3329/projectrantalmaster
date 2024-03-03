@@ -32,7 +32,7 @@ public class RabbitMQConfiguration {
 
     @Bean
     Queue queue() {
-        return new Queue(properties.getChatExchangeName(), true);
+        return new Queue(properties.getChatQueueName(), true);
     }
 
     @Bean
