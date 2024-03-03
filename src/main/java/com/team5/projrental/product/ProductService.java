@@ -126,13 +126,17 @@ public class ProductService implements RefProductService {
 
         List<ProductListForMainDto> dto = productRepository.findEachTop8ByCategoriesOrderByIproductDesc(limit);
 
-        Long loginUserPk = authenticationFacade.getLoginUserPk();
 
         List<Long> iproducts = dto.stream().map(ProductListForMainDto::getIproduct).toList();
 
         // 제품의 전체 좋아요 수와 로그인 유저가 좋아요 했는지 여부 가져오기
-        List<ProdLike> prodLikes = productLikeRepository.countByIuserAndInIproduct(loginUserPk, iproducts);
-
+        List<ProdLike> prodLikes = new ArrayList<>();
+        try {
+            Long loginUserPk = authenticationFacade.getLoginUserPk();
+            prodLikes.addAll(productLikeRepository.countByIuserAndInIproduct(loginUserPk, iproducts));
+        } catch (ClassCastException ignored) {
+            // 로그인하지 않은 경우
+        }
 //        List<Product> findProduct = productRepository.findByIdIn(iproducts);
 
 
