@@ -20,6 +20,6 @@ public class ChatBot extends BaseAt {
     private Integer depth;
     private Integer level;
     private String mention;
-    private String redirectUrl;
+//    private String redirectUrl;
 
 }

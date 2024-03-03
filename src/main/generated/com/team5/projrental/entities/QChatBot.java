@@ -34,8 +34,6 @@ public class QChatBot extends EntityPathBase<ChatBot> {
 
     public final StringPath mention = createString("mention");
 
-    public final StringPath redirectUrl = createString("redirectUrl");
-
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 

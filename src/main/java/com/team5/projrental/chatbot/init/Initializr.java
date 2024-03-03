@@ -2,21 +2,28 @@ package com.team5.projrental.chatbot.init;
 
 import com.team5.projrental.entities.ChatBot;
 import com.team5.projrental.chatbot.repository.ChatBotRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-//@Component
+@Component
 @RequiredArgsConstructor
 public class Initializr {
 
     private final ChatBotRepository chatBotRepository;
+    private final EntityManager em;
 
     @Transactional
-//    @EventListener(ApplicationReadyEvent.class)
+    @EventListener(ApplicationReadyEvent.class)
     public void init() {
+        if (chatBotRepository.findAll().size() == 31) {
+            return;
+        }
+
+        chatBotRepository.deleteAll();
 
         chatBotRepository.save(ChatBot.builder()
                 .id(1L)
@@ -268,9 +275,6 @@ public class Initializr {
                          "주의사항: 만약 아직 처리되지 않은 거래가 남아있는 경우에는 탈퇴를 진행할 수 없습니다.\n" +
                          "탈퇴 전에 해당 사항을 확인하시기 바랍니다.")
                 .build());
-
-
-
 
 
     }
