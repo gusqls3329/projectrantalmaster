@@ -29,38 +29,33 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
-                        "/api/mypage/**",
-                        "/api/chat/**",
-                        "/api/pay/review",
-                        "/api/user/signout",
-                        "/api/user/fcm",
-                        "/api/user/refrech-token",
-                        "/api/user/firebase-token"
-                ).authenticated())
-                .authorizeHttpRequests(auth -> auth.requestMatchers(
-                        HttpMethod.PATCH, "/api/user"
-                ).authenticated())
-                .authorizeHttpRequests(auth -> auth.requestMatchers(
-                        HttpMethod.GET, "/api/user"
-                ).authenticated())
-                .authorizeHttpRequests(auth -> auth.requestMatchers(
-                        HttpMethod.PUT, "/api/user"
-                ).authenticated())
-                .authorizeHttpRequests(auth -> auth.requestMatchers(
-                        "/api/pay/**"
-                ).authenticated())
-                .authorizeHttpRequests(auth -> auth.requestMatchers(
-                        HttpMethod.DELETE, "/api/prod"
-                ).authenticated())
-                .authorizeHttpRequests(auth -> auth.requestMatchers(
-                        HttpMethod.POST, "/api/prod"
-                ).authenticated())
-                .authorizeHttpRequests(auth -> auth.requestMatchers(
-                        HttpMethod.PUT, "/api/prod"
-                ).authenticated())
-                .authorizeHttpRequests(auth -> auth.requestMatchers(
-                        HttpMethod.PATCH, "/api/prod"
-                ).authenticated().anyRequest().permitAll())
+                                "/api/mypage/**",
+                                "/api/chat/**",
+                                "/api/pay/review",
+                                "/api/user/signout",
+                                "/api/user/fcm",
+                                "/api/user/refrech-token",
+                                "/api/user/firebase-token",
+                                "/api/pay/**",
+
+                                // 3차
+
+                                "/api/pay/kakao/**",
+                                "/api/dispute/**",
+                                "/api/sse/connect",
+                                "/api/bot/**"
+                        ).authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/api/user").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/user").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/user").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/prod").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/prod").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/prod").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/api/prod").authenticated()
+                        // 권한
+                        .requestMatchers("/api/admin/**").hasAnyRole("ADMIN")
+
+                        .anyRequest().permitAll())
                 .exceptionHandling(ex -> {
                     ex.authenticationEntryPoint(new JwtAuthenticationEntryPoint());
                     ex.accessDeniedHandler(new JwtAccessDeniedHandler());
