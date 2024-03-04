@@ -11,6 +11,7 @@ import com.team5.projrental.entities.Push;
 import com.team5.projrental.user.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class PushQueryRepositoryImpl implements PushQueryRepository{
     private final UsersRepository usersRepository;
 
     @Override
+    @Transactional
     public long deleteUseIn(List<Push> findPush) {
 
         long executed = query.delete(push)

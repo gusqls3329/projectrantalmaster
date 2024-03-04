@@ -31,10 +31,10 @@ spring:
 #      on-profile: default
   rabbitmq:
     #host: localhost
-    host: 192.168.0.144
+    host: localhost
     port: 5672
-    username: admin
-    password: admin
+    username: guest
+    password: guest
     virtual-host: /
     chat-queue-name: chat.queue
     chat-exchange-name: chat.exchange
