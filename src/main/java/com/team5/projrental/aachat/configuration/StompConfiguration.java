@@ -33,7 +33,7 @@ public class StompConfiguration implements WebSocketMessageBrokerConfigurer {
 
         registry.setPathMatcher(new AntPathMatcher("."))
                 .setApplicationDestinationPrefixes(properties.getStompApplicationDestinationPrefixes())
-                .enableStompBrokerRelay(properties.getStompBrokerRelay())
+                .enableStompBrokerRelay(properties.getStompBrokerRelay()[0], properties.getStompBrokerRelay()[1])
                 .setRelayHost(properties.getHost())
                 .setRelayPort(properties.getStompRelayPort())
                 .setVirtualHost(properties.getVirtualHost())
