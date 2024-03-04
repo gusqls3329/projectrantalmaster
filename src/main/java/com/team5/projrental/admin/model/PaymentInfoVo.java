@@ -20,5 +20,5 @@ public class PaymentInfoVo {
     private Long ipayment;
     private String title;
     private String prodMainPic;
-    private String paymentStatus;
+    private Integer paymentStatus;
 }

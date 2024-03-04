@@ -25,10 +25,12 @@ public class MyUserDetails implements UserDetails, OAuth2User {
 
     @Override //권한이 무엇이있는지에 대한 리턴
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(myPrincipal == null){
-            return null;
-        }
-        return List.of(new SimpleGrantedAuthority("ROLE_" + this.myPrincipal.getAuth()));
+
+        return myPrincipal == null ? null :
+                myPrincipal.getRoles()
+                        .stream()
+                        .map(r -> new SimpleGrantedAuthority("ROLE_" + r))
+                        .collect(Collectors.toList());
     }
 
     @Override //1. 루틴(여기에 값이 리턴하도록_아이디가 리턴되도록..) 2. 커스터마이징(직접응답, 리턴까지 직접구현)
