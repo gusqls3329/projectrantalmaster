@@ -76,7 +76,7 @@
 
     <!-- 특정 게시글의 사진들 -->
     <select id="selBoardPicList">
-        SELECT stored_pic AS boardPic
+        SELECT stored_pic AS boardPic, ipics
         FROM board_pic
         WHERE iboard = #{iboard}
     </select>
@@ -133,8 +133,10 @@
     </select>
 
     <delete id="delBoardPics">
-        DELETE FROM board_pics
-        WHERE iboard = #{iboard}
+        DELETE FROM board_pic
+        WHERE iboard = #{iboard} and ipics = #{intIpics}
     </delete>
+
+
 
 </mapper>

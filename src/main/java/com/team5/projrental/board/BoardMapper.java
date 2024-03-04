@@ -27,8 +27,6 @@ public interface BoardMapper {
     //List<BoardFavVo> selLike (long iboard,long iuser);
     BoardAllCount selBoardCount(String status);
 
-    int delBoardPics(int iboard);
-
-
-
+    int delBoardPics(int iboard, int intIpics);
+    //gg
 }

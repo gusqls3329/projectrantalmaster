@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
@@ -60,13 +61,14 @@ public class SseEmitterHolder {
         }
 
 
-        myThreadPoolHolder.getThreadPool().execute(() -> sendFromDbMessage(iuser));
+        sendFromDbMessage(iuser);
 
         return sseEmitter;
     }
 
     // + 만약 해당 유저의 SseEmitter 가 존재하지 않으면 DB 에 저장해두고, 로그인시 해당 데이터 일괄 보내기
     // 여기서 필요한건 DB에서 해당 유저에게 보내야할 푸시가 존재한다면 해당 메시지 다 담아서 푸시하기.
+    @Transactional
     public void sendFromDbMessage(Long iuser) {
         // select iusers, description, code, identity_num, kind from push_message where iuser = #{iuser}
         // select * from push_message where iusers = #{iuser}
