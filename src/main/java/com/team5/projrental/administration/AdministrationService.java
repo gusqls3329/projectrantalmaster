@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AdministrationService {
     private final ApplicationEventPublisher eventPublisher;
-
     private final PaymentInfoRepository paymentInfoRepository;
     private final AdminUserRepository userRepository;
     private final AdminRepository adminRepository;
@@ -222,27 +221,23 @@ public class AdministrationService {
             DisputeKind kind = null;
             String pk = "";
 
-            if (dispute instanceof DisputeBoard) {
-                DisputeBoard disputeBoard = (DisputeBoard) dispute;
+            if (dispute instanceof DisputeBoard disputeBoard) {
                 kind = DisputeKind.BOARD;
                 pk = String.valueOf(disputeBoard.getBoard().getId());
             }
 
-            if (dispute instanceof DisputePayment) {
-                DisputePayment disputePayment = (DisputePayment) dispute;
+            if (dispute instanceof DisputePayment disputePayment) {
                 kind = DisputeKind.PAYMENT;
                 pk = "ipayment: " + disputePayment.getPaymentInfo().getPaymentInfoIds().getIpayment()
                      + ", iuser: " + disputePayment.getPaymentInfo().getPaymentInfoIds().getIuser();
             }
 
-            if (dispute instanceof DisputeProduct) {
-                DisputeProduct disputeProduct = (DisputeProduct) dispute;
+            if (dispute instanceof DisputeProduct disputeProduct) {
                 kind = DisputeKind.PRODUCT;
                 pk = String.valueOf(disputeProduct.getProduct().getId());
             }
 
-            if (dispute instanceof DisputeChatUser) {
-                DisputeChatUser disputeChat = (DisputeChatUser) dispute;
+            if (dispute instanceof DisputeChatUser disputeChat) {
                 kind = DisputeKind.CHAT;
                 pk = String.valueOf(disputeChat.getChatUser().getId());
             }
