@@ -39,7 +39,8 @@ public class RefundQueryRepositoryImpl implements RefundQueryRepository {
     }
 
     private BooleanExpression whereFindAllLimitPage(Integer status) {
-        return status == null ? null : refund.status.eq(RefundStatus.getByNum(status));
+        return status == null ? null : refund.status.eq(RefundStatus.getByNum(status))
+                .and(refund.refundAmount.gt(0));
     }
 
 }
