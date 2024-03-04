@@ -225,6 +225,7 @@ public class MypageService {
         throw new ClientException(ILLEGAL_EX_MESSAGE);
     }
 
+    @Transactional
     public ProductListVo getProduct(ProductListDto dto) {
         Long loginUserPk = authenticationFacade.getLoginUserPk();
         Optional<User> user = userRepository.findById(dto.getTargetIuser());
