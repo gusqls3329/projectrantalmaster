@@ -4,8 +4,8 @@ import com.team5.projrental.aachat.model.ChatMsgInsDto;
 import com.team5.projrental.aachat.properties.RabbitMQProperties;
 import com.team5.projrental.common.SecurityProperties;
 import com.team5.projrental.common.security.JwtTokenProvider;
+import com.team5.projrental.common.security.SecurityUserDetails;
 import com.team5.projrental.common.security.model.SecurityPrincipal;
-import com.team5.projrental.common.security.oauth2.MyUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.ExchangeTypes;
@@ -39,8 +39,8 @@ public class ChatMessageController {
 
         if (auth != null) {
             // 만약 권한이 필요하다면 여기서 처리
-            MyUserDetails myUserDetails = (MyUserDetails) auth.getPrincipal();
-            SecurityPrincipal myPrincipal = myUserDetails.getMyPrincipal();
+            SecurityUserDetails myUserDetails = (SecurityUserDetails) auth.getPrincipal();
+            SecurityPrincipal myPrincipal = myUserDetails.getSecurityPrincipal();
             dto.setSenderIuser(myPrincipal.getIuser());
 //            dto.setSenderNick(// user 의 닉네임);
             dto.setIchat(ichatRoom);

@@ -3,6 +3,7 @@ package com.team5.projrental.common.security.oauth2;
 
 import com.team5.projrental.common.SecurityProperties;
 import com.team5.projrental.common.security.JwtTokenProvider;
+import com.team5.projrental.common.security.SecurityUserDetails;
 import com.team5.projrental.common.security.model.SecurityPrincipal;
 import com.team5.projrental.common.utils.CookieUtils;
 import com.team5.projrental.user.model.UserModel;
@@ -56,8 +57,8 @@ public class OAth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSu
 
         String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
 
-        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
-        SecurityPrincipal myPrincipal = myUserDetails.getMyPrincipal();
+        SecurityUserDetails myUserDetails = (SecurityUserDetails) authentication.getPrincipal();
+        SecurityPrincipal myPrincipal = myUserDetails.getSecurityPrincipal();
 
         String at = jwtTokenProvider.generateAccessToken(myPrincipal);
         String rt = jwtTokenProvider.generateRefreshToken(myPrincipal);
