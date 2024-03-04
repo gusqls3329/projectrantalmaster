@@ -8,6 +8,6 @@ import java.util.List;
 public interface ChatMsgQdslRepository {
     ChatUser findByIuserAndIchat(Long senderIuser, Long ichat);
 
-    List<ChatMsgSelVo> findAllChatMsgByIchat(long ichat, Integer page);
+    List<ChatMsgSelVo> findAllChatMsgByIchat(long ichat, Long loginedIuser, Integer page);
 
 }
