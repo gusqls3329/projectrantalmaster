@@ -22,13 +22,15 @@ public class BoardPutDto {
     @Min(value = 1, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
     private int iboard;
 
-    @NotBlank(message = ErrorMessage.CAN_NOT_BLANK_EX_MESSAGE)
+    //@NotBlank(message = ErrorMessage.CAN_NOT_BLANK_EX_MESSAGE)
     @Length(min = 2, max = 50)
     private String title;
 
-    @NotBlank(message = ErrorMessage.CAN_NOT_BLANK_EX_MESSAGE)
+    //@NotBlank(message = ErrorMessage.CAN_NOT_BLANK_EX_MESSAGE)
     @Length(min = 2, max = 2000)
     private String contents;
+
+    private List<Integer> ipics;
 
     @JsonIgnore
     private List<MultipartFile> storedPic;

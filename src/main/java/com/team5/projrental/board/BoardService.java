@@ -139,10 +139,13 @@ public class BoardService {
     @Transactional
     public ResVo putBoard (BoardPutDto dto) {
         Board board = boardRepository.getReferenceById((long)dto.getIboard());
-
-        if(dto.getStoredPic() != null && !dto.getStoredPic().isEmpty()) {
-            mapper.delBoardPics(dto.getIboard());
+        if(dto.getIpics() != null && dto.getIpics().get(0) != 0) {
+            List<Integer> ipics = dto.getIpics();
+            for(int intIpics : ipics ) {
+                mapper.delBoardPics(dto.getIboard(), intIpics);
+            }
         }
+
 
         if(dto.getTitle() != null && dto.getTitle() != "") {
             board.setTitle(dto.getTitle());
