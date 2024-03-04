@@ -19,14 +19,21 @@ spring:
     url: jdbc:mysql://localhost:3306/projrental3_test
     username: root
     password: 12345qwert
+#  datasource:
+#    driver-class-name: org.h2.Driver
+#    url: jdbc:h2:mem:testdb
+#    username: sa
+#    password:
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-#  config:
+    open-in-view: false
+
+  #  config:
 #    activate:
 #      on-profile: default
   rabbitmq:
@@ -111,4 +118,5 @@ redis:
   config:
     host: 192.168.0.144
     port: 6379
+
 
