@@ -1,26 +1,19 @@
 package com.team5.projrental.dispute;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team5.projrental.common.model.ResVo;
 import com.team5.projrental.dispute.model.DisputeDto;
-import com.team5.projrental.entities.User;
 import com.team5.projrental.user.UserController;
 import com.team5.projrental.user.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -65,10 +58,49 @@ public class DisputeIntegrationTest {
     }
 
     @Test
-    void postDisputeUser() {
+    void postDisputeUser() throws Exception {
+        DisputeDto disputeDto = new DisputeDto();
+        disputeDto.setReason(1);
+        disputeDto.setIdentity(10L);
+        disputeDto.setDetails("test");
 
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/dispute/user")
+                        .header(tokenKey, token)
+                        .contentType("application/json")
+                        .content(om.writeValueAsString(disputeDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result").value(1L));
 
     }
 
+    @Test
+    void postDisputePayment() throws Exception {
+        DisputeDto disputeDto = new DisputeDto();
+        disputeDto.setReason(1);
+        disputeDto.setIdentity(3L);
+        disputeDto.setDetails("test");
 
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/dispute/payment")
+                        .header(tokenKey, token)
+                        .contentType("application/json")
+                        .content(om.writeValueAsString(disputeDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result").value(1L));
+
+    }
+
+    @Test
+    void postDisputeBoard() throws Exception {
+        DisputeDto disputeDto = new DisputeDto();
+        disputeDto.setReason(1);
+        disputeDto.setIdentity(10L);
+        disputeDto.setDetails("test");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/dispute/board")
+                        .header(tokenKey, token)
+                        .contentType("application/json")
+                        .content(om.writeValueAsString(disputeDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result").value(1L));
+    }
 }
