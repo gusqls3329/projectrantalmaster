@@ -26,15 +26,15 @@ spring:
     properties:
       hibernate:
         format_sql: true
-#  config:
-#    activate:
-#      on-profile: default
+  #  config:
+  #    activate:
+  #      on-profile: default
   rabbitmq:
     #host: localhost
-    host: localhost
+    host: 192.168.0.144
     port: 5672
-    username: guest
-    password: guest
+    username: admin
+    password: admin
     virtual-host: /
     chat-queue-name: chat.queue
     chat-exchange-name: chat.exchange
