@@ -139,7 +139,7 @@ public class BoardService {
     }
 
     @Transactional
-    public ResVo putBoard (BoardPutDto dto) {
+    public ResVo putBoard (BoardPutDto dto) { //gg
         Board board = boardRepository.getReferenceById((long)dto.getIboard());
 
         if(dto.getIpics() != null && dto.getIpics().get(0) != 0) {

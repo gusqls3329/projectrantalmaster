@@ -28,5 +28,5 @@ public interface BoardMapper {
     BoardAllCount selBoardCount(String status);
 
     int delBoardPics(int iboard, int intIpics);
-
+    //gg
 }
