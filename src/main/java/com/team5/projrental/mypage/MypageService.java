@@ -40,8 +40,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.team5.projrental.common.exception.ErrorMessage.ILLEGAL_EX_MESSAGE;
-import static com.team5.projrental.entities.QDisputeProduct.disputeProduct;
-import static com.team5.projrental.entities.inheritance.QUsers.users;
 
 @Service
 @RequiredArgsConstructor
@@ -82,6 +80,7 @@ public class MypageService {
         dto.setIuser(loginUserPk);
         List<MyFavListSelVo> vo = mapper.getFavList(dto);
         return vo;
+
     }
 
 

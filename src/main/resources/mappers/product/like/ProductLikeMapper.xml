@@ -6,18 +6,18 @@
 
 
     <insert id="insFav">
-        INSERT INTO like
+        INSERT INTO product_like
         SET iuser = #{iuser}
         , iproduct = #{iproduct}
     </insert>
 
     <delete id="delFav">
-        DELETE FROM like
+        DELETE FROM product_like
         WHERE iuser = #{iuser} and iproduct = #{iproduct}
     </delete>
 
     <delete id="delFavForDelUser">
-        DELETE FROM like
+        DELETE FROM product_like
         WHERE iuser = #{iuser}
     </delete>
 
