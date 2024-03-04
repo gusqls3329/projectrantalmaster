@@ -30,7 +30,7 @@ public class ChatMsgQdslRepositoryImpl implements ChatMsgQdslRepository {
     }
 
     @Override
-    public List<ChatMsgSelVo> findAllChatMsgByIchat(long ichat, Integer page) {
+    public List<ChatMsgSelVo> findAllChatMsgByIchat(long ichat, Long loginedIuser, Integer page) {
 
         return jpaQueryFactory.select(Projections.fields(ChatMsgSelVo.class,
                         user.id.as("senderIuser"),
