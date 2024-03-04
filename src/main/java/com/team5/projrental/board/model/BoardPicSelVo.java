@@ -8,5 +8,6 @@ import java.util.List;
 @Getter
 @Setter
 public class BoardPicSelVo {
+    private int ipics;
     private String boardPic;
 }
