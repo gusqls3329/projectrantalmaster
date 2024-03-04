@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,7 +27,7 @@ public class DisputeController {
                           "details : 신고 사유(글) - \"\" 도 가능.<br>")
 
     @PostMapping("product")
-    public ResVo postDisputeProduct(@Validated DisputeDto dto) {
+    public ResVo postDisputeProduct(@Validated @RequestBody DisputeDto dto) {
         return disputeService.postDisputeProduct(dto);
     }
 
@@ -36,7 +37,7 @@ public class DisputeController {
                           "identity : 유저 = 유저번호 pk<br>" +
                           "details : 신고 사유(글) - \"\" 도 가능.<br>")
     @PostMapping("user")
-    public ResVo postDisputeUser(@Validated DisputeDto dto) {
+    public ResVo postDisputeUser(@Validated @RequestBody DisputeDto dto) {
         return disputeService.postDisputeUser(dto);
     }
 
@@ -46,7 +47,7 @@ public class DisputeController {
                           "identity : 채팅 = 채팅pk<br>" +
                           "details : 신고 사유(글) - \"\" 도 가능.<br>")
     @PostMapping("chat")
-    public ResVo postDisputeChat(@Validated DisputeDto dto) {
+    public ResVo postDisputeChat(@Validated @RequestBody DisputeDto dto) {
         return disputeService.postDisputeChat(dto);
     }
 
@@ -56,7 +57,7 @@ public class DisputeController {
                           "identity : 결제 = 결제번호(pk)<br>" +
                           "details : 신고 사유(글) - \"\" 도 가능.<br>")
     @PostMapping("payment")
-    public ResVo postDisputePayment(@Validated DisputeDto dto) {
+    public ResVo postDisputePayment(@Validated @RequestBody DisputeDto dto) {
         return disputeService.postDisputePayment(dto);
     }
 
@@ -67,7 +68,7 @@ public class DisputeController {
                           "identity : 자유게시판 = 자유게시판번호(pk) or 유저 = 유저pk ...등<br>" +
                           "details : 신고 사유(글) - \"\" 도 가능.<br>")
     @PostMapping("board")
-    public ResVo postDisputeBoard(@Validated DisputeDto dto) {
+    public ResVo postDisputeBoard(@Validated @RequestBody DisputeDto dto) {
         return disputeService.postDisputeBoard(dto);
     }
 
