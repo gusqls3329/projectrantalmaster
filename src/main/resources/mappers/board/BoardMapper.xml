@@ -137,4 +137,6 @@
         WHERE iboard = #{iboard} and ipics = #{intIpics}
     </delete>
 
+
+
 </mapper>
