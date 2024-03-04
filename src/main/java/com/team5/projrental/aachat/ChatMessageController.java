@@ -47,9 +47,9 @@ public class ChatMessageController {
 
         // ChatUser테이블의 상대유저 상태 DELETE면 ACTIVE로 변경되고 상대유저PK 반환받음
         dto.setIchat(ichatRoom);
-//        Long otherPersonIuser = service.changeUserStatus(dto.getIchat());
+        Long otherPersonIuser = service.changeUserStatus(dto.getIchat());
 
-//        service.setSeq(dto);
+        service.setSeq(dto);
         // chat.exchange                // room.{ichatRoom}                       // 메시지
         template.convertAndSend(properties.getChatExchangeName(), String.format("%s.%d", "room", ichatRoom), dto);
         service.saveMsg(dto);
@@ -57,7 +57,7 @@ public class ChatMessageController {
 
 //    @RabbitListener(queues = "${spring.rabbitmq.chat-queue-name}")
     @RabbitListener(bindings = @QueueBinding(
-            exchange = @Exchange(name = "`${spring.rabbitmq.chat-exchange-name}", type = ExchangeTypes.TOPIC),
+            exchange = @Exchange(name = "${spring.rabbitmq.chat-exchange-name}", type = ExchangeTypes.TOPIC),
             value = @Queue(name = "${spring.rabbitmq.chat-queue-name}"),
             key = "room.*"
     ))
