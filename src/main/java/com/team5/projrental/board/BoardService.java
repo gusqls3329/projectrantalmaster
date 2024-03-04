@@ -6,6 +6,7 @@ import com.team5.projrental.board.model.*;
 import com.team5.projrental.common.Const;
 import com.team5.projrental.common.exception.BadWordException;
 import com.team5.projrental.common.exception.NoSuchUserException;
+import com.team5.projrental.common.exception.base.BadInformationException;
 import com.team5.projrental.common.exception.checked.FileNotContainsDotException;
 import com.team5.projrental.common.exception.thrid.ClientException;
 import com.team5.projrental.common.model.ResVo;
@@ -30,8 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.team5.projrental.common.exception.ErrorCode.BAD_PIC_EX_MESSAGE;
-import static com.team5.projrental.common.exception.ErrorCode.BAD_WORD_EX_MESSAGE;
+import static com.team5.projrental.common.exception.ErrorCode.*;
 import static com.team5.projrental.common.exception.ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE;
 
 @Slf4j
@@ -120,8 +120,11 @@ public class BoardService {
     }
 
     public BoardSelVo getBoard (int iboard){
+        BoardStatus boardStatus = BoardStatus.ACTIVATED;
+        String status = boardStatus.name(); //enum을 문자열로
+
         mapper.viewCount(iboard);
-        BoardSelVo vo = mapper.selBoard(iboard);
+        BoardSelVo vo = mapper.selBoard(iboard, status);
 
         vo.setPic(mapper.selBoardPicList(iboard));
         List<BoardPicSelVo> picList = mapper.selBoardPicList(iboard);
@@ -136,6 +139,10 @@ public class BoardService {
     @Transactional
     public ResVo putBoard (BoardPutDto dto) {
         Board board = boardRepository.getReferenceById((long)dto.getIboard());
+
+        if(dto.getStoredPic() != null && !dto.getStoredPic().isEmpty()) {
+            mapper.delBoardPics(dto.getIboard());
+        }
 
         if(dto.getTitle() != null && dto.getTitle() != "") {
             board.setTitle(dto.getTitle());
@@ -186,8 +193,11 @@ public class BoardService {
                 mapper.insLike(dto);
                 return new ResVo(Const.SUCCESS);
             }
-            long result = 0;
-            return new ResVo(result);
+            if (affectedRow == 1) {
+                long result = -1;
+                return new ResVo(result);
+            }
+            throw new BadInformationException(ILLEGAL_EX_MESSAGE);
     }
 }
 

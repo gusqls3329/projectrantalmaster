@@ -111,7 +111,7 @@ public class BoardController {
     }
 
 
-    @Operation(summary = "게시글 좋아요 처리", description = "게시글 좋아요 토글<br> result:1(좋아요 누름), result:0(좋아요 취소)")
+    @Operation(summary = "게시글 좋아요 처리", description = "게시글 좋아요 토글<br> result:1(좋아요 누름), result:-1(좋아요 취소)")
     @Parameters(value = {
             @Parameter(name = "iboard", description = "좋아요 처리 할 게시판pk")})
     @GetMapping("/like/{iboard}")
