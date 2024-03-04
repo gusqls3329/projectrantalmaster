@@ -123,6 +123,7 @@ public class BoardService {
         mapper.viewCount(iboard);
         BoardSelVo vo = mapper.selBoard(iboard);
 
+        vo.setPic(mapper.selBoardPicList(iboard));
         List<BoardPicSelVo> picList = mapper.selBoardPicList(iboard);
         vo.setPic(picList);
 

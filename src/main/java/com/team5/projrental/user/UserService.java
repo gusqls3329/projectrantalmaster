@@ -303,6 +303,8 @@ UserService {
                 .iuser(iuser)
                 .auth(auth.name())
                 .build();
+        principal.getRoles().add(auth.name());
+
 
         String at = jwtTokenProvider.generateAccessToken(principal);
         String rt = jwtTokenProvider.generateRefreshToken(principal);

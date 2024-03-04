@@ -2,6 +2,7 @@ package com.team5.projrental.common.security.oauth2;
 
 
 import com.team5.projrental.common.SecurityProperties;
+import com.team5.projrental.common.security.SecurityUserDetails;
 import com.team5.projrental.common.security.model.SecurityPrincipal;
 import com.team5.projrental.common.security.oauth2.userinfo.Oauth2UserInfo;
 import com.team5.projrental.common.security.oauth2.userinfo.Oauth2UserInfoFactory;
@@ -58,9 +59,9 @@ public class CustomeOAuth2UserService extends DefaultOAuth2UserService {
 
 
 
-        return MyUserDetails.builder()
+        return SecurityUserDetails.builder()
                 .userModel(savedUser)
-                .myPrincipal(myPrincipal)
+                .securityPrincipal(myPrincipal)
                 .attributes(user.getAttributes()).build();
 
     }
