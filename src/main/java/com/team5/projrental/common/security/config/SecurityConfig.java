@@ -54,6 +54,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/api/prod").authenticated()
                         // 권한
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN")
+                        .requestMatchers("/api/sse/connect").hasAnyRole("USER")
 
                         .anyRequest().permitAll())
                 .exceptionHandling(ex -> {

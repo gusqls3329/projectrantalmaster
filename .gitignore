@@ -19,6 +19,7 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
+src/main/generated/**
 src/main/resources/application-hyunmin.yaml
 src/main/resources/application-sw.yaml
 .idea
