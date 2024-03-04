@@ -3,15 +3,37 @@ package com.team5.projrental.aachat.model;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class ChatMsgSelVo {
-    private Long senderIuser; // 작성자 PK
-    private String senderNick;
-    private String senderPic; // 메세지 보낸 사람 사진
-    private String msg; // 메세지
-    private LocalDateTime createdAt; // 각 seq에 대한 메세지 보낸 시간
 
+    ///////////////// senderIuser는 필요없어보여서 빼는게맞는거같음
+
+
+    /////////////////여기까지 빼면될거같음 - 상원의견
+
+
+    //제품 관련 정보
+    private Long iproduct;
+    private String title;
+    private String productMainPic;
+    private Long rentalPrice;
+
+
+    // 내 프로필 정보
+    private Long myIuser;
+    private String myNick;
+    private String myPic;
+
+    //상대 프로필 정보
+    private Long otherIuser;
+    private String otherNick;
+    private String otherPic;
+
+    private List<Messages> messages;
+
+    //
 
 
 

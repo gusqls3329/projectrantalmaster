@@ -28,4 +28,12 @@ public class ChatQdslRepositoryImpl implements ChatQdslRepository {
                 .fetchOne();
     }
 
+    public Long selOtherPersonIuser(Long loginedIuser, Long ichat){
+
+        return jpaQueryFactory.select(chatUser.user.id)
+                .from(chatUser)
+                .where(chatUser.chat.id.eq(ichat).and(chatUser.user.id.ne(loginedIuser)))
+                .fetchOne();
+    }
+
 }
