@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardSelVo {
+    private int iuser;
     private String nick;
     private String userPic;
 
