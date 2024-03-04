@@ -8,6 +8,7 @@ import com.team5.projrental.common.exception.BadWordException;
 import com.team5.projrental.common.exception.ErrorCode;
 import com.team5.projrental.common.exception.NoSuchUserException;
 import com.team5.projrental.common.exception.base.BadInformationException;
+import com.team5.projrental.common.exception.base.NoSuchDataException;
 import com.team5.projrental.common.exception.checked.FileNotContainsDotException;
 import com.team5.projrental.common.exception.thrid.ClientException;
 import com.team5.projrental.common.model.ResVo;
