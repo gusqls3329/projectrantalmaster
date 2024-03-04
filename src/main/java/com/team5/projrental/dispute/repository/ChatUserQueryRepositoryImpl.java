@@ -51,9 +51,9 @@ public class ChatUserQueryRepositoryImpl implements ChatUserQueryRepository{
 
     //여기 작성해야함 상대유저 pk값 얻어와야 delete이면 ACTIVE로 바꿔야함
     @Override // 상대 유저pk값 셀렉해야함
-    public ChatUser changeUserStatus(Long ichat, Long loginedIuser) {
+    public ChatUser changeUserStatus(Long ichat, Long senderIuser) {
         return query.selectFrom(chatUser)
-                .where(chatUser.chat.id.eq(ichat).and(chatUser.user.id.ne(loginedIuser)))
+                .where(chatUser.chat.id.eq(ichat).and(chatUser.user.id.ne(senderIuser)))
                 .fetchOne();
     }
 

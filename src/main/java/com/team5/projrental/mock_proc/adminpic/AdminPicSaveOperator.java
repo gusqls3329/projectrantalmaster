@@ -80,7 +80,7 @@ public class AdminPicSaveOperator {
         if (!code.equals("even_last_6::electro")) return "FALSE";
 
         adminRepository.findAll().forEach(admin -> {
-            admin.setStoredAdminPic(basePath + "/admin/0/logo.jpg");
+            admin.setStoredAdminPic(basePath + "admin/0/logo.jpg");
         });
 
         return "OK";
