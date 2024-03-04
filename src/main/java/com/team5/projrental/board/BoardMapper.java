@@ -29,6 +29,4 @@ public interface BoardMapper {
 
     int delBoardPics(int iboard, int intIpics);
 
-
-
 }
