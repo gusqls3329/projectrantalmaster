@@ -181,12 +181,27 @@ public class BoardService {
 
     @Transactional
     public ResVo delBoard (long iboard){
-        Board board = boardRepository.getReferenceById(iboard);
-        board.setStatus(BoardStatus.DELETED);
+        // jpa 게시글 삭제
+        /*Board board = boardRepository.getReferenceById(iboard);
+        User user = userRepository.getReferenceById(authenticationFacade.getLoginUserPk());
+        board.setUser(user);
+        board.setStatus(BoardStatus.DELETED);*/
+
         //board.setStatus(BoardStatus.DELETED);
             /*long result = mapper.delBoard(iboard);
             return new ResVo(result);*/
-        return new ResVo(Const.SUCCESS);
+
+        BoardStatus boardStatus = BoardStatus.ACTIVATED;
+        String status = boardStatus.name(); //enum을 문자열로
+
+        long loginIuser = authenticationFacade.getLoginUserPk();
+        int affecedRow = mapper.delBoard(iboard, loginIuser);
+        if(affecedRow == 1) {
+            return new ResVo(Const.SUCCESS);
+        }
+        throw new ClientException(
+                ErrorCode.ILLEGAL_EX_MESSAGE,
+                "잘못된 정보 입니다.");
     }
 
     public ResVo toggleLike (long iboard) {

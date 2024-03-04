@@ -110,7 +110,7 @@
     <update id="delBoard">
         UPDATE board
         SET status = #{status}
-        WHERE iboard = #{iboard}
+        WHERE iboard = #{iboard} and iuser = #{iuser}
     </update>
 
     <insert id="insLike">
