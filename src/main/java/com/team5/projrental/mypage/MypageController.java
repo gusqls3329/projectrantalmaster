@@ -65,6 +65,19 @@ public class MypageController {
         dto.setPage(page);
         return service.getReview(dto);
     }
+    /*
+    @Validated
+    @GetMapping("/prod/review")
+    @Operation(summary = "내가 받은 리뷰", description = "내 상품이 받은 리뷰 리스트")
+    @Parameters(value = {@Parameter(name = "page", description = "페이지"
+    + "iproduct : 상품pk")})
+    public ProdReviewListSelVo getProdReview(@RequestParam(defaultValue = "1") @Range(min = 1) int page
+    , @RequestParam(defaultValue = "1") int iproduct) {
+        ProdReviewListSelDto dto = new ProdReviewListSelDto();
+        dto.setPage(page);
+        dto.setIproduct(iproduct);
+        return service.getProdReview(dto);
+    }*/
 
     @Validated
     @GetMapping("/dispute")
