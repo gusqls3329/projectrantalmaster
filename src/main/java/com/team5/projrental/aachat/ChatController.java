@@ -29,21 +29,24 @@ public class ChatController {
     //로그인 유저의 채팅 리스트
     @GetMapping()
     @Operation(summary = "채팅방 리스트", description = "로그인 유저가 참여중인 채팅방 리스트")
-    public List<ChatSelVo> getChatAll(Integer page) {
+    public List<ChatSelVo> getChatAll(@RequestParam(defaultValue = "1") Integer page) {
         return service.getRoomList(page);
     }
 
     @GetMapping("room/{ichat}")
     @Operation(summary = "채팅방 메세지 리스트", description = "로그인 유저가 입장한 채팅방의 메세지 리스트")
-    public List<ChatMsgSelVo> getMessageAll(@PathVariable("ichat") Long ichat, Integer page) {
+    public List<ChatMsgSelVo> getMessageAll(@PathVariable("ichat") Long ichat, @RequestParam(defaultValue = "1") Integer page) {
 
-        return service.getChatList(ichat, (page - 1) * Const.CHAT_MSG_PER_PAGE);
+        return service.getChatMsgList(ichat, (page - 1) * Const.CHAT_MSG_PER_PAGE);
     }
 
     // 채팅방 입장
     @PostMapping("room/{target-iuser}")
     @Operation(summary = "채팅방 입장", description = "로그인 한 유저가 대화버튼 누를 경우 채팅방 생성 및 유저 입장됨")
     public ResVo postRoom(@PathVariable("target-iuser") Long targetIuser, @RequestParam Long iproduct) {
+
+
+
         return service.postRoom(targetIuser, iproduct);
     }
 

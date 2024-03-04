@@ -37,17 +37,17 @@ public class ChatMessageController {
         String token = authorizationHeader.substring(appProperties.getJwt().getTokenType().length() + 1);
         UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) jwtTokenProvider.getAuthentication(token);
 
-
-
         if (auth != null) {
             // 만약 권한이 필요하다면 여기서 처리
             MyUserDetails myUserDetails = (MyUserDetails) auth.getPrincipal();
             SecurityPrincipal myPrincipal = myUserDetails.getMyPrincipal();
             dto.setSenderIuser(myPrincipal.getIuser());
 //            dto.setSenderNick(// user 의 닉네임);
-
             dto.setIchat(ichatRoom);
         }
+
+        // ChatUser테이블의 상대유저 상태 DELETE면 ACTIVE로 변경되고 상대유저PK 반환받음
+        Long otherPersonIuser = service.changeUserStatus(dto.getIchat());
 
         service.setSeq(dto);
         // chat.exchange                // room.{ichatRoom}                       // 메시지

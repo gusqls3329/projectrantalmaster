@@ -41,6 +41,27 @@ public class ChatService {
 
     private final AuthenticationFacade facade;
 
+
+
+
+    // 메세지 보낼 때
+    @Transactional
+    public Long changeUserStatus(Long ichat) {
+        Long loginedIuser = facade.getLoginUserPk();
+
+
+        // chatUser테이블의 상대유저 PK 가져옴
+        ChatUser chatUser = chatUserRepository.changeUserStatus(ichat, loginedIuser);
+
+        // 상대유저의 status상태가 DELETE라면 ACTIVE로 변경
+        if (chatUser.getStatus().equals(ChatUserStatus.DELETE)) {
+            chatUser.setStatus(ChatUserStatus.ACTIVE);
+        }
+
+        return chatUser.getUser().getId();
+    }
+
+
     //seq +1 증가
     @Transactional
     public void setSeq(ChatMsgInsDto dto) {
@@ -78,7 +99,6 @@ public class ChatService {
     //
 
     // 로그인한 유저의 채팅방 리스트
-    @Transactional
     public List<ChatSelVo> getRoomList(Integer page) {
         Long loginedIuser = facade.getLoginUserPk();
 
@@ -97,14 +117,18 @@ public class ChatService {
     }
 
     // 방 들어갔을때 채팅글 리스트.
-    @Transactional
-    public List<ChatMsgSelVo> getChatList(long ichat, Integer page) {
+    public List<ChatMsgSelVo> getChatMsgList(long ichat, Integer page) {
+
         // todo 예외처리
+
         List<ChatMsgSelVo> findChatMsgSelVo = chatMsgRepository.findAllChatMsgByIchat(ichat, page);
         return findChatMsgSelVo;
     }
 
-    // 방 새로 등록
+    // 방 새로 등록하기전 SELECT 해서 기존 iproduct 및 iuser가 같은 ichat에 있으면 아래 방새로 등록되지 않고 기존 방 입장되도록 해야함
+
+
+    // 채팅방 입장
     @Transactional
     public ResVo postRoom(Long targetIuser, Long iproduct) {
         Chat saveChat = Chat.builder()
@@ -114,19 +138,26 @@ public class ChatService {
         User findUserMe = userRepository.findById(facade.getLoginUserPk()).orElseThrow(() -> new ClientException(ErrorCode.ILLEGAL_STATUS_EX_MESSAGE, "로그인 유저가 존재하지 않습니다."));
         User findUserTarget = userRepository.findById(targetIuser).orElseThrow(() -> new ClientException(ErrorCode.NO_SUCH_USER_EX_MESSAGE, "상대방 유저가 존재하지 않습니다."));
 
-        chatUserRepository.save(ChatUser.builder()
-                .chat(saveChat)
-                .user(findUserMe)
-                .status(ChatUserStatus.ACTIVE)
-                .build());
 
-        chatUserRepository.save(ChatUser.builder()
-                .chat(saveChat)
-                .user(findUserTarget)
-                .status(ChatUserStatus.ACTIVE)
-                .build());
+        // 해당 iproduct에 로그인유저와 iproduct판매자에 대한 채팅방에 입장한 유저 있는지 확인. ichat이 셀렉되면 iproduct에 대한 로그인(구매)유저 상대(판매)유저 pk가 존재함(=기존채팅방 존재)
+        Long ichat = chatUserRepository.checkChatUserChatRoom(facade.getLoginUserPk(), iproduct);
 
+        if (ichat != null) { // 채팅유저가 존재하면 리턴 2 = 입장성공
+            return new ResVo(2L);
 
+        } else {
+            chatUserRepository.save(ChatUser.builder() // ichat이 존재하지 않으면 새로운 방 생성 후 "로그인(구매자)" 유저 저장
+                    .chat(saveChat)
+                    .user(findUserMe)
+                    .status(ChatUserStatus.ACTIVE)
+                    .build());
+
+            chatUserRepository.save(ChatUser.builder() // ichat이 존재하지 않으면 새로운 방 생성 후 "상대(판매자)" 유저 저장
+                    .chat(saveChat)
+                    .user(findUserTarget)
+                    .status(ChatUserStatus.ACTIVE)
+                    .build());
+        }
         return new ResVo(1L);
     }
 

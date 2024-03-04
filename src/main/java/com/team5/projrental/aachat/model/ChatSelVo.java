@@ -20,6 +20,7 @@ public class ChatSelVo {
 
     private String otherPersonNm; // 상대방 유저 이름
     private String otherPersonPic; // 상대방 유저 사진
+    private String otherPersonIuser;
     private String prodPic; // 제품 대표사진
 
     @JsonIgnore
