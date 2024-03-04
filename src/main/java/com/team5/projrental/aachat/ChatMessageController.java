@@ -58,7 +58,7 @@ public class ChatMessageController {
 //    @RabbitListener(queues = "${spring.rabbitmq.chat-queue-name}")
     @RabbitListener(bindings = @QueueBinding(
             exchange = @Exchange(name = "${spring.rabbitmq.chat-exchange-name}", type = ExchangeTypes.TOPIC),
-            value = @Queue(name = "${spring.rabbitmq.chat-queue-name}"),
+            value= @Queue(name = "${spring.rabbitmq.chat-queue-name}"),
             key = "room.*"
     ))
     public void receive(ChatMsgInsDto dto) {
