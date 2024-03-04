@@ -176,6 +176,7 @@ public class DisputeService {
                     "해당 결제 정보가 존재하지 않습니다.")
             );
         } catch (IncorrectResultSizeDataAccessException e) {
+            log.info("", e);
             throw new ClientException(
                     ErrorCode.ILLEGAL_EX_MESSAGE,
                     "해당 결제 정보가 존재하지 않습니다."

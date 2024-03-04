@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardCommentSelVo {
+    private Integer iboardComment;
     private Integer iuser;
     private String nick;
     private String userPic;

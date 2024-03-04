@@ -45,11 +45,9 @@ import static com.team5.projrental.entities.enums.PaymentInfoStatus.*;
 @RequiredArgsConstructor
 public class ProductQueryRepositoryImpl implements ProductQueryRepository {
 
-    private final EntityManager em;
     private final JPAQueryFactory query;
     private final StockRepository stockRepository;
     private final ProductLikeRepository productLikeRepository;
-    private final ProductLikeMapper productLikeMapper;
     private final JdbcTemplate jdbcTemplate;
     private final HashTagRepository hashTagRepository;
 

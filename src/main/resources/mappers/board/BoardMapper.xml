@@ -19,16 +19,10 @@
     <select id="selBoardList">
         SELECT A.nick, A.stored_pic AS userPic, B.title, B.iboard, B.view
         , B.created_at AS createdAt
-        , if(C.iuser is null, 0, 1) AS isLiked, d.cnt AS totalBoardCount
+        , if(C.iuser is null, 0, 1) AS isLiked
         FROM user A
         JOIN board B
         ON A.iuser = B.iuser
-
-        <!-- 게시글 총 갯수 -->
-        JOIN (
-            select count(iboard) as cnt
-            from board
-        ) as d
 
         <choose>
             <when test="sort == 1">
@@ -70,7 +64,7 @@
     </select>
 
     <select id="selBoard">
-        SELECT A.nick, A.stored_pic AS userPic, B.iboard
+        SELECT A.iuser, A.nick, A.stored_pic AS userPic, B.iboard
         , B.title, B.contents, B.view, B.created_at AS createdAt, if(C.iuser is null, 0, 1) AS isLiked
         FROM user A
         JOIN board B
