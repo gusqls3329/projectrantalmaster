@@ -62,13 +62,13 @@ public class BoardController {
     @Validated
     @GetMapping
     public BoardListVo getBoardList(@RequestParam(defaultValue = "1") @Min(1)
-                                             int page,
-                                             @RequestParam(defaultValue = "0")
-                                             int sort,
-                                             @RequestParam(name = "search", required = false)
-                                             String search,
-                                             @RequestParam(name = "type", required = false)
-                                             Integer type)
+                                    int page,
+                                    @RequestParam(defaultValue = "0")
+                                    int sort,
+                                    @RequestParam(name = "search", required = false)
+                                    String search,
+                                    @RequestParam(name = "type", required = false)
+                                    Integer type)
     {
         BoardListSelDto dto = new BoardListSelDto();
 

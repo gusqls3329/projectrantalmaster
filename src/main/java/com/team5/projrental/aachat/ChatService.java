@@ -46,8 +46,8 @@ public class ChatService {
 
     // 메세지 보낼 때
     @Transactional
-    public Long changeUserStatus(Long ichat) {
-        Long loginedIuser = facade.getLoginUserPk();
+    public Long changeUserStatus(Long ichat, Long loginedIuser) {
+        //Long loginedIuser = facade.getLoginUserPk();
 
 
         // chatUser테이블의 상대유저 PK 가져옴

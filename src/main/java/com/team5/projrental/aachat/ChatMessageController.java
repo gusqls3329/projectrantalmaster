@@ -32,7 +32,7 @@ public class ChatMessageController {
     private final SecurityProperties appProperties;
 
     @MessageMapping("chat.send.{ichatRoom}")
-    public void send(ChatMsgInsDto dto, @DestinationVariable long ichatRoom) {
+    public void send(ChatMsgInsDto dto, @DestinationVariable Long ichatRoom) {
 //        String authorizationHeader = accessor.getNativeHeader(appProperties.getJwt().getHeaderSchemeName()) == null ? null : String.valueOf(accessor.getNativeHeader(appProperties.getJwt().getHeaderSchemeName()).get(0));
 //        String token = authorizationHeader.substring(appProperties.getJwt().getTokenType().length() + 1);
 //        UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) jwtTokenProvider.getAuthentication(token);
@@ -47,7 +47,7 @@ public class ChatMessageController {
 
         // ChatUser테이블의 상대유저 상태 DELETE면 ACTIVE로 변경되고 상대유저PK 반환받음
         dto.setIchat(ichatRoom);
-        Long otherPersonIuser = service.changeUserStatus(dto.getIchat());
+        Long otherPersonIuser = service.changeUserStatus(dto.getIchat(), dto.getSenderIuser());
 
         service.setSeq(dto);
         // chat.exchange                // room.{ichatRoom}                       // 메시지
