@@ -65,6 +65,7 @@ public class MypageService {
         dto.setIuser(loginUserPk);
         if (dto.getRole() == 1) {
             List<BuyPaymentSelVo> list = mapper.getPaymentList(dto);
+
             return list;
         }
         if (dto.getRole() == 2) {
@@ -96,6 +97,13 @@ public class MypageService {
         return null;
                 //mapper.getAllReviewFromMyProduct(authenticationFacade.getLoginUserPk());
     }*/
+
+    /*ublic ProdReviewListSelVo getProdReview(ProdReviewListSelDto dto) {
+        Long loginUserPk = authenticationFacade.getLoginUserPk();
+        dto.setIuser(loginUserPk);
+
+    }*/
+
     @Transactional
     public DisputeByMyPageVo getDispute(MyBuyReviewListSelDto dto) {
 
@@ -103,7 +111,7 @@ public class MypageService {
         Long loginUserPk = authenticationFacade.getLoginUserPk();
 
         Long totalCount = myPageDisputeRepository.totalCountByOptions(loginUserPk);
-        List<Dispute> findDisputes = myPageDisputeRepository.getDisputeList(loginUserPk,dto.getStartIdx(), dto.getRowCount());
+        List<Dispute> findDisputes = myPageDisputeRepository.getDisputeList(loginUserPk, dto.getStartIdx(), dto.getRowCount());
 
         return DisputeByMyPageVo.builder()
                 .totalUserCount(totalCount)
@@ -220,7 +228,7 @@ public class MypageService {
     public ProductListVo getProduct(ProductListDto dto) {
         Long loginUserPk = authenticationFacade.getLoginUserPk();
         Optional<User> user = userRepository.findById(dto.getTargetIuser());
-        if(Objects.equals(loginUserPk, dto.getTargetIuser())){
+        if (Objects.equals(loginUserPk, dto.getTargetIuser())) {
             List<Product> products = productRepository.findByUser(user.get(), dto.getPage());
             return ProductListVo.builder().vo(products.stream().filter(prd -> !prd.getStatus().equals(ProductStatus.DELETED)).map(
                     productss -> MyPageProductVo.builder().iproduct(productss.getId().longValue())
@@ -232,7 +240,7 @@ public class MypageService {
             ).toList()).build();
         }
 
-        if(!Objects.equals(loginUserPk, dto.getTargetIuser())){
+        if (!Objects.equals(loginUserPk, dto.getTargetIuser())) {
             List<Product> products = productRepository.findByUser(user.get(), dto.getPage());
 
             return ProductListVo.builder().vo(products.stream().filter(prd -> prd.getStatus().equals(ProductStatus.ACTIVATED)).map(

@@ -6,7 +6,8 @@
         SELECT distinct pa.iproduct, pa.ipayment, pp.stored_pic as ProStoredPic,
         pa.deposit, pa.total_price as totalPrice, pa.rental_end_date as rentalEndDate
         , pa.rental_start_date as rentalStartDate, pa.duration, pa.created_at as createdAt,
-        pai.`status`, pr.iuser, u.nick, u.stored_pic as userPic
+        pai.`status`, pr.iuser, u.nick, u.stored_pic as userPic, pr.title,
+        pr.main_category AS mainCategoryy, pr.sub_category AS subCategoryy
         from payment pa
         LEFT JOIN payment_info pai
         ON pa.ipayment = pai.ipayment
@@ -31,7 +32,8 @@
         SELECT distinct pr.iproduct, pa.ipayment, pp.stored_pic as ProStoredPic,
         pa.deposit, pa.total_price as totalPrice, pa.rental_end_date as rentalEndDate
         , pa.rental_start_date as rentalStartDate, pa.duration, pa.created_at as createdAt,
-        pai.`status`, pa.iuser, u.nick, u.stored_pic as userPic
+        pai.`status`, pa.iuser, u.nick, u.stored_pic as userPic, pr.title,
+        pr.main_category AS mainCategoryy, pr.sub_category AS subCategoryy
         FROM `user` u
         JOIN product pr
         ON u.iuser = pr.iuser
