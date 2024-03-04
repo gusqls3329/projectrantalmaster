@@ -47,11 +47,11 @@ public class ChatService {
     // 메세지 보낼 때
     @Transactional
     public Long changeUserStatus(Long ichat) {
-        Long loginedIuser = facade.getLoginUserPk();
+        //Long loginedIuser = facade.getLoginUserPk();
 
 
         // chatUser테이블의 상대유저 PK 가져옴
-        ChatUser chatUser = chatUserRepository.changeUserStatus(ichat, loginedIuser);
+        ChatUser chatUser = chatUserRepository.changeUserStatus(ichat, 1L);
 
         // 상대유저의 status상태가 DELETE라면 ACTIVE로 변경
         if (chatUser.getStatus().equals(ChatUserStatus.DELETE)) {
@@ -120,8 +120,9 @@ public class ChatService {
     public List<ChatMsgSelVo> getChatMsgList(long ichat, Integer page) {
 
         // todo 예외처리
+        Long loginedIuser = facade.getLoginUserPk();
 
-        List<ChatMsgSelVo> findChatMsgSelVo = chatMsgRepository.findAllChatMsgByIchat(ichat, page);
+        List<ChatMsgSelVo> findChatMsgSelVo = chatMsgRepository.findAllChatMsgByIchat(ichat, loginedIuser, page);
         return findChatMsgSelVo;
     }
 

@@ -19,7 +19,7 @@
     <select id="selBoardList">
         SELECT A.nick, A.stored_pic AS userPic, B.title, B.iboard, B.view
         , B.created_at AS createdAt
-        , if(C.iuser is null, 0, 1) AS isLiked
+        , if(C.iuser > 0, 0, 1) AS isLiked
         FROM user A
         JOIN board B
         ON A.iuser = B.iuser
@@ -65,13 +65,13 @@
 
     <select id="selBoard">
         SELECT A.iuser, A.nick, A.stored_pic AS userPic, B.iboard
-        , B.title, B.contents, B.view, B.created_at AS createdAt, if(C.iuser is null, 0, 1) AS isLiked
+        , B.title, B.contents, B.view, B.created_at AS createdAt, if(C.iuser > 0, 0, 1) AS isLiked
         FROM user A
         JOIN board B
         ON A.iuser = B.iuser
         LEFT JOIN board_like C
         ON B.iboard = C.board_iboard
-        WHERE B.iboard = #{iboard}
+        WHERE B.iboard = #{iboard} and B.status = #{status}
     </select>
 
     <!-- 특정 게시글의 사진들 -->
@@ -131,5 +131,10 @@
         from board
         where status = #{status};
     </select>
+
+    <delete id="delBoardPics">
+        DELETE FROM board_pics
+        WHERE iboard = #{iboard}
+    </delete>
 
 </mapper>
