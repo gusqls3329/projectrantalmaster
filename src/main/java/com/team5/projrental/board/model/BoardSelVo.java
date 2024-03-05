@@ -24,7 +24,7 @@ public class BoardSelVo {
     private String contents;
     private int view;
     private LocalDateTime createdAt;
-    private String status;
+    private String status; //d
 
     private List<BoardPicSelVo> pic;
 
