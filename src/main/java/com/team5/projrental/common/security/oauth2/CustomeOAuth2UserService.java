@@ -1,14 +1,13 @@
 package com.team5.projrental.common.security.oauth2;
 
 
-import com.team5.projrental.common.SecurityProperties;
 import com.team5.projrental.common.security.SecurityUserDetails;
 import com.team5.projrental.common.security.model.SecurityPrincipal;
 import com.team5.projrental.common.security.oauth2.userinfo.Oauth2UserInfo;
 import com.team5.projrental.common.security.oauth2.userinfo.Oauth2UserInfoFactory;
-import com.team5.projrental.entities.enums.Auth;
+import com.team5.projrental.entities.User;
 import com.team5.projrental.user.UserMapper;
-import com.team5.projrental.user.model.UserEntity;
+import com.team5.projrental.user.UserRepository;
 import com.team5.projrental.user.model.UserModel;
 import com.team5.projrental.user.model.UserSelDto;
 import com.team5.projrental.user.model.UserSignupProcDto;
@@ -27,6 +26,7 @@ import org.springframework.stereotype.Service;
 public class CustomeOAuth2UserService extends DefaultOAuth2UserService {
     private final UserMapper mapper;
     private final Oauth2UserInfoFactory factory;
+    private final UserRepository userRepository;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -47,41 +47,52 @@ public class CustomeOAuth2UserService extends DefaultOAuth2UserService {
         UserSelDto dto = UserSelDto.builder()
                 .providerType(socialProviderType.name())
                 .uid(oauth2UserInfo.getId()).build();
-        UserModel savedUser = mapper.selUserSocial(dto);
+        User userss = userRepository.findByUid(dto.getUid()).orElse(null);
+        UserModel userModel = null;
 
-        if(savedUser == null){//한번도 로그인한적이 없다면, 회원가입 처리
-            savedUser = signupUser(oauth2UserInfo, socialProviderType);
+        if (userss != null) {
+            userModel = UserModel.builder()
+                    .iuser(userss.getId())
+                    .auth(userss.getAuth())
+                    .address(userss.getBaseUser().getAddress())
+                    .phone(userss.getPhone())
+                    .id(userss.getId())
+                    .email(userss.getEmail())
+                    .nick(userss.getNick())
+                    .provideType(userss.getProvideType().name())
+                    .rating(userss.getBaseUser().getRating())
+                    .penalty(userss.getPenalty())
+                    .storedPic(userss.getBaseUser().getStoredPic())
+                    .verification(userss.getBaseUser().getVerification())
+                    .status(userss.getStatus())
+                    .build();
+
+            SecurityPrincipal myPrincipal = SecurityPrincipal.builder()
+                    .iuser(userModel.getId())
+                    .build();
+            myPrincipal.getRoles().add(userss.getAuth().name());
+
+            return SecurityUserDetails.builder()
+                    .userModel(userModel)
+                    .securityPrincipal(myPrincipal)
+                    .attributes(user.getAttributes()).build();
         }
 
-        SecurityPrincipal myPrincipal = SecurityPrincipal.builder()
-                .iuser(savedUser.getIuser()).build();
-        myPrincipal.setAuth(String.valueOf(savedUser.getAuth()));
-
-
-
+        userModel = signupUser(oauth2UserInfo, socialProviderType);
         return SecurityUserDetails.builder()
-                .userModel(savedUser)
-                .securityPrincipal(myPrincipal)
+                .userModel(userModel)
                 .attributes(user.getAttributes()).build();
 
     }
 
-    private UserModel signupUser(Oauth2UserInfo oauth2UserInfo, SocialProviderType socialProviderType){
-        UserSignupProcDto dto = new UserSignupProcDto();
-        dto.setProviderType(socialProviderType.name());
-        dto.setUid(oauth2UserInfo.getId()); //소셜로그인에서 관리하는 pk값(유일값)이 넘어옴
-        dto.setUpw("social");
-        dto.setNm(oauth2UserInfo.getName());
-        dto.setPic(oauth2UserInfo.getImageUrl());
-        dto.setAuth(Auth.USER);
-        int result = mapper.insUser(dto);
+    private UserModel signupUser(Oauth2UserInfo oauth2UserInfo, SocialProviderType socialProviderType) {
+        //회원가입 해줘야함!!!!!꼭
 
-        UserModel entity = new UserModel();
-        entity.setUid(dto.getUid());
-        entity.setIuser(dto.getIuser());
-        entity.setAuth(dto.getAuth());
-        entity.setNm(dto.getNm());
-        entity.setPic(dto.getPic());
-        return entity;
+        return UserModel.builder()
+                .uid(oauth2UserInfo.getId())
+                .upw("social")
+                .provideType(SocialProviderType.KAKAO.name())
+                .build();
     }
+
 }
