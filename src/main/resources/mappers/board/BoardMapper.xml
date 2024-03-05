@@ -57,6 +57,7 @@
                 ORDER BY B.iboard DESC
             </when>
             <when test="sort == 1">
+                GROUP BY B.iboard
                 order by SQ.cnt desc, B.iboard desc
             </when>
             <when test="sort == 2">
