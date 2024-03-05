@@ -90,7 +90,8 @@ public class PaymentReviewService {
                         throw new BadInformationException(ILLEGAL_EX_MESSAGE);
                     }
                     if (dto.getRating() == null) {
-                        reviewRepository.save(review);
+                        Review review1 = reviewRepository.save(review);
+                        dto.setIreview(review1.getId().intValue());
                         return dto.getIreview();
                     }
                     user = paymentRepository.selUser(dto.getIpayment().longValue());
@@ -146,6 +147,7 @@ public class PaymentReviewService {
         if(user.getBaseUser().getRating() == 0){
             review.setRating(dto.getRating() == null ? 0 : dto.getRating());
             review.setContents(dto.getContents() == null ? review.getContents() : dto.getContents());
+            user.getBaseUser().setRating(dto.getRating().doubleValue());
             return (int) Const.SUCCESS;
         }
         //int chIuser = reviewMapper.selUser(dto.getIpayment());
