@@ -9,6 +9,9 @@ import org.hibernate.validator.constraints.Range;
 
 @Data
 public class MyBuyReviewListSelVo {
+    private String mainCategory;
+    private String subCategory;
+
     private int ireview; // 리뷰 번호(PK)
     private int raiting; // 별 점수
     private String contents; // 로그인 유저가 남긴 후기
