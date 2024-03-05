@@ -62,13 +62,13 @@ public class ChatService {
     }
 
 
-    //seq +1 증가
+/*    //seq +1 증가
     @Transactional
     public void setSeq(ChatMsgInsDto dto) {
         Long preSeq = chatRepository.selChatMsg(dto.getIchat(), dto.getSenderIuser());
         if (preSeq == null) preSeq = 0L;
         dto.setSeq(++preSeq);
-    }
+    }*/
 
     // 메세지 저장
     @Transactional
@@ -77,7 +77,7 @@ public class ChatService {
         ChatUser findChatUser = chatMsgRepository.findByIuserAndIchat(dto.getSenderIuser(), dto.getIchat());
 
         ChatMsg chatMsg = new ChatMsg();
-        chatMsg.setSeq(dto.getSeq());
+        //chatMsg.setSeq(dto.getSeq());
         chatMsg.setMsg(dto.getMessage());
         chatMsg.setChatUser(findChatUser);
 

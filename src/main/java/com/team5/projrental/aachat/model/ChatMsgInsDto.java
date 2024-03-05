@@ -9,6 +9,7 @@ public class ChatMsgInsDto {
     @JsonIgnore
     private Long ichat; // 채팅방 고유 번호(채팅방 PK)
 
+    @JsonIgnore
     private Long seq; // 각 채팅방의 채팅고유 번호(채팅 PK)
 
     private Long senderIuser; // 로그인 유저 PK

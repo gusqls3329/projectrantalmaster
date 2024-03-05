@@ -33,8 +33,6 @@ public class QChatMsg extends EntityPathBase<ChatMsg> {
 
     public final StringPath msg = createString("msg");
 
-    public final NumberPath<Long> seq = createNumber("seq", Long.class);
-
     public QChatMsg(String variable) {
         this(ChatMsg.class, forVariable(variable), INITS);
     }
