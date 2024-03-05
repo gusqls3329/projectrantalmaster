@@ -249,7 +249,7 @@ public class MypageService {
 
             return ProductListVo.builder().vo(products.stream().filter(prd -> prd.getStatus().equals(ProductStatus.ACTIVATED)).map(
                     productss -> MyPageProductVo.builder().iproduct(productss.getId().longValue())
-                            .storedPic(productss.getStoredPic())
+                            .storedPic(productss.getStoredPic()) //사진
                             .mainCategory(productss.getMainCategory())
                             .subCategory(productss.getSubCategory())
                             .tilte(productss.getTitle())
