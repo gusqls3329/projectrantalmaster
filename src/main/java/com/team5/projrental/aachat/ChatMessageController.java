@@ -49,7 +49,7 @@ public class ChatMessageController {
         dto.setIchat(ichatRoom);
         Long otherPersonIuser = service.changeUserStatus(dto.getIchat(), dto.getSenderIuser());
 
-        service.setSeq(dto);
+        //service.setSeq(dto);
         // chat.exchange                // room.{ichatRoom}                       // 메시지
         template.convertAndSend(properties.getChatExchangeName(), String.format("%s.%d", "room", ichatRoom), dto);
         service.saveMsg(dto);

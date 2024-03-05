@@ -8,7 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"ichat_user", "seq"}))
 public class ChatMsg extends CreatedAt {
 
     @Id
@@ -19,12 +18,6 @@ public class ChatMsg extends CreatedAt {
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "ichat_user")
     private ChatUser chatUser;
-
-    @Column(columnDefinition = "BIGINT UNSIGNED")
-    private Long seq;
-
-
-
 
     @Column(length = 2000, nullable = false)
     private String msg;
