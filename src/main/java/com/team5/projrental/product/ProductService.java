@@ -303,7 +303,8 @@ public class ProductService implements RefProductService {
         saveProduct.getHashTags().addAll(dto.getHashTags()
                 .stream()
                 .map(hash -> HashTag.builder()
-                        .tag(hash.charAt(0) != '#' ? "#" + hash.replaceAll(" ", "") : hash.replaceAll(" ", ""))
+                        .tag(hash.charAt(0) != '#' ? "#" + hash.replaceAll(" ", "") :
+                                hash.replaceAll(" ", ""))
                         .product(saveProduct)
                         .build()).toList());
 

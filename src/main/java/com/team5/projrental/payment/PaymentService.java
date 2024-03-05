@@ -236,8 +236,9 @@ public class PaymentService {
             long dateGap = ChronoUnit.DAYS.between(LocalDate.now(),
                     findPayment.getRentalDates().getRentalStartDate().toLocalDate()) + 1;
             double penaltyPer = (dateGap <= 3 ? 100 : dateGap <= 7 ? 50 : 0) * 0.1;
+
+
             if (isBuyer) {
-                // 만약 예약취소 요청자가 구매자인경우
                 int refundForSeller = (int) (basePrice * penaltyPer);
                 int refundForBuyer = basePrice - refundForSeller;
 
@@ -251,21 +252,23 @@ public class PaymentService {
                 refundRepository.save(refundSeller);
                 refundRepository.save(refundBuyer);
             }
+
+
             if (!isBuyer) {
-                // 만약 예약취소 요청자가 판매자인경우
                 Refund refundEntity = getRefundEntity(findBuyer,
                         basePrice + findPayment.getDeposit(),
                         findPayment);
 
-                // 판매자에게 벌점 부과
                 findSeller.setPenalty((byte) (findSeller.getPenalty() + DisputeReason.MANNER.getPenaltyScore()));
                 if (findSeller.getPenalty() <= -50) {
 
-                    changeUserWhenOverPenalty(findSeller, adminRepository.findById(2147483647L).get(),
+                    changeUserWhenOverPenalty(findSeller, adminRepository.findById(Const.BILLY_BOT_ID).orElse(null),
                             DisputeReason.DELETE_BY_ADMIN);
                 }
                 refundRepository.save(refundEntity);
             }
+
+
         }
         return new ResVo((long) findPaymentInfo.getStatus().getNum());
     }

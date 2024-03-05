@@ -124,4 +124,5 @@ public interface Const {
 
 
     int HASH_TAG_MAX_SIZE = 10;
+    Long BILLY_BOT_ID = 2147483647L;
 }
