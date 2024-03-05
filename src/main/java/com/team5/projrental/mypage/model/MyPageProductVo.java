@@ -14,6 +14,7 @@ import java.time.LocalDate;
 public class MyPageProductVo {
     private ProductMainCategory mainCategory;
     private ProductSubCategory subCategory;
+    private String storedPic;
 
     private Long iproduct;
     private String tilte;
