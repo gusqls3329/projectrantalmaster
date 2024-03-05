@@ -8,7 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"ichat_user", "seq"}))
 public class ChatMsg extends CreatedAt {
 
     @Id
