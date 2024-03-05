@@ -24,6 +24,6 @@ public class BoardLike extends CreatedAt {
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @MapsId("iboard")
-    @JoinColumn(nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @JoinColumn(name = "iboard", nullable = false, columnDefinition = "BIGINT UNSIGNED")
     private Board board;
 }

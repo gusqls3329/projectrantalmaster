@@ -97,19 +97,18 @@ public class ProductService implements RefProductService {
         }
         // iuser 가져오기 -> isLiked 를 위해서
         Long iuser = getLoginUserPk();
-        if (imainCategory > 0) {
-            if (imainCategory > 6) {
-                throw new ClientException(ILLEGAL_CATEGORY_EX_MESSAGE, "잘못된 카테고리입니다.");
-            }
+        if (imainCategory > 6 || isubCategory > 5) {
+            throw new ClientException(ILLEGAL_CATEGORY_EX_MESSAGE, "잘못된 카테고리입니다.");
         }
 
 
-        ProductMainCategory mainCategory = ProductMainCategory.getByNum(imainCategory);
+        ProductMainCategory mainCategory = imainCategory > 0 ? ProductMainCategory.getByNum(imainCategory)
+                : null;
         return productRepository.findAllBy(
                 sort,
                 search,
                 mainCategory,
-                ProductSubCategory.getByNum(mainCategory, isubCategory),
+                isubCategory > 0 ? ProductSubCategory.getByNum(mainCategory, isubCategory) : null,
                 addr,
                 page,
                 iuser,
@@ -339,7 +338,7 @@ public class ProductService implements RefProductService {
         saveProduct.getHashTags().addAll(dto.getHashTags()
                 .stream()
                 .map(hash -> HashTag.builder()
-                        .tag(hash.replaceAll(" ", ""))
+                        .tag(hash.charAt(0) != '#' ? "#" + hash.replaceAll(" ", "") : hash.replaceAll(" ", ""))
                         .product(saveProduct)
                         .build()).toList());
 
@@ -485,7 +484,7 @@ public class ProductService implements RefProductService {
 
         // 해시태그 작업(추가)
         findProduct.getHashTags().addAll(dto.getHashTags().stream().map(hash -> HashTag.builder()
-                .tag(hash)
+                .tag(hash.charAt(1) != '#' ? "#" + hash.replaceAll(" ", "") : hash.replaceAll(" ", ""))
                 .product(findProduct)
                 .build()).toList());
 

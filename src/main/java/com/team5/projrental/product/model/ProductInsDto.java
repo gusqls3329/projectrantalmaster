@@ -54,6 +54,6 @@ public class ProductInsDto {
     @NotNull(message = ErrorMessage.CAN_NOT_BLANK_EX_MESSAGE)
     private Categories icategory;
 
-    @Range(max = 100, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
+    @Size(max = 10, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
     private List<String> hashTags;
 }

@@ -374,7 +374,9 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
             booleanBuilder.and(product.title.like("%" + search + "%"));
         }
 
-        booleanBuilder.and(product.mainCategory.eq(mainCategory));
+        if (mainCategory != null) {
+            booleanBuilder.and(product.mainCategory.eq(mainCategory));
+        }
         if (subCategory != null) {
             booleanBuilder.and(product.subCategory.eq(subCategory));
         }
@@ -395,6 +397,7 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
             likeAddr += "%";
             booleanBuilder.and(product.address.addr.like(likeAddr));
         }
+
 
 
         return booleanBuilder;
