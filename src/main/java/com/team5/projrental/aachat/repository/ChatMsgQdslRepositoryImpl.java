@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+import static com.team5.projrental.entities.QChat.chat;
 import static com.team5.projrental.entities.QChatMsg.chatMsg;
 import static com.team5.projrental.entities.QChatUser.chatUser;
 import static com.team5.projrental.entities.QUser.user;
@@ -56,12 +57,12 @@ public class ChatMsgQdslRepositoryImpl implements ChatMsgQdslRepository {
     //상원
     @Override
     public Long updChatLastMsg(ChatMsgInsDto dto) {
-        QChatMsg qChatMsg = QChatMsg.chatMsg;
+
 
         long updatedCount = jpaQueryFactory
-                .update(qChatMsg)
-                .set(qChatMsg.msg, dto.getMessage())
-                .where(qChatMsg.id.eq(dto.getIchat()))
+                .update(chat)
+                .set(chat.lastMsg, dto.getMessage())
+                .where(chat.id.eq(dto.getIchat()))
                 .execute();
 
         if (updatedCount != 1) {

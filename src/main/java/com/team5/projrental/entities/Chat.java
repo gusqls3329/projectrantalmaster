@@ -8,6 +8,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -34,4 +36,5 @@ public class Chat extends CreatedAt {
     @LastModifiedDate
     @Column(name = "last_msg_at")
     private LocalDateTime lastMsgAt;
+
 }
