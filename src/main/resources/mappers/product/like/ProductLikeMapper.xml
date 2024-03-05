@@ -4,21 +4,21 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.team5.projrental.product.like.ProductLikeMapper">
 
-    <insert id="insFav">
-        INSERT INTO prod_like
-        SET iuser = #{iuser}
-        , iproduct = #{iproduct}
-        , created_at = #{createdAt}
-    </insert>
+  <insert id="insFav">
+    INSERT INTO prod_like
+    SET iuser = #{iuser}
+    , iproduct = #{iproduct}
+    , created_at = #{createdAt}
+  </insert>
 
-    <delete id="delFav">
-        DELETE FROM prod_like
-        WHERE iuser = #{iuser} and iproduct = #{iproduct}
-    </delete>
+  <delete id="delFav">
+    DELETE FROM prod_like
+    WHERE iuser = #{iuser} and iproduct = #{iproduct}
+  </delete>
 
-    <delete id="delFavForDelUser">
-        DELETE FROM prod_like
-        WHERE iuser = #{iuser}
-    </delete>
+  <delete id="delFavForDelUser">
+    DELETE FROM prod_like
+    WHERE iuser = #{iuser}
+  </delete>
 
 </mapper>
