@@ -73,7 +73,7 @@
         JOIN board B
         ON A.iuser = B.iuser
 
-        JOIN (select iuser, iboard, count(iboard) As cnt
+        LEFT JOIN (select iuser, iboard, count(iboard) As cnt
                 from board_like
                 where iboard = #{iboard}) C
         ON B.iboard = C.iboard
