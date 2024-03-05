@@ -21,4 +21,5 @@ public class BoardListSelVo {
     private String title;
     private int view;
     private LocalDateTime createdAt;
+    private String status;
 }
