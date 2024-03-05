@@ -50,7 +50,7 @@ public class ProductController {
     public ResVo getProdCount(@RequestParam(required = false)
                               @Length(min = 1, message = ILLEGAL_RANGE_EX_MESSAGE)
                               String search,
-                              @RequestParam("mc")
+                              @RequestParam(value = "mc", required = false)
                               @Min(value = 1, message = ILLEGAL_RANGE_EX_MESSAGE)
                               Integer imainCategory,
                               @RequestParam(name = "sc", required = false)
@@ -119,7 +119,7 @@ public class ProductController {
                                            @Size(min = 1, max = 5)
                                            List<Integer> isubCategory) {
 
-        return productService.getProductListForMain(Const.MAIN_PROD_PER_PAGE);
+        return productService.getProductListForMain(imainCategory, isubCategory);
 
 
     }

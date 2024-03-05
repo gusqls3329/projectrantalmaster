@@ -19,7 +19,7 @@ public class BoardLike extends CreatedAt {
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @MapsId("iuser")
-    @JoinColumn(name = "iuser", nullable = false)
+    @JoinColumn(name = "iuser", columnDefinition = "BIGINT UNSIGNED", nullable = false)
     private User user;
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
