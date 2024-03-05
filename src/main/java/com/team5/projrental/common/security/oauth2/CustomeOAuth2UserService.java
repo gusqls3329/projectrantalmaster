@@ -1,14 +1,14 @@
 package com.team5.projrental.common.security.oauth2;
 
 
-import com.team5.projrental.common.SecurityProperties;
 import com.team5.projrental.common.security.SecurityUserDetails;
 import com.team5.projrental.common.security.model.SecurityPrincipal;
 import com.team5.projrental.common.security.oauth2.userinfo.Oauth2UserInfo;
 import com.team5.projrental.common.security.oauth2.userinfo.Oauth2UserInfoFactory;
-import com.team5.projrental.entities.enums.Auth;
+import com.team5.projrental.entities.User;
+import com.team5.projrental.user.UserController;
 import com.team5.projrental.user.UserMapper;
-import com.team5.projrental.user.model.UserEntity;
+import com.team5.projrental.user.UserRepository;
 import com.team5.projrental.user.model.UserModel;
 import com.team5.projrental.user.model.UserSelDto;
 import com.team5.projrental.user.model.UserSignupProcDto;
@@ -25,8 +25,9 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class CustomeOAuth2UserService extends DefaultOAuth2UserService {
-    private final UserMapper mapper;
+    private final UserController userController;
     private final Oauth2UserInfoFactory factory;
+    private final UserRepository userRepository;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -47,14 +48,31 @@ public class CustomeOAuth2UserService extends DefaultOAuth2UserService {
         UserSelDto dto = UserSelDto.builder()
                 .providerType(socialProviderType.name())
                 .uid(oauth2UserInfo.getId()).build();
-        UserModel savedUser = mapper.selUserSocial(dto);
+        User userss = userRepository.findByUid(dto.getUid()).orElse(null);
+        UserModel savedUser = null;
+        if(userss != null) {
+            savedUser  = UserModel.builder()
+                    .auth(userss.getAuth())
+                    .address(userss.getBaseUser().getAddress())
+                    .phone(userss.getPhone())
+                    .id(userss.getId())
+                    .email(userss.getEmail())
+                    .nick(userss.getNick())
+                    .provideType(userss.getProvideType().name())
+                    .rating(userss.getBaseUser().getRating())
+                    .penalty(userss.getPenalty())
+                    .storedPic(userss.getBaseUser().getStoredPic())
+                    .verification(userss.getBaseUser().getVerification())
+                    .status(userss.getStatus())
+                    .build();
+        }
+        if(userss == null){//한번도 로그인한적이 없다면, 회원가입 처리
 
-        if(savedUser == null){//한번도 로그인한적이 없다면, 회원가입 처리
             savedUser = signupUser(oauth2UserInfo, socialProviderType);
         }
 
         SecurityPrincipal myPrincipal = SecurityPrincipal.builder()
-                .iuser(savedUser.getIuser()).build();
+                .iuser(savedUser.getId()).build();
         myPrincipal.setAuth(String.valueOf(savedUser.getAuth()));
 
 
@@ -67,21 +85,12 @@ public class CustomeOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private UserModel signupUser(Oauth2UserInfo oauth2UserInfo, SocialProviderType socialProviderType){
-        UserSignupProcDto dto = new UserSignupProcDto();
-        dto.setProviderType(socialProviderType.name());
-        dto.setUid(oauth2UserInfo.getId()); //소셜로그인에서 관리하는 pk값(유일값)이 넘어옴
-        dto.setUpw("social");
-        dto.setNm(oauth2UserInfo.getName());
-        dto.setPic(oauth2UserInfo.getImageUrl());
-        dto.setAuth(Auth.USER);
-        int result = mapper.insUser(dto);
-
-        UserModel entity = new UserModel();
-        entity.setUid(dto.getUid());
-        entity.setIuser(dto.getIuser());
-        entity.setAuth(dto.getAuth());
-        entity.setNm(dto.getNm());
-        entity.setPic(dto.getPic());
-        return entity;
+        //회원가입 해줘야함!!!!!꼭
+        return UserModel.builder()
+                .uid(oauth2UserInfo.getId())
+                .upw("social")
+                .provideType(SocialProviderType.KAKAO.name())
+                .build();
     }
+
 }

@@ -17,6 +17,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.appoptics.A
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -70,14 +71,14 @@ public class OAth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSu
 
         UserModel userModel = myUserDetails.getUserModel();
 
-        return UriComponentsBuilder.fromUriString(targetUrl)
+        UriComponents uriComponents = UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("access_token", at)
-                .queryParam("iuser", userModel.getIuser())
-                .queryParam("nm", userModel.getNm()).encode()
-                .queryParam("pic", userModel.getPic())
-                .queryParam("firebase_token", userModel.getFirebaseToken())
-                .build()
-                .toUriString();
+                .queryParam("iuser", userModel.getId())
+                .queryParam("nick", userModel.getNick()).encode()
+                .queryParam("pic", userModel.getStoredPic())
+                .build();
+
+        return ;
     }
 
     private void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {
