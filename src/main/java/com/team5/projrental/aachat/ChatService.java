@@ -73,6 +73,7 @@ public class ChatService {
     // 메세지 저장
     @Transactional
     public void saveMsg(ChatMsgInsDto dto) {
+        Chat chat = chatRepository.getReferenceById(dto.getIchat());
 
         ChatUser findChatUser = chatMsgRepository.findByIuserAndIchat(dto.getSenderIuser(), dto.getIchat());
 
@@ -94,8 +95,8 @@ public class ChatService {
          */
 
         chatMsgRepository.save(chatMsg);
-        chatMsgRepository.updChatLastMsg(dto);
-
+        chat.setLastMsg(dto.getMessage());
+        //chatMsgRepository.updChatLastMsg(dto);
         //mapper.updChatLastMsg(dto);
     }
 
