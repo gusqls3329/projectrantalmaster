@@ -288,9 +288,8 @@ public class PaymentService {
 
     @Transactional
     public PaymentInfoVo getPaymentInfo(Long ipayment) {
-        Long loginUserPk = getLoginUserPk();
         PaymentInfo findPaymentInfo = paymentInfoRepository.findByIdJoinFetchPaymentInfoAndProductBy(PaymentInfoIds.builder()
-                .iuser(loginUserPk)
+                .iuser(getLoginUserPk())
                 .ipayment(ipayment)
                 .build()).orElseThrow(() -> new ClientException(NO_SUCH_PAYMENT_EX_MESSAGE,
                 "잘못된 결제정보 입니다. (login user, ipayment)"));
@@ -308,7 +307,6 @@ public class PaymentService {
                 .myPaymentCode(findPaymentInfo.getCode())
                 .paymentStatus(findPaymentInfo.getStatus().getNum())
                 .build();
-
     }
 
 
@@ -327,7 +325,6 @@ public class PaymentService {
 
         if (findPaymentInfo.getStatus() == PaymentInfoStatus.RESERVED && myPaymentInfo.getStatus() == PaymentInfoStatus.RESERVED) {
 
-            // 상태 거래중으로 변경, 새로운 코드 발급
             findPaymentInfo.setStatus(PaymentInfoStatus.ACTIVATED);
             myPaymentInfo.setStatus(PaymentInfoStatus.ACTIVATED);
 

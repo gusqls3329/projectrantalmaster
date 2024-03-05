@@ -287,7 +287,7 @@ public class AdministrationService {
 
         penaltyUser.setPenalty((byte) (penaltyUser.getPenalty() + findDispute.getPenalty()));
 
-        if (penaltyUser.getPenalty() <= -50) {
+        if (penaltyUser.getPenalty() <= Const.LIMIT_PENALTY_SCORE) {
             changeUserWhenOverPenalty(
                     penaltyUser,
                     adminRepository.findById(getLoginUserPk())
