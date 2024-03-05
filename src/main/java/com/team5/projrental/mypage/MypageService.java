@@ -44,7 +44,7 @@ import static com.team5.projrental.common.exception.ErrorMessage.ILLEGAL_EX_MESS
 @Service
 @RequiredArgsConstructor
 public class MypageService {
-    private final ProductRepository productRepository;
+    private final MyProductRepository productRepository;
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
     private final UsersRepository usersRepository;

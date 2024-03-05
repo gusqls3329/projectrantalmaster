@@ -90,6 +90,7 @@ public class PaymentReviewService {
                         throw new BadInformationException(ILLEGAL_EX_MESSAGE);
                     }
                     if (dto.getRating() == null) {
+                        reviewRepository.save(review);
                         return dto.getIreview();
                     }
                     user = paymentRepository.selUser(dto.getIpayment().longValue());
@@ -133,7 +134,6 @@ public class PaymentReviewService {
         //CheckIsBuyer buyCheck = reviewMapper.selBuyRew(loginUserPk, check.get().getPayment().getId().intValue());
         CommonUtils.ifAnyNullThrow(BadInformationException.class, BAD_INFO_EX_MESSAGE, payment);
         Optional<User> userOptional = usersRepository.findById(loginUserPk);
-        User user = userOptional.get();
         Review review = reviewRepository.findById(dto.getIreview().longValue()).get();
 
         //수정전 리뷰를 작성한 사람이 iuser가 맞는지 확인
@@ -142,10 +142,12 @@ public class PaymentReviewService {
         if (dto.getRating() == null && (dto.getContents() == null || dto.getContents().equals(""))) {
             throw new BadInformationException(ILLEGAL_EX_MESSAGE);
         }
-        if (dto.getRating() == null) {
-            return dto.getIreview();
+        User user = paymentRepository.selUser(review.getPayment().getId());
+        if(user.getBaseUser().getRating() == 0){
+            review.setRating(dto.getRating() == null ? 0 : dto.getRating());
+            review.setContents(dto.getContents() == null ? review.getContents() : dto.getContents());
+            return (int) Const.SUCCESS;
         }
-        user = paymentRepository.selUser(review.getPayment().getId());
         //int chIuser = reviewMapper.selUser(dto.getIpayment());
         SelRatVo vo = paymentRepository.selRat(user.getId());
         // SelRatVo vo = reviewMapper.selRat(user.getId().intValue());
