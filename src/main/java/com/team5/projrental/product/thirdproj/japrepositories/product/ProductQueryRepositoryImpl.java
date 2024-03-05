@@ -254,12 +254,21 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
     @Override
     public Long countBySearchAndMainCategoryAndSubCategory(String search, Integer imainCategory, Integer isubCategory,
                                                            String addr) {
-        ProductMainCategory mainCategory = ProductMainCategory.getByNum(imainCategory);
+        ProductMainCategory mainCategory = null;
+        ProductSubCategory subCategory = null;
+        if (imainCategory != null) {
+            mainCategory = ProductMainCategory.getByNum(imainCategory);
+            if (isubCategory != null) {
+                subCategory = ProductSubCategory.getByNum(mainCategory, isubCategory);
+
+            }
+        }
+
         return (long) query.select(product)
                 .from(product)
                 .where(whereSearchForFindAllBy(search,
                         mainCategory,
-                        ProductSubCategory.getByNum(mainCategory, isubCategory),
+                        subCategory,
                         addr).and(product.status.in(ProductStatus.ACTIVATED)))
                 .fetch().size();
     }
