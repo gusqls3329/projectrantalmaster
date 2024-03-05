@@ -96,7 +96,12 @@ public class ProductService implements RefProductService {
             throw new IllegalCategoryException(ILLEGAL_CATEGORY_EX_MESSAGE);
         }
         // iuser 가져오기 -> isLiked 를 위해서
-        Long iuser = getLoginUserPk();
+        Long iuser = null;
+        try {
+            iuser = getLoginUserPk();
+        } catch (ClassCastException ignored) {
+
+        }
         if (imainCategory > 6 || isubCategory > 5) {
             throw new ClientException(ILLEGAL_CATEGORY_EX_MESSAGE, "잘못된 카테고리입니다.");
         }
@@ -121,7 +126,6 @@ public class ProductService implements RefProductService {
             List<Integer> imainCategory,
             List<Integer> isubCategory
     ) {
-
         int page = 0;
         int limit = Const.MAIN_PROD_PER_PAGE;
         List<ProductListVo> result = new ArrayList<>();
