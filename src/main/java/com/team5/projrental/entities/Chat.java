@@ -4,6 +4,9 @@ import com.team5.projrental.entities.mappedsuper.CreatedAt;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -25,5 +28,7 @@ public class Chat extends CreatedAt {
     @Column(length = 2000, name = "last_msg")
     private String lastMsg;
 
-    private String lastMsgAt;
+    @LastModifiedDate
+    @Column(name = "last_msg_at")
+    private LocalDateTime lastMsgAt;
 }

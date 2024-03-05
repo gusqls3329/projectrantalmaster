@@ -31,7 +31,7 @@ public class QChat extends EntityPathBase<Chat> {
 
     public final StringPath lastMsg = createString("lastMsg");
 
-    public final StringPath lastMsgAt = createString("lastMsgAt");
+    public final DateTimePath<java.time.LocalDateTime> lastMsgAt = createDateTime("lastMsgAt", java.time.LocalDateTime.class);
 
     public final QProduct product;
 

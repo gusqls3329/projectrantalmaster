@@ -154,7 +154,7 @@ public class MypageService {
                                     if (dispute instanceof DisputeChatUser) {
                                         DisputeChatUser disputeChatUser = (DisputeChatUser) dispute;
                                         vo.setLastMsg(disputeChatUser.getChatUser().getChat().getLastMsg());
-                                        vo.setLastMsgAt(disputeChatUser.getChatUser().getChat().getLastMsgAt());
+                                        vo.setLastMsgAt(disputeChatUser.getChatUser().getChat().getLastMsgAt().toString());
                                         vo.setKind(DisputeKind.CHAT.getNum());
                                         vo.setPk(disputeChatUser.getChatUser().getChat().getId());
 
