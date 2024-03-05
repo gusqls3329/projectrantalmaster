@@ -95,7 +95,7 @@ public class BoardController {
             @Parameter(name = "iboard", description = "수정 할 게시글pk"),
             @Parameter(name = "title", description = "수정 할 게시글 제목 - 따옴표 없애고 그냥 null 입력시 수정x"),
             @Parameter(name = "contents", description = "수정 할 게시글 내용 - 따옴표 없애고 그냥 null 입력시 수정x"),
-            @Parameter(name = "storedPic", description = "수정(추가) 할 게시글 사진")})
+            @Parameter(name = "storedPic", description = "수정(추가) 할 게시글 사진")})//1
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResVo putBoard(@RequestPart(required = false) List<MultipartFile> storedPic, @RequestPart @Validated BoardPutDto dto) {
         dto.setStoredPic(storedPic);

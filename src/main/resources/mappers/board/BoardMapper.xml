@@ -17,6 +17,7 @@
     </insert>
 
 
+
     <select id="selBoardList">
         SELECT A.nick, A.stored_pic AS userPic, B.title, B.iboard, B.view
         , B.created_at AS createdAt
