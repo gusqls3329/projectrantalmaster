@@ -20,12 +20,6 @@ public class ChatMsg extends CreatedAt {
     @JoinColumn(name = "ichat_user")
     private ChatUser chatUser;
 
-    @Column(columnDefinition = "BIGINT UNSIGNED")
-    private Long seq;
-
-
-
-
     @Column(length = 2000, nullable = false)
     private String msg;
 }
