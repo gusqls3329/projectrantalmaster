@@ -35,8 +35,8 @@ public class HashTagQueryRepositoryImpl implements HashTagQueryRepository {
 
             if (search.charAt(0) == '#') {
                 searchClaus = searchClaus.replaceFirst("#", "");
+                builder.and(hashTag.tag.like("%" + searchClaus + "%"));
             }
-            builder.and(hashTag.tag.like("%" + searchClaus + "%"));
         }
         return builder;
 

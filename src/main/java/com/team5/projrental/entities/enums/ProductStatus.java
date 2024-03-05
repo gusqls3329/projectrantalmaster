@@ -2,9 +2,10 @@ package com.team5.projrental.entities.enums;
 
 import com.team5.projrental.common.exception.ErrorCode;
 import com.team5.projrental.common.exception.thrid.ServerException;
+import lombok.Getter;
 
 import java.util.Arrays;
-
+@Getter
 public enum ProductStatus {
     ACTIVATED(1), HIDDEN (-2), DELETED (-1), PRODUCT_OF_UNREGISTERED_USER(0);
 

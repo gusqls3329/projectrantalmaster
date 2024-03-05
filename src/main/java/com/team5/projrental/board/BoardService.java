@@ -77,10 +77,10 @@ public class BoardService {
                 .view(zero)
                 .status(BoardStatus.ACTIVATED)
                 .build();
-
-        board.setUser(user);
+        boardRepository.save(board);
+        /*board.setUser(user);
         board.setTitle(dto.getTitle());
-        board.setContents(dto.getContents());
+        board.setContents(dto.getContents());*/
 
         String stringId= String.valueOf(board.getId());
         BoardPicInsDto boardPicInsDto = new BoardPicInsDto();
@@ -98,7 +98,6 @@ public class BoardService {
                 throw new ClientException(BAD_PIC_EX_MESSAGE);
             }
         }
-        boardRepository.save(board);
         return new ResVo((long)boardPicInsDto.getIboard());
     }
 
@@ -119,7 +118,7 @@ public class BoardService {
                 .build();
         LocalDateTime createdAt = LocalDateTime.now();
         System.out.println(createdAt);
-
+        //hi
         return vo;
     }
 
