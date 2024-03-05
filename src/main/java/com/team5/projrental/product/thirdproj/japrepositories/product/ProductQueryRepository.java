@@ -3,6 +3,7 @@ package com.team5.projrental.product.thirdproj.japrepositories.product;
 import com.team5.projrental.entities.Product;
 import com.team5.projrental.entities.User;
 import com.team5.projrental.entities.enums.ProductMainCategory;
+import com.team5.projrental.entities.enums.ProductStatus;
 import com.team5.projrental.entities.enums.ProductSubCategory;
 import com.team5.projrental.product.model.CanNotRentalDateVo;
 import com.team5.projrental.product.model.ProductListVo;
@@ -31,13 +32,13 @@ public interface ProductQueryRepository {
     List<ProductListForMainDto> findEachTop8ByCategoriesOrderByIproductDesc(int limitNum);
 
 
-    List<Product> findByUser(User user, Integer page);
+    List<Product> findByUser(User user, Integer page, List<ProductStatus> status);
 
     List<CanNotRentalDateVo> findCanNotRentalDateVoBy(Product product, LocalDate refStartDate, LocalDate refEndDate);
 
     Long countBySearchAndMainCategoryAndSubCategory(String search, Integer imainCategory, Integer isubCategory, String addr);
 
-    Long findByIuser(long iuser);
+    Long findByIuser(long iuser, List<ProductStatus> statuses);
 
     Long getReviewCount(Long iproduct);
 
@@ -50,4 +51,5 @@ public interface ProductQueryRepository {
     Long totalCountByOptions(Integer type, String search);
 
     Optional<Product> findByIdFetchUser(Long iproduct);
+
 }

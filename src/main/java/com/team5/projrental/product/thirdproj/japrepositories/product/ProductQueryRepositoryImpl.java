@@ -10,6 +10,7 @@ import com.team5.projrental.entities.*;
 import com.team5.projrental.entities.enums.ProductMainCategory;
 import com.team5.projrental.entities.enums.ProductStatus;
 import com.team5.projrental.entities.enums.ProductSubCategory;
+import com.team5.projrental.entities.enums.ReviewStatus;
 import com.team5.projrental.entities.ids.ProdLikeIds;
 import com.team5.projrental.product.like.ProductLikeMapper;
 import com.team5.projrental.product.model.CanNotRentalDateVo;
@@ -193,13 +194,13 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
     }
 
     @Override
-    public List<Product> findByUser(User user, Integer page) {
+    public List<Product> findByUser(User user, Integer page, List<ProductStatus> status) {
 
         return query.select(product)
                 .from(product)
                 .join(product.user).fetchJoin()
                 .leftJoin(product.prodLikes).fetchJoin()
-                .where(product.user.eq(user))
+                .where(product.user.eq(user).and(product.status.in(status)))
                 .offset(page)
                 .limit(PROD_PER_PAGE)
                 .fetch();
@@ -259,15 +260,15 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
                 .where(whereSearchForFindAllBy(search,
                         mainCategory,
                         ProductSubCategory.getByNum(mainCategory, isubCategory),
-                        addr))
+                        addr).and(product.status.in(ProductStatus.ACTIVATED)))
                 .fetch().size();
     }
 
     @Override
-    public Long findByIuser(long iuser) {
+    public Long findByIuser(long iuser, List<ProductStatus> statuses) {
 
         return (long) query.selectFrom(product)
-                .where(product.id.eq(iuser))
+                .where(product.id.eq(iuser).and(product.status.in(statuses)))
                 .fetch().size();
 
     }
@@ -279,7 +280,7 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
                 .from(review)
                 .join(payment).on(review.payment.eq(payment)).fetchJoin()
                 .join(product).on(payment.product.eq(product)).fetchJoin()
-                .where(product.id.eq(iproduct))
+                .where(product.id.eq(iproduct).and(review.status.eq(ReviewStatus.ACTIVATED)))
                 .fetch()
                 .size();
 
@@ -399,7 +400,6 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
             likeAddr += "%";
             booleanBuilder.and(product.address.addr.like(likeAddr));
         }
-
 
 
         return booleanBuilder;

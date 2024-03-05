@@ -565,7 +565,13 @@ public class ProductService implements RefProductService {
     public List<ProductUserVo> getUserProductList(Long iuser, Integer page) {
         User findUser = userRepository.findById(iuser == null ? getLoginUserPk() : iuser)
                 .orElseThrow(() -> new ClientException(NO_SUCH_USER_EX_MESSAGE, "존재하지 않는 유저입니다."));
-        List<Product> findProducts = productRepository.findByUser(findUser, page);
+        List<ProductStatus> status = new ArrayList<>();
+        status.add(ProductStatus.ACTIVATED);
+        if (iuser == null) {
+            status.add(ProductStatus.HIDDEN);
+        }
+
+        List<Product> findProducts = productRepository.findByUser(findUser, page, status);
         List<Long> usersLikeProductInFindProducts = productLikeRepository.findByUserAndProductIn(findUser, findProducts)
                 .stream().map(prodLike -> prodLike.getProduct().getId()).toList();
 
@@ -725,8 +731,13 @@ public class ProductService implements RefProductService {
     }
 
     public ResVo getUserProductCount(Integer iuser) {
-
-        return new ResVo(productRepository.findByIuser(iuser == null || iuser == 0 ? getLoginUserPk() : iuser));
+        List<ProductStatus> status = new ArrayList<>();
+        status.add(ProductStatus.ACTIVATED);
+        if (iuser == null) {
+            status.add(ProductStatus.HIDDEN);
+        }
+        return new ResVo(productRepository.findByIuser(iuser == null || iuser == 0 ? getLoginUserPk() : iuser,
+                status));
 
     }
 
