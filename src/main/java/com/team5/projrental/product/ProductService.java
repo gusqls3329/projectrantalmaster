@@ -117,61 +117,22 @@ public class ProductService implements RefProductService {
 
     }
 
-    public List<ProductListVo> getProductListForMain(Integer cnt) {
+    public List<ProductListVo> getProductListForMain(
+            List<Integer> imainCategory,
+            List<Integer> isubCategory
+    ) {
 
-
-        int limit = cnt == null || cnt == 0 ? Const.MAIN_PROD_PER_PAGE : cnt;
-
-
-        List<ProductListForMainDto> dto = productRepository.findEachTop8ByCategoriesOrderByIproductDesc(limit);
-
-
-        List<Long> iproducts = dto.stream().map(ProductListForMainDto::getIproduct).toList();
-
-        // 제품의 전체 좋아요 수와 로그인 유저가 좋아요 했는지 여부 가져오기
-        List<ProdLike> prodLikes = new ArrayList<>();
-        try {
-            Long loginUserPk = authenticationFacade.getLoginUserPk();
-            prodLikes.addAll(productLikeRepository.countByIuserAndInIproduct(loginUserPk, iproducts));
-        } catch (ClassCastException ignored) {
-            // 로그인하지 않은 경우
+        int page = 0;
+        int limit = Const.MAIN_PROD_PER_PAGE;
+        List<ProductListVo> result = new ArrayList<>();
+        for (int i = 0; i < imainCategory.size(); i++) {
+            result.addAll(getProductList(null, null, imainCategory.get(i), isubCategory.get(i), null, page, limit));
         }
-//        List<Product> findProduct = productRepository.findByIdIn(iproducts);
 
 
-        // dto -> vo 변환작업 시작
-        return dto.stream().map(d -> ProductListVo.builder()
-                        .iuser(d.getIuser())
-                        .nick(d.getNick())
-                        .userPic(d.getUserPic())
-                        .iproduct(d.getIproduct())
-                        .title(d.getTitle())
-                        .prodMainPic(d.getProdMainPic())
-                        .rentalPrice(d.getRentalPrice())
-                        .rentalStartDate(d.getRentalStartDate())
-                        .rentalEndDate(d.getRentalEndDate())
-                        .addr(d.getAddr())
-                        .restAddr(d.getRestAddr())
-                        // 해당 제품의 찜 수
-                        .isLiked(prodLikes.stream().anyMatch(l -> Objects.equals(l.getProduct().getId(),
-                                d.getIproduct())) ? 1 : 0) // 내가
-                        // 좋아요 했는지 여부
-                        .istatus(d.getStatus().getNum())
-//                .inventory(findProduct.stream() // 재고 삭제, 무조건 1개 제품 등록 가능
-//                        .filter(fp -> Objects.equals(fp.getId(), d.getIproduct()))
-//                        .findFirst()
-//                        .orElseThrow(() -> new ServerException(SERVER_ERR_MESSAGE, "재고 조회중 에러 발생."))
-//                        .getStocks()
-//                        .size()) // 전체 재고 수
-                        .view(d.getView())
-                        .categories(Categories.builder()
-                                .mainCategory(d.getMainCategory().getNum())
-                                .subCategory(d.getSubCategory().getNum())
-                                .build())
-                        .build()
-        ).collect(Collectors.toList());
-
+        return result;
     }
+
 
     /**
      * 선택한 특정 제품페이지 조회.
