@@ -24,7 +24,7 @@ public class ProdLike extends CreatedAt {
 
     @MapsId("iuser")
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-    @JoinColumn(name = "iuser")
+    @JoinColumn(name = "iuser", columnDefinition = "BIGINT UNSIGNED")
     private User user;
 
 
