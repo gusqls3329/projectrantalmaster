@@ -36,19 +36,7 @@ public class ChatMessageController {
     @MessageMapping("chat.send.{ichatRoom}")
     @Operation(summary = "채팅 메세지 발송", description = "채팅 메세지 발송")
     public void send(ChatMsgInsDto dto, @DestinationVariable Long ichatRoom) {
-//        String authorizationHeader = accessor.getNativeHeader(appProperties.getJwt().getHeaderSchemeName()) == null ? null : String.valueOf(accessor.getNativeHeader(appProperties.getJwt().getHeaderSchemeName()).get(0));
-//        String token = authorizationHeader.substring(appProperties.getJwt().getTokenType().length() + 1);
-//        UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) jwtTokenProvider.getAuthentication(token);
-//
-//        if (auth != null) {
-//            // 만약 권한이 필요하다면 여기서 처리
-//            SecurityUserDetails myUserDetails = (SecurityUserDetails) auth.getPrincipal();
-//            SecurityPrincipal myPrincipal = myUserDetails.getSecurityPrincipal();
-//            dto.setSenderIuser(myPrincipal.getIuser());
-////            dto.setSenderNick(// user 의 닉네임);
-//        }
 
-        // ChatUser테이블의 상대유저 상태 DELETE면 ACTIVE로 변경되고 상대유저PK 반환받음
         dto.setIchat(ichatRoom);
         Long otherPersonIuser = service.changeUserStatus(dto.getIchat(), dto.getSenderIuser());
 

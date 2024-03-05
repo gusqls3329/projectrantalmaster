@@ -88,13 +88,14 @@ public class BoardController {
         return service.getBoard(iboard);
     }
 
-    @Operation(summary = "게시글 수정", description = "특정 게시글 수정<br>result:1(수정 성공)")
+    @Operation(summary = "게시글 수정", description = "특정 게시글 수정<br>result:1(수정 성공)" +
+            "<br>ipics: 삭제 할 사진pk값(List여러개 입력 가능 ex[1,4,5])" +
+            "<br>사진 삭제 안하면 default:0 그대로 두면됨")
     @Parameters(value = {
             @Parameter(name = "iboard", description = "수정 할 게시글pk"),
             @Parameter(name = "title", description = "수정 할 게시글 제목 - 따옴표 없애고 그냥 null 입력시 수정x"),
             @Parameter(name = "contents", description = "수정 할 게시글 내용 - 따옴표 없애고 그냥 null 입력시 수정x"),
-            @Parameter(name = "storedPic", description = "수정(추가) 할 게시글 사진"),
-            @Parameter(name = "ipics", description = "삭제 할 사진pk값(List여러개 입력 가능 ex[1,4,5]), 사진 삭제 안하면 default:0 그대로 두면됨")})
+            @Parameter(name = "storedPic", description = "수정(추가) 할 게시글 사진")})//1
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResVo putBoard(@RequestPart(required = false) List<MultipartFile> storedPic, @RequestPart @Validated BoardPutDto dto) {
         dto.setStoredPic(storedPic);

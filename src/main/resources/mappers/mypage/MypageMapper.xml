@@ -57,7 +57,8 @@
 
     <select id="getIbuyerReviewList">
         SELECT B.ireview, B.rating, B.`contents`, A.nick, A.stored_pic AS loginedUserPic,
-        D.iproduct, D.title, D.stored_pic AS prodPic
+        D.iproduct, D.title, D.stored_pic AS prodPic,
+        D.main_category AS mainCategory, D.sub_category AS subCategory
         FROM user A
         LEFT JOIN review B
         ON A.iuser = B.iuser

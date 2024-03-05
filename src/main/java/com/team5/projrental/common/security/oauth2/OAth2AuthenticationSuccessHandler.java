@@ -52,33 +52,45 @@ public class OAth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSu
         Optional<String> redirectUri = cookieUtils.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME)
                 .map(Cookie::getValue);
 
-        if(redirectUri.isPresent() && !hasAuthorizedRedirectUri(redirectUri.get())) {
+        if (redirectUri.isPresent() && !hasAuthorizedRedirectUri(redirectUri.get())) {
             throw new IllegalArgumentException("Sorry!, Unauthorized Redirect URI");
         }
 
         String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
 
+
         SecurityUserDetails myUserDetails = (SecurityUserDetails) authentication.getPrincipal();
-        SecurityPrincipal myPrincipal = myUserDetails.getSecurityPrincipal();
 
-        String at = jwtTokenProvider.generateAccessToken(myPrincipal);
-        String rt = jwtTokenProvider.generateRefreshToken(myPrincipal);
+        if (myUserDetails.getUserModel().getUpw() == null) {
+            SecurityPrincipal myPrincipal = myUserDetails.getSecurityPrincipal();
 
-        //rt > cookie에 담을꺼임
-        int rtCookieMaxAge = appProperties.getJwt().getRefreshTokenCookieMaxAge();
-        cookieUtils.deleteCookie(response, "rt");
-        cookieUtils.setCookie(response, "rt", rt, rtCookieMaxAge);
+            String at = jwtTokenProvider.generateAccessToken(myPrincipal);
+            String rt = jwtTokenProvider.generateRefreshToken(myPrincipal);
 
+            //rt > cookie에 담을꺼임
+            int rtCookieMaxAge = appProperties.getJwt().getRefreshTokenCookieMaxAge();
+            cookieUtils.deleteCookie(response, "rt");
+            cookieUtils.setCookie(response, "rt", rt, rtCookieMaxAge);
+
+            UserModel userModel = myUserDetails.getUserModel();
+
+            return UriComponentsBuilder.fromUriString(targetUrl)
+                    .queryParam("access_token", at)
+                    .queryParam("iuser", userModel.getIuser())
+                    .queryParam("auth", userModel.getAuth().getIauth())
+                    .queryParam("result", 1L).encode()
+                    .build()
+                    .toUriString();
+        }
         UserModel userModel = myUserDetails.getUserModel();
+        return UriComponentsBuilder.fromUriString(targetUrl)
+                .queryParam("uid", userModel.getUid()).encode()
+                .queryParam("upw", userModel.getUpw()).encode()
+                .queryParam("provider-type", userModel.getProvideType()).encode()
+                .build()
+                .toUriString();
 
-        UriComponents uriComponents = UriComponentsBuilder.fromUriString(targetUrl)
-                .queryParam("access_token", at)
-                .queryParam("iuser", userModel.getId())
-                .queryParam("nick", userModel.getNick()).encode()
-                .queryParam("pic", userModel.getStoredPic())
-                .build();
 
-        return ;
     }
 
     private void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {
@@ -93,7 +105,7 @@ public class OAth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSu
                 .stream().anyMatch(redirectUri -> {
                     URI authorizedURI = URI.create(uri);
                     if (authorizedURI.getHost().equalsIgnoreCase(clientRedirectUri.getHost())
-                            && authorizedURI.getPort() == clientRedirectUri.getPort()) {
+                        && authorizedURI.getPort() == clientRedirectUri.getPort()) {
                         return true;
                     }
                     return false;

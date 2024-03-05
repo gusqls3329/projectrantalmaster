@@ -6,7 +6,6 @@ import com.team5.projrental.common.security.model.SecurityPrincipal;
 import com.team5.projrental.common.security.oauth2.userinfo.Oauth2UserInfo;
 import com.team5.projrental.common.security.oauth2.userinfo.Oauth2UserInfoFactory;
 import com.team5.projrental.entities.User;
-import com.team5.projrental.user.UserController;
 import com.team5.projrental.user.UserMapper;
 import com.team5.projrental.user.UserRepository;
 import com.team5.projrental.user.model.UserModel;
@@ -25,7 +24,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class CustomeOAuth2UserService extends DefaultOAuth2UserService {
-    private final UserController userController;
+    private final UserMapper mapper;
     private final Oauth2UserInfoFactory factory;
     private final UserRepository userRepository;
 
@@ -49,9 +48,11 @@ public class CustomeOAuth2UserService extends DefaultOAuth2UserService {
                 .providerType(socialProviderType.name())
                 .uid(oauth2UserInfo.getId()).build();
         User userss = userRepository.findByUid(dto.getUid()).orElse(null);
-        UserModel savedUser = null;
-        if(userss != null) {
-            savedUser  = UserModel.builder()
+        UserModel userModel = null;
+
+        if (userss != null) {
+            userModel = UserModel.builder()
+                    .iuser(userss.getId())
                     .auth(userss.getAuth())
                     .address(userss.getBaseUser().getAddress())
                     .phone(userss.getPhone())
@@ -65,27 +66,28 @@ public class CustomeOAuth2UserService extends DefaultOAuth2UserService {
                     .verification(userss.getBaseUser().getVerification())
                     .status(userss.getStatus())
                     .build();
+
+            SecurityPrincipal myPrincipal = SecurityPrincipal.builder()
+                    .iuser(userModel.getId())
+                    .build();
+            myPrincipal.getRoles().add(userss.getAuth().name());
+
+            return SecurityUserDetails.builder()
+                    .userModel(userModel)
+                    .securityPrincipal(myPrincipal)
+                    .attributes(user.getAttributes()).build();
         }
-        if(userss == null){//한번도 로그인한적이 없다면, 회원가입 처리
 
-            savedUser = signupUser(oauth2UserInfo, socialProviderType);
-        }
-
-        SecurityPrincipal myPrincipal = SecurityPrincipal.builder()
-                .iuser(savedUser.getId()).build();
-        myPrincipal.setAuth(String.valueOf(savedUser.getAuth()));
-
-
-
+        userModel = signupUser(oauth2UserInfo, socialProviderType);
         return SecurityUserDetails.builder()
-                .userModel(savedUser)
-                .securityPrincipal(myPrincipal)
+                .userModel(userModel)
                 .attributes(user.getAttributes()).build();
 
     }
 
-    private UserModel signupUser(Oauth2UserInfo oauth2UserInfo, SocialProviderType socialProviderType){
+    private UserModel signupUser(Oauth2UserInfo oauth2UserInfo, SocialProviderType socialProviderType) {
         //회원가입 해줘야함!!!!!꼭
+
         return UserModel.builder()
                 .uid(oauth2UserInfo.getId())
                 .upw("social")

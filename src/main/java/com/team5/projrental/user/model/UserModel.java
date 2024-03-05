@@ -16,6 +16,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Builder
 public class UserModel {
     private Long id;
+    private Long iuser;
     private Auth auth;
     private String uid;
     private String upw;

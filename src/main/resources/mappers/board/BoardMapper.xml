@@ -17,6 +17,7 @@
     </insert>
 
 
+
     <select id="selBoardList">
         SELECT A.nick, A.stored_pic AS userPic, B.title, B.iboard, B.view
         , B.created_at AS createdAt
@@ -54,12 +55,15 @@
         </choose>
         <choose>
             <when test="sort == 0">
+                GROUP BY B.iboard
                 ORDER BY B.iboard DESC
             </when>
             <when test="sort == 1">
+                GROUP BY B.iboard
                 order by SQ.cnt desc, B.iboard desc
             </when>
             <when test="sort == 2">
+                GROUP BY B.iboard
                 ORDER BY B.view DESC
             </when>
         </choose>
@@ -144,7 +148,4 @@
         DELETE FROM board_pic
         WHERE iboard = #{iboard} and ipics = #{intIpics}
     </delete>
-
-
-
 </mapper>

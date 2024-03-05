@@ -47,8 +47,6 @@ public class ChatService {
     // 메세지 보낼 때
     @Transactional
     public Long changeUserStatus(Long ichat, Long loginedIuser) {
-        //Long loginedIuser = facade.getLoginUserPk();
-
 
         // chatUser테이블의 상대유저 PK 가져옴
         ChatUser chatUser = chatUserRepository.changeUserStatus(ichat, loginedIuser);
@@ -61,40 +59,22 @@ public class ChatService {
         return chatUser.getUser().getId();
     }
 
-
-/*    //seq +1 증가
-    @Transactional
-    public void setSeq(ChatMsgInsDto dto) {
-        Long preSeq = chatRepository.selChatMsg(dto.getIchat(), dto.getSenderIuser());
-        if (preSeq == null) preSeq = 0L;
-        dto.setSeq(++preSeq);
-    }*/
-
-    // 메세지 저장
+    // 메세지 입력
     @Transactional
     public void saveMsg(ChatMsgInsDto dto) {
+        Chat chat = chatRepository.getReferenceById(dto.getIchat());
 
         ChatUser findChatUser = chatMsgRepository.findByIuserAndIchat(dto.getSenderIuser(), dto.getIchat());
 
         ChatMsg chatMsg = new ChatMsg();
-        //chatMsg.setSeq(dto.getSeq());
         chatMsg.setMsg(dto.getMessage());
         chatMsg.setChatUser(findChatUser);
 
 
-        /*
-        msg, seq, ichat, senderIuser 가 있음.
-        이 데이터를 바탕으로
-        ChatUserRepository 를 사용해서  저장된 ChatUser 를 가져와야함.
-
-        쿼리문은 다음과 같이 나가야 함.
-        select *
-        from CHAT_USER
-        WHERE ichat = #{ichat} AND iuser = #{senderIuser}
-         */
-
         chatMsgRepository.save(chatMsg);
-        mapper.updChatLastMsg(dto);
+        chat.setLastMsg(dto.getMessage());
+        //chatMsgRepository.updChatLastMsg(dto);
+        //mapper.updChatLastMsg(dto);
     }
 
 
