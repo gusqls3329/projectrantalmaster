@@ -2,9 +2,12 @@ package com.team5.projrental.aachat.repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.team5.projrental.aachat.model.ChatMsgInsDto;
 import com.team5.projrental.aachat.model.ChatMsgSelVo;
 import com.team5.projrental.common.Const;
+import com.team5.projrental.entities.ChatMsg;
 import com.team5.projrental.entities.ChatUser;
+import com.team5.projrental.entities.QChatMsg;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,5 +50,24 @@ public class ChatMsgQdslRepositoryImpl implements ChatMsgQdslRepository {
                 .limit(Const.CHAT_MSG_PER_PAGE)
                 .fetch();
 
+    }
+
+
+    //상원
+    @Override
+    public Long updChatLastMsg(ChatMsgInsDto dto) {
+        QChatMsg qChatMsg = QChatMsg.chatMsg;
+
+        long updatedCount = jpaQueryFactory
+                .update(qChatMsg)
+                .set(qChatMsg.msg, dto.getMessage())
+                .where(qChatMsg.id.eq(dto.getIchat()))
+                .execute();
+
+        if (updatedCount != 1) {
+            throw new RuntimeException("Failed to update chat last message for ichat: " + dto.getIchat());
+        }
+
+        return dto.getIchat();
     }
 }
