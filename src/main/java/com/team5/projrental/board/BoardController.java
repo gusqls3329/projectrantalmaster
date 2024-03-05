@@ -50,7 +50,7 @@ public class BoardController {
             "<br>title: 게시글 제목" +
             "<br>view: 게시글 조회수" +
             "<br>createdAt: 등록 날짜" +
-            "}]")
+            "<br>boardLikeCnt: 좋아요 받은 갯수}]")
     @Parameters(value = {
             @Parameter(name = "page", description = "페이지, min:1 / 게시글 12개씩 나옴"),
             @Parameter(name = "search", description = "search(검색어)가 제공될 경우 해당 키워드가 포함된 게시글만 조회<br>" +

@@ -19,20 +19,18 @@
     <select id="selBoardList">
         SELECT A.nick, A.stored_pic AS userPic, B.title, B.iboard, B.view
         , B.created_at AS createdAt
-        , if(C.iuser > 0, 0, 1) AS isLiked
+        , if(C.iuser > 0, 0, 1) AS isLiked, SQ.cnt AS boardLikeCnt
         FROM user A
         JOIN board B
         ON A.iuser = B.iuser
 
-        <choose>
-            <when test="sort == 1">
-                INNER JOIN board_like C
-            </when>
-            <when test="sort == 0 or sort == 2">
-                LEFT JOIN board_like C
-            </when>
-        </choose>
-        ON B.iboard = C.board_iboard
+        left JOIN (SELECT iuser, iboard, count(iboard) as cnt
+        from board_like
+        group by iboard) SQ
+        on B.iboard = SQ.iboard
+
+        LEFT JOIN board_like C
+        ON B.iboard = C.iboard
         WHERE B.status = #{status}
         <choose>
             <when test="type == 1">
@@ -53,8 +51,11 @@
             </when>
         </choose>
         <choose>
-            <when test="sort == 0 or sort == 1">
+            <when test="sort == 0">
                 ORDER BY B.iboard DESC
+            </when>
+            <when test="sort == 1">
+                order by SQ.cnt desc, B.iboard desc
             </when>
             <when test="sort == 2">
                 ORDER BY B.view DESC
@@ -65,12 +66,17 @@
 
     <select id="selBoard">
         SELECT A.iuser, A.nick, A.stored_pic AS userPic, B.iboard
-        , B.title, B.contents, B.view, B.created_at AS createdAt, if(C.iuser > 0, 0, 1) AS isLiked
+        , B.title, B.contents, B.view
+        , B.created_at AS createdAt, if(C.iuser > 0, 0, 1) AS isLiked
+        , C.cnt AS boardLikeCount
         FROM user A
         JOIN board B
         ON A.iuser = B.iuser
-        LEFT JOIN board_like C
-        ON B.iboard = C.board_iboard
+
+        JOIN (select iuser, iboard, count(iboard) As cnt
+                from board_like
+                where iboard = #{iboard}) C
+        ON B.iboard = C.iboard
         WHERE B.iboard = #{iboard} and B.status = #{status}
     </select>
 

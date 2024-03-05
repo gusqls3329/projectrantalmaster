@@ -77,7 +77,7 @@ public class BoardService {
                 .view(zero)
                 .status(BoardStatus.ACTIVATED)
                 .build();
-        boardRepository.save(board);
+
         board.setUser(user);
         board.setTitle(dto.getTitle());
         board.setContents(dto.getContents());
@@ -98,6 +98,7 @@ public class BoardService {
                 throw new ClientException(BAD_PIC_EX_MESSAGE);
             }
         }
+        boardRepository.save(board);
         return new ResVo((long)boardPicInsDto.getIboard());
     }
 
@@ -116,7 +117,8 @@ public class BoardService {
                 .boardList(list)
                 .totalBoardCount(count.getTotalBoardCount())
                 .build();
-
+        LocalDateTime createdAt = LocalDateTime.now();
+        System.out.println(createdAt);
 
         return vo;
     }
@@ -221,7 +223,8 @@ public class BoardService {
             long result = -1;
             return new ResVo(result);
         }
-        throw new BadInformationException(ILLEGAL_EX_MESSAGE);
+        throw new ClientException(
+                ErrorCode.ILLEGAL_EX_MESSAGE);
     }
 }
 
