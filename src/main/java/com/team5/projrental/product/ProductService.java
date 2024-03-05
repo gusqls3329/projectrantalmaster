@@ -339,7 +339,7 @@ public class ProductService implements RefProductService {
         saveProduct.getHashTags().addAll(dto.getHashTags()
                 .stream()
                 .map(hash -> HashTag.builder()
-                        .tag(hash.replaceAll(" ", ""))
+                        .tag(hash.charAt(0) != '#' ? "#" + hash.replaceAll(" ", "") : hash.replaceAll(" ", ""))
                         .product(saveProduct)
                         .build()).toList());
 
@@ -485,7 +485,7 @@ public class ProductService implements RefProductService {
 
         // 해시태그 작업(추가)
         findProduct.getHashTags().addAll(dto.getHashTags().stream().map(hash -> HashTag.builder()
-                .tag(hash)
+                .tag(hash.charAt(1) != '#' ? "#" + hash.replaceAll(" ", "") : hash.replaceAll(" ", ""))
                 .product(findProduct)
                 .build()).toList());
 
