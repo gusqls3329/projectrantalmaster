@@ -8,7 +8,7 @@ public class UserSignupProcDto {
     private Long iuser;
     private String uid;
     private String upw;
-    private String nm;
+//    private String nick;
     private String pic;
     private String providerType;
     private Auth auth;
