@@ -57,8 +57,8 @@
 
     <select id="selChatAll">
         SELECT
-        cu.ichat, ct.last_msg, ct.last_msg_at, cu.`status`, pd.iproduct, pd.stored_pic as prodPic, pd.title, ur.nick, ur.stored_pic as otherPersonPic,
-        cu.iuser AS otherPersonIuser
+        cu.ichat, ct.last_msg AS lastMsg, ct.last_msg_at AS lastMsgAt, cu.`status` AS istatus, pd.iproduct, pd.stored_pic as prodPic, pd.title, ur.nick, ur.stored_pic as otherPersonPic,
+        cu.iuser AS otherPersonIuser, ur.nick AS otherPersonNm
         FROM chat_user cu
         LEFT JOIN chat_msg cm ON cu.ichat_user = cm.ichat_user
         LEFT JOIN chat ct ON cu.ichat = ct.ichat

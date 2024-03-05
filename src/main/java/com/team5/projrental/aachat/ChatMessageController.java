@@ -6,6 +6,7 @@ import com.team5.projrental.common.SecurityProperties;
 import com.team5.projrental.common.security.JwtTokenProvider;
 import com.team5.projrental.common.security.SecurityUserDetails;
 import com.team5.projrental.common.security.model.SecurityPrincipal;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.ExchangeTypes;
@@ -32,6 +33,7 @@ public class ChatMessageController {
     private final SecurityProperties appProperties;
 
     @MessageMapping("chat.send.{ichatRoom}")
+    @Operation(summary = "채팅 메세지 발송", description = "채팅 메세지 발송")
     public void send(ChatMsgInsDto dto, @DestinationVariable Long ichatRoom) {
 //        String authorizationHeader = accessor.getNativeHeader(appProperties.getJwt().getHeaderSchemeName()) == null ? null : String.valueOf(accessor.getNativeHeader(appProperties.getJwt().getHeaderSchemeName()).get(0));
 //        String token = authorizationHeader.substring(appProperties.getJwt().getTokenType().length() + 1);
