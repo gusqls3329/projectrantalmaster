@@ -94,7 +94,9 @@ public class ChatService {
          */
 
         chatMsgRepository.save(chatMsg);
-        mapper.updChatLastMsg(dto);
+        chatMsgRepository.updChatLastMsg(dto);
+
+        //mapper.updChatLastMsg(dto);
     }
 
 
