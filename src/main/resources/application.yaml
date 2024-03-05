@@ -26,9 +26,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
-#  config:
-#    activate:
-#      on-profile: default
+  #  config:
+  #    activate:
+  #      on-profile: default
   rabbitmq:
     #host: localhost
     host: 192.168.0.144
