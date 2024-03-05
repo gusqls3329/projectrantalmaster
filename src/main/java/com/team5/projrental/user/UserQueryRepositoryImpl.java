@@ -6,6 +6,7 @@ import com.team5.projrental.entities.User;
 import com.team5.projrental.entities.VerificationInfo;
 import com.team5.projrental.entities.enums.UserStatus;
 import com.team5.projrental.mypage.MyPageDisputeQueryRepository;
+import com.team5.projrental.user.model.UserModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

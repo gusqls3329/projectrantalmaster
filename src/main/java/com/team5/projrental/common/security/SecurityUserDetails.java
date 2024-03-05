@@ -34,12 +34,12 @@ public class SecurityUserDetails implements UserDetails, OAuth2User {
 
     @Override
     public String getPassword() {
-        return null;
+        return  userModel == null ? null : userModel.getUpw();
     }
 
     @Override
     public String getUsername() {
-        return null;
+       return userModel == null ? null : userModel.getUid();
     }
 
     @Override

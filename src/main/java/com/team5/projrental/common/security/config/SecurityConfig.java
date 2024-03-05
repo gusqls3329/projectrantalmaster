@@ -3,6 +3,10 @@ package com.team5.projrental.common.security.config;
 import com.team5.projrental.common.security.ex.JwtAccessDeniedHandler;
 import com.team5.projrental.common.security.ex.JwtAuthenticationEntryPoint;
 import com.team5.projrental.common.security.filter.JwtAuthenticationFilter;
+import com.team5.projrental.common.security.oauth2.CustomeOAuth2UserService;
+import com.team5.projrental.common.security.oauth2.OAth2AuthenticationSuccessHandler;
+import com.team5.projrental.common.security.oauth2.OAuth2AuthenticationRequestBasedOnCookieRepository;
+import com.team5.projrental.common.security.oauth2.Oauth2AuthenticationFailureHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +24,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final Oauth2AuthenticationFailureHandler oauth2AuthenticationFailureHandler;
+    private final OAuth2AuthenticationRequestBasedOnCookieRepository oAuth2AuthenticationRequestBasedOnCookieRepository;
+    private final OAth2AuthenticationSuccessHandler oAth2AuthenticationSuccessHandler;
+    private final CustomeOAuth2UserService customeOAuth2UserService;
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -39,7 +48,6 @@ public class SecurityConfig {
                                 "/api/pay/**",
 
                                 // 3차
-
                                 "/api/pay/kakao/**",
                                 "/api/dispute/**",
                                 "/api/sse/connect",
@@ -57,10 +65,25 @@ public class SecurityConfig {
                         .requestMatchers("/api/sse/connect").hasAnyRole("USER")
 
                         .anyRequest().permitAll())
-                .exceptionHandling(ex -> {
+                /*.exceptionHandling(ex -> {
                     ex.authenticationEntryPoint(new JwtAuthenticationEntryPoint());
                     ex.accessDeniedHandler(new JwtAccessDeniedHandler());
-                }).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).build();
+                }).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).build();*/
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(except -> {
+                    except.authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+                            .accessDeniedHandler(new JwtAccessDeniedHandler());
+                })
+                .oauth2Login(oauth2 -> oauth2.authorizationEndpoint(auth ->
+                                        auth.baseUri("/oauth2/authorization")
+                                                .authorizationRequestRepository(oAuth2AuthenticationRequestBasedOnCookieRepository)
+
+                                ).redirectionEndpoint(redirection -> redirection.baseUri("/*/oauth2/code/*"))
+                                .userInfoEndpoint(userInfo -> userInfo.userService(customeOAuth2UserService))
+                                .successHandler(oAth2AuthenticationSuccessHandler)
+                                .failureHandler(oauth2AuthenticationFailureHandler)
+                )
+                .build();
     }
 
     @Bean
