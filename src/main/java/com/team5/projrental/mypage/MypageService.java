@@ -233,6 +233,7 @@ public class MypageService {
             List<Product> products = productRepository.findByUser(user.get(), dto.getPage());
             return ProductListVo.builder().vo(products.stream().filter(prd -> !prd.getStatus().equals(ProductStatus.DELETED)).map(
                     productss -> MyPageProductVo.builder().iproduct(productss.getId().longValue())
+                            .storedPic(productss.getStoredPic())
                             .mainCategory(productss.getMainCategory())
                             .subCategory(productss.getSubCategory())
                             .tilte(productss.getTitle())
@@ -248,6 +249,7 @@ public class MypageService {
 
             return ProductListVo.builder().vo(products.stream().filter(prd -> prd.getStatus().equals(ProductStatus.ACTIVATED)).map(
                     productss -> MyPageProductVo.builder().iproduct(productss.getId().longValue())
+                            .storedPic(productss.getStoredPic()) //사진
                             .mainCategory(productss.getMainCategory())
                             .subCategory(productss.getSubCategory())
                             .tilte(productss.getTitle())
