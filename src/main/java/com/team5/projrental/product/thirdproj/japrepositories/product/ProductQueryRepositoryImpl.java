@@ -102,7 +102,7 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
     public List<ProductListVo> findAllBy(Integer sort, String search, ProductMainCategory mainCategory,
                                          ProductSubCategory subCategory, String addr, int page, Long iuser, int limit) {
         List<Product> findProducts = query.select(product)
-                .from(product)
+                .from(product).leftJoin(product.prodLikes).fetchJoin()
                 .where(whereSearchForFindAllBy(search, mainCategory, subCategory, addr)
                         .and(product.status.in(ProductStatus.ACTIVATED)))
                 .offset(page)
@@ -143,7 +143,8 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
                                             .id(hash.getId().intValue())
                                             .tag(hash.getTag())
                                             .build()).collect(Collectors.toList()))
-                            .isLiked(prodLikeCount == 1 ? 1 : 0)
+                            .isLiked(iuser == null ? 0 : productEntity.getProdLikes().stream()
+                                    .anyMatch(prodLike -> prodLike.getUser().getId().equals(iuser)) ? 1 : 0)
                             .view(productEntity.getView())
                             .categories(Categories.builder()
                                     .mainCategory(productEntity.getMainCategory().getNum())
@@ -151,6 +152,7 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
                                     .build())
                             .build();
                 }).collect(Collectors.toList());
+
 
     }
 
