@@ -143,7 +143,7 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
                                             .id(hash.getId().intValue())
                                             .tag(hash.getTag())
                                             .build()).collect(Collectors.toList()))
-                            .isLiked(iuser == null ? null : productEntity.getProdLikes().stream()
+                            .isLiked(iuser == null ? 0 : productEntity.getProdLikes().stream()
                                     .anyMatch(prodLike -> prodLike.getUser().getId().equals(iuser)) ? 1 : 0)
                             .view(productEntity.getView())
                             .categories(Categories.builder()
