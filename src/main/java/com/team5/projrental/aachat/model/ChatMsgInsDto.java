@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class ChatMsgInsDto {
-    @JsonIgnore
+
     private Long ichat; // 채팅방 고유 번호(채팅방 PK)
 
     @JsonIgnore

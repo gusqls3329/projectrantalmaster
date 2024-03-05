@@ -125,9 +125,7 @@
     <update id="updChatLastMsg">
         UPDATE chat
         SET
-        <if test="msg != null">
-            last_msg = #{msg}
-        </if>
+        last_msg = #{message}
         WHERE ichat = #{ichat}
     </update>
 

@@ -32,6 +32,7 @@ public class ChatMessageController {
     private final JwtTokenProvider jwtTokenProvider;
     private final SecurityProperties appProperties;
 
+
     @MessageMapping("chat.send.{ichatRoom}")
     @Operation(summary = "채팅 메세지 발송", description = "채팅 메세지 발송")
     public void send(ChatMsgInsDto dto, @DestinationVariable Long ichatRoom) {
