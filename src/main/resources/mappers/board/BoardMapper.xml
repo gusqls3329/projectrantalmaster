@@ -21,7 +21,7 @@
     <select id="selBoardList">
         SELECT A.nick, A.stored_pic AS userPic, B.title, B.iboard, B.view
         , B.created_at AS createdAt
-        , if(C.iuser > 0, 0, 1) AS isLiked, SQ.cnt AS boardLikeCnt
+        , if(C.iuser > 0, 1, 0) AS isLiked, SQ.cnt AS boardLikeCnt
         , B.status
         FROM user A
         JOIN board B
@@ -73,7 +73,7 @@
     <select id="selBoard">
         SELECT A.iuser, A.nick, A.stored_pic AS userPic, B.iboard
         , B.title, B.contents, B.view
-        , B.created_at AS createdAt, if(C.iuser > 0, 0, 1) AS isLiked
+        , B.created_at AS createdAt, if(C.iuser > 0, 1, 0) AS isLiked
         , C.cnt AS boardLikeCount, B.status
         FROM user A
         JOIN board B
