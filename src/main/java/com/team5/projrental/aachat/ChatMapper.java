@@ -1,8 +1,6 @@
 package com.team5.projrental.aachat;
 
-import com.team5.projrental.aachat.model.ChatMsgInsDto;
-import com.team5.projrental.aachat.model.ChatSelDto;
-import com.team5.projrental.aachat.model.ChatSelVo;
+import com.team5.projrental.aachat.model.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -22,7 +20,7 @@ public interface ChatMapper {
 //    Integer selChatUserCheck2(ChatInsDto dto);
 //
 //    int insChatMsg(ChatMsgInsDto dto);
-//    List<ChatMsgSelVo> selChatMsgAll(ChatMsgSelDto dto);
+    ChatMsgSelVo selChatMsgAll(Long ichat);
 //    int updChatLastMsgAfterDelByLastMsg(ChatMsgDelDto dto);
 //    int updChatLastMsg(ChatMsgInsDto dto);
 //

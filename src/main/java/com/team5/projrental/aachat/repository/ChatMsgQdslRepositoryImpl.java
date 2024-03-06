@@ -4,6 +4,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.team5.projrental.aachat.model.ChatMsgInsDto;
 import com.team5.projrental.aachat.model.ChatMsgSelVo;
+import com.team5.projrental.aachat.model.Messages;
 import com.team5.projrental.common.Const;
 import com.team5.projrental.entities.ChatMsg;
 import com.team5.projrental.entities.ChatUser;
@@ -12,11 +13,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.TreeMap;
 
 import static com.team5.projrental.entities.QChat.chat;
 import static com.team5.projrental.entities.QChatMsg.chatMsg;
 import static com.team5.projrental.entities.QChatUser.chatUser;
 import static com.team5.projrental.entities.QUser.user;
+import static com.team5.projrental.entities.QProduct.product;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -36,20 +40,8 @@ public class ChatMsgQdslRepositoryImpl implements ChatMsgQdslRepository {
     @Override
     public List<ChatMsgSelVo> findAllChatMsgByIchat(long ichat, Long loginedIuser, Integer page) {
 
-        return jpaQueryFactory.select(Projections.fields(ChatMsgSelVo.class,
-                        user.id.as("senderIuser"),
-                        user.nick.as("senderNick"),
-                        user.baseUser.storedPic.as("senderPic"),
-                        chatMsg.msg,
-                        chatMsg.createdAt))
-                .from(chatMsg)
-                .join(chatMsg.chatUser)
-                .join(user).on(chatMsg.chatUser.user.eq(user))
-                .where(chatMsg.chatUser.chat.id.eq(ichat))
-                .orderBy(chatMsg.createdAt.desc())
-                .offset(page)
-                .limit(Const.CHAT_MSG_PER_PAGE)
-                .fetch();
+
+                       return null;
 
     }
 
@@ -70,5 +62,34 @@ public class ChatMsgQdslRepositoryImpl implements ChatMsgQdslRepository {
         }
 
         return dto.getIchat();
+    }
+
+    @Override
+    public List<Messages> findBothUsersMsges(long ichat, Integer page, Long loginedIuser) {
+        return jpaQueryFactory.select(Projections.bean(Messages.class,
+                chatMsg.id.as("asc"),
+                chatMsg.chatUser.user.id.as("iuser"),
+                chatMsg.msg.as("msg"),
+                chatMsg.createdAt
+                )).from(chatMsg)
+                .join(chatMsg.chatUser)
+                .join(chatMsg.chatUser.chat)
+                .offset(page)
+                .limit(30)
+                .orderBy(chatMsg.id.desc())
+                .where(chatMsg.chatUser.chat.id.eq(ichat))
+                .fetch()
+
+                .stream().map(m -> {
+                    if (Objects.equals(m.getIuser(), loginedIuser)) {
+                        m.setIsMyMessage(1);
+                    }
+                    return m;
+                })
+                .sorted((f, s) -> -((int) (f.getAsc() - s.getAsc())))
+                .toList();
+
+
+
     }
 }

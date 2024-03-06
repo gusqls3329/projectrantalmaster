@@ -1,9 +1,6 @@
 package com.team5.projrental.aachat;
 
-import com.team5.projrental.aachat.model.ChatMsgInsDto;
-import com.team5.projrental.aachat.model.ChatMsgSelVo;
-import com.team5.projrental.aachat.model.ChatSelDto;
-import com.team5.projrental.aachat.model.ChatSelVo;
+import com.team5.projrental.aachat.model.*;
 import com.team5.projrental.aachat.repository.ChatMsgRepository;
 import com.team5.projrental.aachat.repository.ChatRepository;
 import com.team5.projrental.common.Const;
@@ -25,6 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -96,12 +95,22 @@ public class ChatService {
     }
 
     // 방 들어갔을때 채팅글 리스트.
-    public List<ChatMsgSelVo> getChatMsgList(long ichat, Integer page) {
+    public ChatMsgSelVo getChatMsgList(long ichat, Integer page) {
 
         // todo 예외처리
         Long loginedIuser = facade.getLoginUserPk();
 
-        List<ChatMsgSelVo> findChatMsgSelVo = chatMsgRepository.findAllChatMsgByIchat(ichat, loginedIuser, page);
+        // fixme mapper 로 변경
+        ChatMsgSelVo findChatMsgSelVo = new ChatMsgSelVo();
+        if (page >= 0) {
+            findChatMsgSelVo = mapper.selChatMsgAll(ichat);
+        }
+        List<Messages> findMessages = chatMsgRepository.findBothUsersMsges(ichat, page, loginedIuser);
+
+
+
+
+        findChatMsgSelVo.setMessages(findMessages);
         return findChatMsgSelVo;
     }
 
