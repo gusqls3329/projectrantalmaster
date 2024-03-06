@@ -6,6 +6,7 @@ import com.team5.projrental.common.SecurityProperties;
 import com.team5.projrental.common.security.JwtTokenProvider;
 import com.team5.projrental.common.security.SecurityUserDetails;
 import com.team5.projrental.common.security.model.SecurityPrincipal;
+import com.team5.projrental.common.utils.CommonUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,11 @@ public class ChatMessageController {
     @MessageMapping("chat.send.{ichatRoom}")
     @Operation(summary = "채팅 메세지 발송", description = "채팅 메세지 발송")
     public void send(ChatMsgInsDto dto, @DestinationVariable Long ichatRoom) {
+
+        dto.setMessage(CommonUtils.ifContainsBadWordTrue(dto.getMessage()) ?
+                CommonUtils.ifContainsBadWordChangeThat(dto.getMessage()) :
+                dto.getMessage());
+
 
         dto.setIchat(ichatRoom);
         Long otherPersonIuser = service.changeUserStatus(dto.getIchat(), dto.getSenderIuser());
