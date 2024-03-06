@@ -15,7 +15,7 @@ public class ChatSelVo {
     private String lastMsgAt; // 최근 메세지 발송시간
     private String istatus; // 채팅방 상태
 
-    private int ipriduct; // 제품PK
+    private int iproduct; // 제품PK
     private String title; // 제품 타이틀
 
     private String otherPersonNm; // 상대방 유저 이름

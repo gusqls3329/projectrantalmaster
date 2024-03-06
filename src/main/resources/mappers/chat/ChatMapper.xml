@@ -80,7 +80,7 @@
     </select>
 
 
-    <select id="selChatMsgAll">
+    <!--<select id="selChatMsgAll">
         SELECT
         F.seq,
         F.msg,
@@ -103,8 +103,40 @@
         GROUP BY F.seq
         ORDER BY F.created_at DESC
         LIMIT #{startIdx}, #{rowCount}
-    </select>
+    </select>-->
 
+    <select id="selChatMsgAll">
+        SELECT
+        p.iproduct,
+        p.title,
+        p.stored_pic AS productMainPic,
+        p.rental_price AS rentalPrice,
+
+        u.iuser AS myIuser,
+        u.nick AS myNick,
+        u.stored_pic AS myPic,
+
+        uu.iuser AS otherIuser,
+        uu.nick AS otherNick,
+        uu.stored_pic AS otherPic
+        FROM product p
+        JOIN chat c
+        ON p.iproduct = c.iproduct
+
+        JOIN chat_user cu
+        ON c.ichat = cu.ichat
+        JOIN user u
+        ON cu.ichat_user = u.iuser
+
+        JOIN chat_user cuu
+        ON c.ichat = cuu.ichat
+        JOIN user uu
+        ON cuu.ichat_user = uu.iuser AND cuu.ichat_user != u.iuser
+
+        WHERE c.ichat = #{ichat}
+        GROUP BY p.iproduct
+
+    </select>
 
     <!--<delete id="chatDelMsg">
         DELETE chat_message
