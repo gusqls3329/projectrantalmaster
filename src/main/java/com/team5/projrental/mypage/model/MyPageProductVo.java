@@ -12,8 +12,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MyPageProductVo {
-    private ProductMainCategory mainCategory;
-    private ProductSubCategory subCategory;
+    private int mainCategory;
+    private int subCategory;
     private String storedPic;//사진
 
     private Long iproduct;
@@ -21,4 +21,5 @@ public class MyPageProductVo {
     private String contents;
     private int price;
     private LocalDate updatedAt;
+
 }
