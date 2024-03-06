@@ -82,8 +82,8 @@ public class ChatMsgQdslRepositoryImpl implements ChatMsgQdslRepository {
                         chatMsg.createdAt
                 )).from(chatMsg)
                 .join(chatMsg.chatUser)
+                .join(chatMsg.chatUser.chat)
                 .join(user).on(chatMsg.chatUser.user.id.eq(user.id))
-                .join(chat).on(chatMsg.chatUser.chat.id.eq(chat.id))
                 .join(product).on(chat.product.id.eq(product.id))
 //                .join(chatUser).on(chat.id.eq(chatUser.chat.id))
 ////                .join(user).on(chatUser.user.id.eq(user.id))
