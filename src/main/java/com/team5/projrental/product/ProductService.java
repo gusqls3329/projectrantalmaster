@@ -445,8 +445,9 @@ public class ProductService implements RefProductService {
         // 문제 없음.
 
         // 해시태그 작업(삭제)
-        findProduct.getHashTags().stream().filter(hash -> dto.getHashTags().contains(hash.getTag()))
-                .forEach(findProduct.getHashTags()::remove);
+        findProduct.getHashTags().removeAll(
+                findProduct.getHashTags().stream().filter(hash -> dto.getDelHashTags().contains(hash.getId())).toList()
+        );
 
         // 해시태그 작업(추가)
         findProduct.getHashTags().addAll(dto.getHashTags().stream().map(hash -> HashTag.builder()
