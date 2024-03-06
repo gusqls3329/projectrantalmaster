@@ -41,7 +41,7 @@ public class ChatController {
     }
 
 
-    // 채팅방 입장
+    // 채팅방 생성
     @PostMapping("room/{target-iuser}")
     @Operation(summary = "채팅방 생성 1보냄 or기존채팅방있으면 2보냄", description = "로그인 한 유저가 대화버튼 누를 경우 채팅방 생성 및 유저 입장됨")
     public ResVo postRoom(@PathVariable("target-iuser") Long targetIuser, @RequestParam Long iproduct) {
