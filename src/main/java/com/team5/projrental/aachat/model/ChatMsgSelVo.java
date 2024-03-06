@@ -1,5 +1,6 @@
 package com.team5.projrental.aachat.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.team5.projrental.entities.mappedsuper.CreatedAt;
 import lombok.Data;
 
@@ -9,24 +10,20 @@ import java.util.List;
 @Data
 public class ChatMsgSelVo {
 
+    @JsonIgnore
+    private Long ichatMsg;
     //제품 관련 정보
     private Long iproduct;
     private String title;
     private String productMainPic;
     private Long rentalPrice;
 
+    private Long isender;
+    private String senderNick;
+    private String senderPic;
 
-    // 내 프로필 정보
-    private Long myIuser;
-    private String myNick;
-    private String myPic;
-
-    //상대 프로필 정보
-    private Long otherIuser;
-    private String otherNick;
-    private String otherPic;
-
-    private List<Messages> messages;
+    private String msg;
+    private String createdAt;
     //
 
 

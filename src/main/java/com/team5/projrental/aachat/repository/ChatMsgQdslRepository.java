@@ -15,5 +15,5 @@ public interface ChatMsgQdslRepository {
     //상원
     Long updChatLastMsg(ChatMsgInsDto dto);
 
-    List<Messages> findBothUsersMsges(long ichat, Integer page, Long loginedIuser);
+    List<ChatMsgSelVo> findBothUsersMsges(long ichat, Integer page);
 }

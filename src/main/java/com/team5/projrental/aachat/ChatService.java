@@ -95,23 +95,15 @@ public class ChatService {
     }
 
     // 방 들어갔을때 채팅글 리스트.
-    public ChatMsgSelVo getChatMsgList(long ichat, Integer page) {
+    public List<ChatMsgSelVo> getChatMsgList(long ichat, Integer page) {
 
         // todo 예외처리
         Long loginedIuser = facade.getLoginUserPk();
 
         // fixme mapper 로 변경
-        ChatMsgSelVo findChatMsgSelVo = new ChatMsgSelVo();
-        if (page >= 0) {
-            findChatMsgSelVo = mapper.selChatMsgAll(ichat);
-        }
-        List<Messages> findMessages = chatMsgRepository.findBothUsersMsges(ichat, page, loginedIuser);
+        return chatMsgRepository.findBothUsersMsges(ichat, page);
 
 
-
-
-        findChatMsgSelVo.setMessages(findMessages);
-        return findChatMsgSelVo;
     }
 
     // 방 새로 등록하기전 SELECT 해서 기존 iproduct 및 iuser가 같은 ichat에 있으면 아래 방새로 등록되지 않고 기존 방 입장되도록 해야함

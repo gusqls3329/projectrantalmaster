@@ -9,6 +9,7 @@ import com.team5.projrental.common.Const;
 import com.team5.projrental.entities.ChatMsg;
 import com.team5.projrental.entities.ChatUser;
 import com.team5.projrental.entities.QChatMsg;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,6 +27,7 @@ import static com.team5.projrental.entities.QProduct.product;
 @RequiredArgsConstructor
 public class ChatMsgQdslRepositoryImpl implements ChatMsgQdslRepository {
     private final JPAQueryFactory jpaQueryFactory;
+    private final EntityManager em;
 
 
     @Override
@@ -41,7 +43,7 @@ public class ChatMsgQdslRepositoryImpl implements ChatMsgQdslRepository {
     public List<ChatMsgSelVo> findAllChatMsgByIchat(long ichat, Long loginedIuser, Integer page) {
 
 
-                       return null;
+        return null;
 
     }
 
@@ -65,30 +67,64 @@ public class ChatMsgQdslRepositoryImpl implements ChatMsgQdslRepository {
     }
 
     @Override
-    public List<Messages> findBothUsersMsges(long ichat, Integer page, Long loginedIuser) {
-        return jpaQueryFactory.select(Projections.bean(Messages.class,
-                chatMsg.id.as("asc"),
-                chatMsg.chatUser.user.id.as("iuser"),
-                chatMsg.msg.as("msg"),
-                chatMsg.createdAt
+    public List<ChatMsgSelVo> findBothUsersMsges(long ichat, Integer page) {
+
+        return jpaQueryFactory.select(Projections.bean(ChatMsgSelVo.class,
+                        chatMsg.chatUser.chat.id.as("ichat"),
+                        chatMsg.chatUser.chat.product.id.as("iproduct"),
+                        chatMsg.chatUser.chat.product.title,
+                        chatMsg.chatUser.chat.product.storedPic.as("productMainPic"),
+                        chatMsg.chatUser.chat.product.rentalPrice,
+                        chatMsg.chatUser.user.id.as("isender"),
+                        chatMsg.chatUser.user.nick.as("senderNick"),
+                        chatMsg.chatUser.user.baseUser.storedPic.as("senderPic"),
+                        chatMsg.msg,
+                        chatMsg.createdAt
                 )).from(chatMsg)
                 .join(chatMsg.chatUser)
                 .join(chatMsg.chatUser.chat)
+                .join(chatMsg.chatUser.user)
+                .join(chatMsg.chatUser.chat.product)
+//                .join(chatUser).on(chat.id.eq(chatUser.chat.id))
+////                .join(user).on(chatUser.user.id.eq(user.id))
+//                .join(chatUser.user)
+////                .join(chatMsg).on(chatUser.id.eq(chatMsg.chatUser.id))
+//                .join(chatMsg.chatUser)
+////                .join(product).on(chat.product.id.eq(product.id))
+//                .join(chatMsg.chatUser.chat.product)
+                .where(chat.id.eq(ichat))
                 .offset(page)
                 .limit(30)
                 .orderBy(chatMsg.id.desc())
-                .where(chatMsg.chatUser.chat.id.eq(ichat))
+                .where(chat.id.eq(ichat))
                 .fetch()
-
-                .stream().map(m -> {
-                    if (Objects.equals(m.getIuser(), loginedIuser)) {
-                        m.setIsMyMessage(1);
-                    }
-                    return m;
-                })
-                .sorted((f, s) -> -((int) (f.getAsc() - s.getAsc())))
+                .stream()
+                .sorted((f, s) -> -((int) (f.getIchatMsg() - s.getIchatMsg())))
                 .toList();
 
+//        return jpaQueryFactory.select(Projections.bean(Messages.class,
+//                chatMsg.id.as("asc"),
+//                chatMsg.chatUser.user.id.as("iuser"),
+//                chatMsg.msg.as("msg"),
+//                chatMsg.createdAt
+//                )).from(chatMsg)
+//                .join(chatMsg.chatUser)
+//                .join(chatMsg.chatUser.chat)
+//                .offset(page)
+//                .limit(30)
+//                .orderBy(chatMsg.id.desc())
+//                .where(chatMsg.chatUser.chat.id.eq(ichat))
+//                .fetch()
+//
+//                .stream().map(m -> {
+//                    if (Objects.equals(m.getIuser(), loginedIuser)) {
+//                        m.setIsMyMessage(1);
+//                    }
+//                    return m;
+//                })
+//                .sorted((f, s) -> -((int) (f.getAsc() - s.getAsc())))
+//                .toList();
+//
 
 
     }
