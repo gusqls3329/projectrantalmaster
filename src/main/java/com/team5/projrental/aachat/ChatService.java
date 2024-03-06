@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -64,6 +65,9 @@ public class ChatService {
         Chat chat = chatRepository.getReferenceById(dto.getIchat());
 
         ChatUser findChatUser = chatMsgRepository.findByIuserAndIchat(dto.getSenderIuser(), dto.getIchat());
+
+        chat.setLastMsg(dto.getMessage());
+        chat.setLastMsgAt(LocalDateTime.now());
 
         ChatMsg chatMsg = new ChatMsg();
         chatMsg.setMsg(dto.getMessage());
