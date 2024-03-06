@@ -74,7 +74,7 @@
 
     <select id="getFavList">
         SELECT A.iproduct, A.title, A.`contents`, A.stored_pic AS pic,
-        A.rental_price AS rentalPrice, A.iuser, B.stored_pic, B.nick
+        A.rental_price AS rentalPrice, A.iuser, B.stored_pic as storedPic, B.nick
         , A.main_category as mainCategory, A.sub_category as subCategory
         FROM product A
         LEFT JOIN user B
