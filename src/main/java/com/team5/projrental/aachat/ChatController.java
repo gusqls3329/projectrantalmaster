@@ -35,7 +35,7 @@ public class ChatController {
 
     @GetMapping("room/{ichat}")
     @Operation(summary = "채팅방 입장 메세지 리스트", description = "로그인 유저가 입장한 채팅방의 메세지 리스트")
-    public ChatMsgSelVo getMessageAll(@PathVariable("ichat") Long ichat, @RequestParam(defaultValue = "1") Integer page) {
+    public List<ChatMsgSelVo> getMessageAll(@PathVariable("ichat") Long ichat, @RequestParam(defaultValue = "1") Integer page) {
 
         return service.getChatMsgList(ichat, (page - 1) * Const.CHAT_MSG_PER_PAGE);
     }
