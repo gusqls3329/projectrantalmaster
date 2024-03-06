@@ -70,21 +70,21 @@ public class ChatMsgQdslRepositoryImpl implements ChatMsgQdslRepository {
     public List<ChatMsgSelVo> findBothUsersMsges(long ichat, Integer page) {
 
         return jpaQueryFactory.select(Projections.bean(ChatMsgSelVo.class,
-                        chatMsg.chatUser.chat.id.as("ichat"),
-                        chatMsg.chatUser.chat.product.id.as("iproduct"),
-                        chatMsg.chatUser.chat.product.title,
-                        chatMsg.chatUser.chat.product.storedPic.as("productMainPic"),
-                        chatMsg.chatUser.chat.product.rentalPrice,
-                        chatMsg.chatUser.user.id.as("isender"),
-                        chatMsg.chatUser.user.nick.as("senderNick"),
-                        chatMsg.chatUser.user.baseUser.storedPic.as("senderPic"),
+                        chatMsg.id.as("ichatMsg"),
+                        product.id.as("iproduct"),
+                        product.title,
+                        product.storedPic.as("productMainPic"),
+                        product.rentalPrice,
+                        user.id.as("isender"),
+                        user.nick.as("senderNick"),
+                        user.baseUser.storedPic.as("senderPic"),
                         chatMsg.msg,
                         chatMsg.createdAt
                 )).from(chatMsg)
                 .join(chatMsg.chatUser)
-                .join(chatMsg.chatUser.chat)
-                .join(chatMsg.chatUser.user)
-                .join(chatMsg.chatUser.chat.product)
+                .join(user).on(chatMsg.chatUser.user.id.eq(user.id))
+                .join(chat).on(chatMsg.chatUser.chat.id.eq(chat.id))
+                .join(product).on(chat.product.id.eq(product.id))
 //                .join(chatUser).on(chat.id.eq(chatUser.chat.id))
 ////                .join(user).on(chatUser.user.id.eq(user.id))
 //                .join(chatUser.user)

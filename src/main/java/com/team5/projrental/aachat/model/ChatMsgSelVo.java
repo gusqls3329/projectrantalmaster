@@ -16,14 +16,14 @@ public class ChatMsgSelVo {
     private Long iproduct;
     private String title;
     private String productMainPic;
-    private Long rentalPrice;
+    private Integer rentalPrice;
 
     private Long isender;
     private String senderNick;
     private String senderPic;
 
     private String msg;
-    private String createdAt;
+    private LocalDateTime createdAt;
     //
 
 
