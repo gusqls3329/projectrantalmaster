@@ -40,6 +40,7 @@ public class ChatController {
         return service.getChatMsgList(ichat, (page - 1) * Const.CHAT_MSG_PER_PAGE);
     }
 
+
     // 채팅방 입장
     @PostMapping("room/{target-iuser}")
     @Operation(summary = "채팅방 생성 1보냄 or기존채팅방있으면 2보냄", description = "로그인 한 유저가 대화버튼 누를 경우 채팅방 생성 및 유저 입장됨")
