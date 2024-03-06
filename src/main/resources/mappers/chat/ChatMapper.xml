@@ -74,11 +74,13 @@
         ON u.iuser != cu.iuser
         JOIN user uu
         ON uu.iuser = cu.iuser
-        JOIN chat c
+        JOIN chat cd
         ON cu.ichat = c.ichat
         JOIN product p
         ON c.iproduct = p.iproduct
-        WHERE u.iuser = #{loginedIuser} AND cu.`status`= 'ACTIVE'
+        WHERE cu.iuser = #{loginedIuser} AND cu.`status`= 'ACTIVE'
+        group by C.ichat
+        order by C.created_at desc
     </select>
 
 
