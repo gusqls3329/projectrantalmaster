@@ -67,11 +67,13 @@
         p.title,
         u.nick,
         u.stored_pic as otherPersonPic,
-        cu.iuser AS otherPersonIuser,
-        u.nick AS otherPersonNm
+        uu.iuser AS otherPersonIuser,
+        uu.nick AS otherPersonNm
         FROM user u
         JOIN chat_user cu
-        ON u.iuser = cu.iuser
+        ON u.iuser != cu.iuser
+        JOIN user uu
+        ON uu.iuser = cu.iuser
         JOIN chat c
         ON cu.ichat = c.ichat
         JOIN product p
