@@ -13,4 +13,5 @@ public class CheckResponseVo {
     private String birthday;
     private String gender;
     private String nationality;
+    private String phone;
 }

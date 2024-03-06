@@ -86,7 +86,6 @@ public class CustomeOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private UserModel signupUser(Oauth2UserInfo oauth2UserInfo, SocialProviderType socialProviderType) {
-        //회원가입 해줘야함!!!!!꼭
 
         return UserModel.builder()
                 .uid(oauth2UserInfo.getId())

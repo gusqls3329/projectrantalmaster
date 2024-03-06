@@ -195,6 +195,7 @@ UserService {
                 .birthday(baseInfo.getUserBirthday())
                 .gender(responseVo.getGender())
                 .nationality(responseVo.getNationality())
+                .phone(baseInfo.getUserPhone())
                 .build();
     }
 
