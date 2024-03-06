@@ -90,10 +90,7 @@ public class ChatService {
         dto.setLoginedIuser(getLoginUserPk());
 
         List<ChatSelVo> findChatSelVo = mapper.selChatAll(dto);
-
         // todo 예외처리
-        ChatSelVo selvo = new ChatSelVo();
-        selvo.setTotalChatCount(chatUserRepository.getChatCount(loginedIuser));
 
         return findChatSelVo;
     }

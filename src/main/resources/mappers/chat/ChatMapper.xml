@@ -57,16 +57,26 @@
 
     <select id="selChatAll">
         SELECT
-        cu.ichat, ct.last_msg AS lastMsg, ct.last_msg_at AS lastMsgAt, cu.`status` AS istatus, pd.iproduct, pd.stored_pic as prodPic, pd.title, ur.nick, ur.stored_pic as otherPersonPic,
-        cu.iuser AS otherPersonIuser, ur.nick AS otherPersonNm
-        FROM chat_user cu
-        LEFT JOIN chat_msg cm ON cu.ichat_user = cm.ichat_user
-        LEFT JOIN chat ct ON cu.ichat = ct.ichat
-        LEFT JOIN product pd ON ct.iproduct = pd.iproduct
-        LEFT JOIN user ur ON cu.iuser = ur.iuser
-        WHERE cu.iuser = #{loginedIuser} AND cu.`status` = 'ACTIVE'
-        ORDER BY ct.last_msg_at DESC
-        LIMIT #{startIdx}, #{rowCount}
+        (SELECT COUNT(ichat) AS totalChatCount FROM chat WHERE u.iuser != 2 AND cu.`status`= 'ACTIVE') AS totalChatCount,
+        c.ichat,
+        c.last_msg AS lastMsg,
+        c.last_msg_at AS lastMsgAt,
+        cu.`status` AS istatus,
+        p.iproduct,
+        p.stored_pic as prodPic,
+        p.title,
+        u.nick,
+        u.stored_pic as otherPersonPic,
+        cu.iuser AS otherPersonIuser,
+        u.nick AS otherPersonNm
+        FROM user u
+        JOIN chat_user cu
+        ON u.iuser = cu.iuser
+        JOIN chat c
+        ON cu.ichat = c.ichat
+        JOIN product p
+        ON c.iproduct = p.iproduct
+        WHERE u.iuser != #{loginedIuser} AND cu.`status`= 'ACTIVE'
     </select>
 
 
