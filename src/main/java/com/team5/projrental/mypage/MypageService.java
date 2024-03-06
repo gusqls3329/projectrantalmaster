@@ -234,8 +234,8 @@ public class MypageService {
             return ProductListVo.builder().vo(products.stream().filter(prd -> !prd.getStatus().equals(ProductStatus.DELETED)).map(
                     productss -> MyPageProductVo.builder().iproduct(productss.getId().longValue())
                             .storedPic(productss.getStoredPic())
-                            .mainCategory(productss.getMainCategory())
-                            .subCategory(productss.getSubCategory())
+                            .mainCategory(productss.getMainCategory().getNum())
+                            .subCategory(productss.getSubCategory().getNum())
                             .tilte(productss.getTitle())
                             .price(productss.getRentalPrice())
                             .contents(productss.getContents())
@@ -250,8 +250,8 @@ public class MypageService {
             return ProductListVo.builder().vo(products.stream().filter(prd -> prd.getStatus().equals(ProductStatus.ACTIVATED)).map(
                     productss -> MyPageProductVo.builder().iproduct(productss.getId().longValue())
                             .storedPic(productss.getStoredPic()) //사진
-                            .mainCategory(productss.getMainCategory())
-                            .subCategory(productss.getSubCategory())
+                            .mainCategory(productss.getMainCategory().getNum())
+                            .subCategory(productss.getSubCategory().getNum())
                             .tilte(productss.getTitle())
                             .price(productss.getRentalPrice())
                             .contents(productss.getContents())
