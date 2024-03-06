@@ -18,7 +18,7 @@ public interface BoardMapper {
     int viewCount(int iboard); //조회수
     int putboard(BoardPutDto dto);
 
-    int delBoard(long iboard, long iuser);
+    int delBoard(long iboard, long iuser, String deleteStatus, String activatedStatus);
 
     int delLike(BoardToggleLikeDto dto);
 

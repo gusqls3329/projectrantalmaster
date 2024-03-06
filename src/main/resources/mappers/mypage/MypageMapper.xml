@@ -97,7 +97,7 @@
         where P.iuser = #{iuser} and R.contents != '' and R.rating > 0
     </select>
     <select id="getReservePayList">
-        SELECT distinct pa.iproduct, pa.ipayment, pp.stored_pic as ProStoredPic,
+        SELECT distinct pa.iproduct, pa.ipayment, pp.stored_pic as ProStoredPic, pr.title,
         pa.deposit, pa.total_price as totalPrice, pa.rental_end_date as rentalEndDate
         , pa.rental_start_date as rentalStartDate, pa.duration, pa.created_at as createdAt,
         pai.`status`, pr.iuser, u.nick, u.stored_pic as userPic
