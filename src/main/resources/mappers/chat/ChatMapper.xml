@@ -76,7 +76,7 @@
         ON cu.ichat = c.ichat
         JOIN product p
         ON c.iproduct = p.iproduct
-        WHERE u.iuser != #{loginedIuser} AND cu.`status`= 'ACTIVE'
+        WHERE u.iuser = #{loginedIuser} AND cu.`status`= 'ACTIVE'
     </select>
 
 
