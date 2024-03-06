@@ -22,7 +22,7 @@ public class MyPageBoardQueryRepositoryImpl implements MyPageBoardQueryRepositor
                 .where(board.user.id.eq(user.getId()))
                 .offset(page)
                 .limit(6)
-                .orderBy(board.updatedAt.desc())
+                .orderBy(board.id.desc())
                 .fetch();
     }
 }
