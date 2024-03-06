@@ -303,7 +303,8 @@ public class ProductService implements RefProductService {
         saveProduct.getHashTags().addAll(dto.getHashTags()
                 .stream()
                 .map(hash -> HashTag.builder()
-                        .tag(hash.charAt(0) != '#' ? "#" + hash.replaceAll(" ", "") : hash.replaceAll(" ", ""))
+                        .tag(hash.charAt(0) != '#' ? "#" + hash.replaceAll(" ", "") :
+                                hash.replaceAll(" ", ""))
                         .product(saveProduct)
                         .build()).toList());
 
@@ -444,12 +445,13 @@ public class ProductService implements RefProductService {
         // 문제 없음.
 
         // 해시태그 작업(삭제)
-        findProduct.getHashTags().stream().filter(hash -> dto.getHashTags().contains(hash.getTag()))
-                .forEach(findProduct.getHashTags()::remove);
+        findProduct.getHashTags().removeAll(
+                findProduct.getHashTags().stream().filter(hash -> dto.getDelHashTags().contains(hash.getId())).toList()
+        );
 
         // 해시태그 작업(추가)
         findProduct.getHashTags().addAll(dto.getHashTags().stream().map(hash -> HashTag.builder()
-                .tag(hash.charAt(1) != '#' ? "#" + hash.replaceAll(" ", "") : hash.replaceAll(" ", ""))
+                .tag(!hash.contains("#") ? "#" + hash.replaceAll(" ", "") : hash.replaceAll(" ", ""))
                 .product(findProduct)
                 .build()).toList());
 

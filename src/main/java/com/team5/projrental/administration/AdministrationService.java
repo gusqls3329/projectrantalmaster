@@ -105,7 +105,7 @@ public class AdministrationService {
         User findUser = findBoard.getUser();
         findUser.setPenalty((byte) (findUser.getPenalty() + DisputeReason.getByNum(reason).getPenaltyScore()));
 
-        if (findUser.getPenalty() <= -50) changeUserWhenOverPenalty(
+        if (findUser.getPenalty() <= Const.LIMIT_PENALTY_SCORE) changeUserWhenOverPenalty(
                 findUser,
                 adminRepository.findById(getLoginUserPk())
                         .orElseThrow(() -> new ClientException(
@@ -120,13 +120,12 @@ public class AdministrationService {
         resolvedBoardRepository.flush();
 
         // sse 이벤트 발행
-        eventPublisher.publishEvent(SseMessageInfo.builder()
-                .receiver(findBoard.getUser().getId())
-                .kind(SseKind.BOARD.getNum())
-                .code(SseCode.BOARD_DELETED_BY_ADMIN.getNum())
-                .identityNum(findBoard.getId())
-                .description("운영자에 의해 자유게시판 게시물이 삭제됨.")
-                .build());
+
+        pubEvent(findBoard.getUser().getId(),
+                "운영자에 의해 자유게시판 게시물이 삭제됨.",
+                SseCode.BOARD_DELETED_BY_ADMIN.getNum(),
+                findBoard.getId(),
+                SseKind.BOARD.getNum());
 
         return new ResVo(Const.SUCCESS);
     }
@@ -199,13 +198,11 @@ public class AdministrationService {
         resolvedUserRepository.save(saveResolvedUser);
         resolvedUserRepository.flush();
 
-        eventPublisher.publishEvent(SseMessageInfo.builder()
-                .receiver(findUser.getId())
-                .kind(SseKind.USER.getNum())
-                .code(SseCode.USER_DELETED_BY_ADMIN.getNum())
-                .identityNum(findUser.getId())
-                .description("운영자에 의해 유저가 삭제됨.")
-                .build());
+        pubEvent(findUser.getId(),
+                "운영자에 의해 유저가 정지됨.",
+                SseCode.USER_DELETED_BY_ADMIN.getNum(),
+                findUser.getId(),
+                SseKind.USER.getNum());
 
         return new ResVo(findUser.getId());
     }
@@ -273,6 +270,7 @@ public class AdministrationService {
 
     @Transactional
     public ResVo postDispute(Long idispute, Integer type) {
+
         Dispute findDispute = adminDisputeRepository.findByIdAndStatus(idispute, DisputeStatus.STAND_BY)
                 .orElseThrow(() -> new ClientException(
                         ErrorCode.ILLEGAL_EX_MESSAGE,
@@ -287,7 +285,7 @@ public class AdministrationService {
 
         penaltyUser.setPenalty((byte) (penaltyUser.getPenalty() + findDispute.getPenalty()));
 
-        if (penaltyUser.getPenalty() <= -50) {
+        if (penaltyUser.getPenalty() <= Const.LIMIT_PENALTY_SCORE) {
             changeUserWhenOverPenalty(
                     penaltyUser,
                     adminRepository.findById(getLoginUserPk())
@@ -298,31 +296,37 @@ public class AdministrationService {
             );
         }
 
-        eventPublisher.publishEvent(SseMessageInfo.builder()
-                .receiver(findDispute.getReporter().getId())
-                .description(String.format("당신이 신고한 신고가 %s되었습니다.",
-                        changeDisputeStatus == DisputeStatus.ACCEPTED ? "수리" : "반려"))
-                .code(changeDisputeStatus == DisputeStatus.ACCEPTED ? DisputeStatus.ACCEPTED.getNum() :
-                        DisputeStatus.DENIED.getNum())
-                .identityNum(idispute)
-                .kind(SseKind.DISPUTE.getNum())
-                .build());
+        pubEvent(findDispute.getReporter().getId(),
+                String.format("당신이 신고한 신고가 %s되었습니다.",
+                        changeDisputeStatus == DisputeStatus.ACCEPTED ? "수리" : "반려"),
+                changeDisputeStatus == DisputeStatus.ACCEPTED ? DisputeStatus.ACCEPTED.getNum() :
+                        DisputeStatus.DENIED.getNum(),
+                idispute,
+                SseKind.DISPUTE.getNum());
 
-        eventPublisher.publishEvent(SseMessageInfo.builder()
-                .receiver(findDispute.getReportedUser().getId())
-                .description(String.format("당신을 신고한 신고가 %s되었습니다.",
-                        changeDisputeStatus == DisputeStatus.ACCEPTED ? "수리" : "반려"))
-                .code(changeDisputeStatus == DisputeStatus.ACCEPTED ? DisputeStatus.ACCEPTED.getNum() :
-                        DisputeStatus.DENIED.getNum())
-                .identityNum(idispute)
-                .kind(SseKind.DISPUTE.getNum())
-                .build());
+        pubEvent(findDispute.getReportedUser().getId(),
+                String.format("당신을 신고한 신고가 %s되었습니다.",
+                        changeDisputeStatus == DisputeStatus.ACCEPTED ? "수리" : "반려"),
+                changeDisputeStatus == DisputeStatus.ACCEPTED ? DisputeStatus.ACCEPTED.getNum() :
+                        DisputeStatus.DENIED.getNum(),
+                idispute,
+                SseKind.DISPUTE.getNum());
 
 
         return new ResVo((long) changeDisputeStatus.getNum());
     }
 
-    public ProductByAdminVo getAllProducts(int page, Integer type, String search, Integer sort) {
+    private void pubEvent(Long receiver, String description, Integer code, Long identityNum, Integer kind) {
+        eventPublisher.publishEvent(SseMessageInfo.builder()
+                .receiver(receiver)
+                .description(description)
+                .code(code)
+                .identityNum(identityNum)
+                .kind(kind).build());
+    }
+
+    public ProductByAdminVo
+    getAllProducts(int page, Integer type, String search, Integer sort) {
         // 삭제된 상태의 제품은 제외하고 조회
 
         Long count = productRepository.totalCountByOptions(type, search);
@@ -374,13 +378,11 @@ public class AdministrationService {
         resolvedProductRepository.save(saveResolvedProduct);
         resolvedProductRepository.flush();
 
-        eventPublisher.publishEvent(SseMessageInfo.builder()
-                .receiver(findProduct.getUser().getId())
-                .description("운영자에 의해 제품 게시글이 삭제됨.")
-                .code(SseCode.PRODUCT_DELETE_BY_ADMIN.getNum())
-                .identityNum(findProduct.getId())
-                .kind(SseKind.PRODUCT.getNum())
-                .build());
+        pubEvent(findProduct.getUser().getId(),
+                "운영자에 의해 제품 게시글이 삭제됨.",
+                SseCode.PRODUCT_DELETE_BY_ADMIN.getNum(),
+                findProduct.getId(),
+                SseKind.PRODUCT.getNum());
 
         return new ResVo(1L);
     }
@@ -451,6 +453,7 @@ public class AdministrationService {
     }
 
     public ChatByAdminVo getAllChats(Integer page) {
+
         Long count = disputeChatUserRepository.totalCountByOptions();
         List<ChatUser> findChatUser = disputeChatUserRepository.findAllLimitPage(page);
 
