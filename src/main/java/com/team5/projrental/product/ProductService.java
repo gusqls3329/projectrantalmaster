@@ -450,7 +450,7 @@ public class ProductService implements RefProductService {
 
         // 해시태그 작업(추가)
         findProduct.getHashTags().addAll(dto.getHashTags().stream().map(hash -> HashTag.builder()
-                .tag(hash.charAt(1) != '#' ? "#" + hash.replaceAll(" ", "") : hash.replaceAll(" ", ""))
+                .tag(!hash.contains("#") ? "#" + hash.replaceAll(" ", "") : hash.replaceAll(" ", ""))
                 .product(findProduct)
                 .build()).toList());
 
