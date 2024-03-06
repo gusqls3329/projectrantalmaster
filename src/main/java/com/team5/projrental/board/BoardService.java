@@ -192,11 +192,14 @@ public class BoardService {
             /*long result = mapper.delBoard(iboard);
             return new ResVo(result);*/
 
-        BoardStatus boardStatus = BoardStatus.ACTIVATED;
-        String status = boardStatus.name(); //enum을 문자열로
+        BoardStatus boardStatus = BoardStatus.DELETED;
+        String deleteStatus = boardStatus.name(); //enum을 문자열로
+
+        BoardStatus boardStatus2 = BoardStatus.ACTIVATED;
+        String activatedStatus = boardStatus2.name();
 
         long loginIuser = authenticationFacade.getLoginUserPk();
-        int affecedRow = mapper.delBoard(iboard, loginIuser);
+        int affecedRow = mapper.delBoard(iboard, loginIuser, deleteStatus, activatedStatus);
         if(affecedRow == 1) {
             return new ResVo(Const.SUCCESS);
         }

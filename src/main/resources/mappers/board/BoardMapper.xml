@@ -28,8 +28,8 @@
         ON A.iuser = B.iuser
 
         left JOIN (SELECT iuser, iboard, count(iboard) as cnt
-        from board_like
-        group by iboard) SQ
+                    from board_like
+                    group by iboard) SQ
         on B.iboard = SQ.iboard
 
         LEFT JOIN board_like C
@@ -121,8 +121,9 @@
     <!-- 게시글 삭제(숨김) -->
     <update id="delBoard">
         UPDATE board
-        SET status = #{status}
+        SET status = #{deleteStatus}
         WHERE iboard = #{iboard} and iuser = #{iuser}
+        and status = #{activatedStatus}
     </update>
 
     <insert id="insLike">
