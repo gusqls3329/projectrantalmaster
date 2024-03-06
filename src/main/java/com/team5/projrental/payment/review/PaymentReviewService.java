@@ -144,6 +144,9 @@ public class PaymentReviewService {
             throw new BadInformationException(ILLEGAL_EX_MESSAGE);
         }
         User user = paymentRepository.selUser(review.getPayment().getId());
+        if(dto.getRating() == null){
+            dto.setRating(review.getRating());
+        }
         if(user.getBaseUser().getRating() == 0){
             review.setRating(dto.getRating() == null ? 0 : dto.getRating());
             review.setContents(dto.getContents() == null ? review.getContents() : dto.getContents());
