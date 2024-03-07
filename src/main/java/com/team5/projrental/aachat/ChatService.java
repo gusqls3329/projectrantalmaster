@@ -67,7 +67,7 @@ public class ChatService {
         ChatUser findChatUser = chatMsgRepository.findByIuserAndIchat(dto.getSenderIuser(), dto.getIchat());
 
         chat.setLastMsg(dto.getMessage());
-        chat.setLastMsgAt(LocalDateTime.now());
+//        chat.setLastMsgAt(LocalDateTime.now());
 
         ChatMsg chatMsg = new ChatMsg();
         chatMsg.setMsg(dto.getMessage());

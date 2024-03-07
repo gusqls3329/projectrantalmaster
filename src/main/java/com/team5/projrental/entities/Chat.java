@@ -33,7 +33,7 @@ public class Chat extends CreatedAt {
     @Column(length = 2000, name = "last_msg")
     private String lastMsg;
 
-    @LastModifiedDate
+    @UpdateTimestamp
     @Column(name = "last_msg_at")
     private LocalDateTime lastMsgAt;
 
