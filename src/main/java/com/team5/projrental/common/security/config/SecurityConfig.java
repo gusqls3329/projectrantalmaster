@@ -63,6 +63,11 @@ public class SecurityConfig {
                         // 권한
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN")
                         .requestMatchers("/api/sse/connect").hasAnyRole("USER")
+                        .requestMatchers("/api/prod/fav/**",
+                                "/api/pay/kakao/**",
+                                "/api/board/like/").hasAnyRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/api/prod",
+                                "/api/board").hasRole("USER")
 
                         .anyRequest().permitAll())
                 /*.exceptionHandling(ex -> {
