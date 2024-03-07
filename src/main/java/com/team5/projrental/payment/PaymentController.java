@@ -28,6 +28,7 @@ public class PaymentController {
                           "[v] rentalStartDate: 실제 계약된 제품 대여 시작일<br>" +
                           "[v] rentalEndDate: 실제 계약된 제품 대여 마감일<br>" +
                           "[v] paymentMethod: 결제 수단 -> credit-card, kakao-pay<br>" +
+                          "[v] paymentDetailId: 카카오 페이 결제시 리턴받은 id값" +
                           "<br>" +
                           "성공시: <br>" +
                           "result: 1" +

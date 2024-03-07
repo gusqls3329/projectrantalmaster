@@ -40,13 +40,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.team5.projrental.common.exception.ErrorMessage.ILLEGAL_EX_MESSAGE;
-import static com.team5.projrental.entities.QDisputeProduct.disputeProduct;
-import static com.team5.projrental.entities.inheritance.QUsers.users;
 
 @Service
 @RequiredArgsConstructor
 public class MypageService {
-    private final ProductRepository productRepository;
+    private final MyProductRepository productRepository;
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
     private final UsersRepository usersRepository;
@@ -67,6 +65,7 @@ public class MypageService {
         dto.setIuser(loginUserPk);
         if (dto.getRole() == 1) {
             List<BuyPaymentSelVo> list = mapper.getPaymentList(dto);
+
             return list;
         }
         if (dto.getRole() == 2) {
@@ -82,6 +81,7 @@ public class MypageService {
         dto.setIuser(loginUserPk);
         List<MyFavListSelVo> vo = mapper.getFavList(dto);
         return vo;
+
     }
 
 
@@ -97,6 +97,13 @@ public class MypageService {
         return null;
                 //mapper.getAllReviewFromMyProduct(authenticationFacade.getLoginUserPk());
     }*/
+
+    /*ublic ProdReviewListSelVo getProdReview(ProdReviewListSelDto dto) {
+        Long loginUserPk = authenticationFacade.getLoginUserPk();
+        dto.setIuser(loginUserPk);
+
+    }*/
+
     @Transactional
     public DisputeByMyPageVo getDispute(MyBuyReviewListSelDto dto) {
 
@@ -104,7 +111,7 @@ public class MypageService {
         Long loginUserPk = authenticationFacade.getLoginUserPk();
 
         Long totalCount = myPageDisputeRepository.totalCountByOptions(loginUserPk);
-        List<Dispute> findDisputes = myPageDisputeRepository.getDisputeList(loginUserPk,dto.getStartIdx(), dto.getRowCount());
+        List<Dispute> findDisputes = myPageDisputeRepository.getDisputeList(loginUserPk, dto.getStartIdx(), dto.getRowCount());
 
         return DisputeByMyPageVo.builder()
                 .totalUserCount(totalCount)
@@ -147,7 +154,7 @@ public class MypageService {
                                     if (dispute instanceof DisputeChatUser) {
                                         DisputeChatUser disputeChatUser = (DisputeChatUser) dispute;
                                         vo.setLastMsg(disputeChatUser.getChatUser().getChat().getLastMsg());
-                                        vo.setLastMsgAt(disputeChatUser.getChatUser().getChat().getLastMsgAt());
+                                        vo.setLastMsgAt(disputeChatUser.getChatUser().getChat().getLastMsgAt().toString());
                                         vo.setKind(DisputeKind.CHAT.getNum());
                                         vo.setPk(disputeChatUser.getChatUser().getChat().getId());
 
@@ -218,13 +225,17 @@ public class MypageService {
         throw new ClientException(ILLEGAL_EX_MESSAGE);
     }
 
+    @Transactional
     public ProductListVo getProduct(ProductListDto dto) {
         Long loginUserPk = authenticationFacade.getLoginUserPk();
         Optional<User> user = userRepository.findById(dto.getTargetIuser());
-        if(Objects.equals(loginUserPk, dto.getTargetIuser())){
+        if (Objects.equals(loginUserPk, dto.getTargetIuser())) {
             List<Product> products = productRepository.findByUser(user.get(), dto.getPage());
             return ProductListVo.builder().vo(products.stream().filter(prd -> !prd.getStatus().equals(ProductStatus.DELETED)).map(
                     productss -> MyPageProductVo.builder().iproduct(productss.getId().longValue())
+                            .storedPic(productss.getStoredPic())
+                            .mainCategory(productss.getMainCategory().getNum())
+                            .subCategory(productss.getSubCategory().getNum())
                             .tilte(productss.getTitle())
                             .price(productss.getRentalPrice())
                             .contents(productss.getContents())
@@ -233,11 +244,14 @@ public class MypageService {
             ).toList()).build();
         }
 
-        if(!Objects.equals(loginUserPk, dto.getTargetIuser())){
+        if (!Objects.equals(loginUserPk, dto.getTargetIuser())) {
             List<Product> products = productRepository.findByUser(user.get(), dto.getPage());
 
             return ProductListVo.builder().vo(products.stream().filter(prd -> prd.getStatus().equals(ProductStatus.ACTIVATED)).map(
                     productss -> MyPageProductVo.builder().iproduct(productss.getId().longValue())
+                            .storedPic(productss.getStoredPic()) //사진
+                            .mainCategory(productss.getMainCategory().getNum())
+                            .subCategory(productss.getSubCategory().getNum())
                             .tilte(productss.getTitle())
                             .price(productss.getRentalPrice())
                             .contents(productss.getContents())

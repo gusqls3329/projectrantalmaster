@@ -50,7 +50,7 @@ public class ProductController {
     public ResVo getProdCount(@RequestParam(required = false)
                               @Length(min = 1, message = ILLEGAL_RANGE_EX_MESSAGE)
                               String search,
-                              @RequestParam("mc")
+                              @RequestParam(value = "mc", required = false)
                               @Min(value = 1, message = ILLEGAL_RANGE_EX_MESSAGE)
                               Integer imainCategory,
                               @RequestParam(name = "sc", required = false)
@@ -100,7 +100,11 @@ public class ProductController {
 
     @Operation(summary = "메인페이지용 카테고리별 상품 (8개씩 조회)",
             description = "<strong>메인페이지용 카테고리별 상품 (8개씩 조회)</strong><br>" +
-                          "cnt: 카테고리당 조회할 전체 개수, 미제공이거나 0 제공시 8개로 변경됨." +
+                          "[ [v] : 필수값 ]<br>" +
+                          "[v] mc: 조회할 메인 카테고리 PK<br>" +
+                          "[v] sc: 조회할 서브 카테고리 PK<br>" +
+                          "    ㄴ> 쿼리 파라미터로 제공 & 구분자 ',' 또는 &로 구분하여 여러개 전송 가능" +
+                          "    ㄴ>/api/prod/main?c=1,2,3,4 또는 /api/prod/main?c=1&c=2&c=3&c=4" +
                           "<br><br>" +
                           "성공시: <br>" +
                           "result: 1<br><br>" +
@@ -108,9 +112,14 @@ public class ProductController {
                           "message: 에러 발생 사유<br>errorCode: 에러 코드")
     @Validated
     @GetMapping("/main")
-    public List<ProductListVo> getMainPage(@RequestParam(required = false) Integer cnt) {
+    public List<ProductListVo> getMainPage(@RequestParam("mc")
+                                           @Size(min = 1, max = 5)
+                                           List<Integer> imainCategory,
+                                           @RequestParam("sc")
+                                           @Size(min = 1, max = 5)
+                                           List<Integer> isubCategory) {
 
-        return productService.getProductListForMain(cnt);
+        return productService.getProductListForMain(imainCategory, isubCategory);
 
 
     }

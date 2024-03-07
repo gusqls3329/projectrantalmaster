@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.team5.projrental.chat.ChatMapper">
+<mapper namespace="com.team5.projrental.aachat.ChatMapper">
 
     <insert id="insChat" useGeneratedKeys="true" keyProperty="ichat"> <!--빈 채팅방 생성-->
         INSERT INTO chat
@@ -37,7 +37,7 @@
     </insert>
 
 
-    <select id="selChatAll">
+    <!--<select id="selChatAll">
         SELECT B.ichat, B.iuser, C.nick AS otherPersonNm, C.stored_pic AS otherPersonPic
         , D.last_msg AS lastMsg, D.last_msg_at AS lastMsgAt
         , E.iproduct, E.title, E.stored_pic AS prodPic
@@ -53,10 +53,36 @@
         WHERE A.iuser = #{loginedIuser} AND A.istatus != -1 AND B.iuser != #{loginedIuser}
         ORDER BY D.last_msg_at DESC
         LIMIT #{startIdx}, #{rowCount}
+    </select>-->
+
+    <select id="selChatAll">
+        SELECT
+        (SELECT COUNT(ichat) AS totalChatCount FROM chat WHERE u.iuser != 2 AND cu.`status`= 'ACTIVE') AS totalChatCount,
+        c.ichat,
+        c.last_msg AS lastMsg,
+        c.last_msg_at AS lastMsgAt,
+        cu.`status` AS istatus,
+        p.iproduct,
+        p.stored_pic as prodPic,
+        p.title,
+        u.nick,
+        u.stored_pic as otherPersonPic,
+        uu.iuser AS otherPersonIuser,
+        uu.nick AS otherPersonNm
+        FROM user u
+        JOIN chat_user cu
+        ON u.iuser != cu.iuser
+        JOIN user uu
+        ON uu.iuser = cu.iuser
+        JOIN chat c
+        ON cu.ichat = c.ichat
+        JOIN product p
+        ON c.iproduct = p.iproduct
+        WHERE u.iuser = #{loginedIuser} AND cu.`status`= 'ACTIVE'
     </select>
 
 
-    <select id="selChatMsgAll">
+    <!--<select id="selChatMsgAll">
         SELECT
         F.seq,
         F.msg,
@@ -79,8 +105,40 @@
         GROUP BY F.seq
         ORDER BY F.created_at DESC
         LIMIT #{startIdx}, #{rowCount}
-    </select>
+    </select>-->
 
+    <select id="selChatMsgAll">
+        SELECT
+        p.iproduct,
+        p.title,
+        p.stored_pic AS productMainPic,
+        p.rental_price AS rentalPrice,
+
+        u.iuser AS myIuser,
+        u.nick AS myNick,
+        u.stored_pic AS myPic,
+
+        uu.iuser AS otherIuser,
+        uu.nick AS otherNick,
+        uu.stored_pic AS otherPic
+        FROM product p
+        JOIN chat c
+        ON p.iproduct = c.iproduct
+
+        JOIN chat_user cu
+        ON c.ichat = cu.ichat
+        JOIN user u
+        ON cu.ichat_user = u.iuser
+
+        JOIN chat_user cuu
+        ON c.ichat = cuu.ichat
+        JOIN user uu
+        ON cuu.ichat_user = uu.iuser AND cuu.ichat_user != u.iuser
+
+        WHERE c.ichat = #{ichat}
+        GROUP BY p.iproduct
+
+    </select>
 
     <!--<delete id="chatDelMsg">
         DELETE chat_message
@@ -111,9 +169,7 @@
     <update id="updChatLastMsg">
         UPDATE chat
         SET
-        <if test="msg != null">
-            last_msg = #{msg}
-        </if>
+        last_msg = #{message}
         WHERE ichat = #{ichat}
     </update>
 

@@ -34,7 +34,8 @@ public class UserController {
 
     // FIXME : 해당 부분의 리턴을 uuid 말고 그냥 본인인증 테이블의 generated key 를 리턴할까 싶다. -> 보안상 문제가 없을거 같고, 있다고해도 uuid 라고 다를것 없어 보인다.
     @PostMapping("/verification")
-    @Operation(summary = "본인인증 요청", description = "본인 요청하기")
+    @Operation(summary = "본인인증 요청", description = "본인 요청하기<br>" +
+                                                  "모든 데이터는 구분자와 공백없이 제공")
     public VerificationReadyVo readyVerification(@RequestBody VerificationUserInfo userInfo){
         return service.readyVerification(userInfo);
     }

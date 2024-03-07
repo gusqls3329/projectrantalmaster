@@ -4,10 +4,15 @@ fcm:
 app: #속성을 바꿀 수 있는 부분 들은 상수 처럼 쓰기 편하도록 만들어놓음
   jwt:
     secret: akjw4egoiaj409gj2a094jg02984jgasegsegase9024jg09ftglk #JWT를 만들 때 쓰는 키, 길이가 짧으면 에러터짐
-    header-scheme-name: authorization
+    header-scheme-name: Authorization
     token-type: Bearer
     access-token-expiry: 7200000 #단위 : 밀리세컨드 7200000은 7200초(2시간) 엑세스 토큰
     refresh-token-expiry: 1296000000 # 15일 리프레시 토큰
+  oauth2:
+    authorized-redirect-uris:
+      - http://localhost:8080/oauth/redirect
+      - http://192.168.0.144:5226/oauth/redirect
+      - http://localhost:3000/oauth/redirect
 mybatis:
   mapper-locations: mappers/**/*.xml
 springdoc:
@@ -26,9 +31,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
-#  config:
-#    activate:
-#      on-profile: default
+  #  config:
+  #    activate:
+  #      on-profile: default
   rabbitmq:
     #host: localhost
     host: 192.168.0.144
@@ -48,7 +53,31 @@ spring:
       - "*"
     stomp-broker-relay:
       - /exchange
-
+  data:
+    redis:
+      repositories:
+        enabled: false
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: 8db8701db67fd418049f9009a00a6995
+            client-secret: 6ardw700GJPLYt81HEcf3BOrIW02p8pX
+            clientAuthenticationMethod: client_secret_post
+            authorizationGrantType: authorization_code
+            #redirectUri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
+            redirectUri: http://192.168.0.144:5226/login/oauth2/code/kakao
+            scope:
+              - profile_nickname
+              - profile_image
+            clientName: Kakao
+        provider:
+          kakao:
+            authorizationUri: https://kauth.kakao.com/oauth/authorize
+            tokenUri: https://kauth.kakao.com/oauth/token
+            userInfoUri: https://kapi.kakao.com/v2/user/me
+            userNameAttribute: id
 logging:
   level:
     -com.team5.projrental: DEBUG
@@ -106,7 +135,6 @@ api:
       base-url: "https://api.odcloud.kr/api/nts-businessman/v1/validate"
       service-code-key: "serviceKey"
       service-code-value: "VUXEsrgmuyDberLO0pvh4iEQON2Apg6dFFxNMvxc5hAYZjC4XBmmNyxuWvgxfaQpZVNnP%2BVqKNgS1W1isULaQA%3D%3D"
-
 redis:
   config:
     host: 192.168.0.144
@@ -144,7 +172,7 @@ file:
 app: #속성을 바꿀 수 있는 부분 들은 상수 처럼 쓰기 편하도록 만들어놓음
   jwt:
     secret: akjw4egoiaj409gj2a094jg02984jgasegsegase9024jg09ftglk #JWT를 만들 때 쓰는 키, 길이가 짧으면 에러터짐
-    header-scheme-name: authorization
+    header-scheme-name: Authorization
     token-type: Bearer
     access-token-expiry: 7200000 #단위 : 밀리세컨드 7200000은 7200초(2시간) 엑세스 토큰
     refresh-token-expiry: 1296000000 # 15일 리프레시 토큰
@@ -155,8 +183,3 @@ app: #속성을 바꿀 수 있는 부분 들은 상수 처럼 쓰기 편하도�
 logging:
   level:
     -com.team5.projrental: info
-
-
-
-
-

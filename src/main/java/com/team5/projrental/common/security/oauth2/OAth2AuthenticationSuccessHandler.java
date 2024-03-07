@@ -3,6 +3,7 @@ package com.team5.projrental.common.security.oauth2;
 
 import com.team5.projrental.common.SecurityProperties;
 import com.team5.projrental.common.security.JwtTokenProvider;
+import com.team5.projrental.common.security.SecurityUserDetails;
 import com.team5.projrental.common.security.model.SecurityPrincipal;
 import com.team5.projrental.common.utils.CookieUtils;
 import com.team5.projrental.user.model.UserModel;
@@ -16,6 +17,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.appoptics.A
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -50,33 +52,45 @@ public class OAth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSu
         Optional<String> redirectUri = cookieUtils.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME)
                 .map(Cookie::getValue);
 
-        if(redirectUri.isPresent() && !hasAuthorizedRedirectUri(redirectUri.get())) {
+        if (redirectUri.isPresent() && !hasAuthorizedRedirectUri(redirectUri.get())) {
             throw new IllegalArgumentException("Sorry!, Unauthorized Redirect URI");
         }
 
         String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
 
-        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
-        SecurityPrincipal myPrincipal = myUserDetails.getMyPrincipal();
 
-        String at = jwtTokenProvider.generateAccessToken(myPrincipal);
-        String rt = jwtTokenProvider.generateRefreshToken(myPrincipal);
+        SecurityUserDetails myUserDetails = (SecurityUserDetails) authentication.getPrincipal();
 
-        //rt > cookie에 담을꺼임
-        int rtCookieMaxAge = appProperties.getJwt().getRefreshTokenCookieMaxAge();
-        cookieUtils.deleteCookie(response, "rt");
-        cookieUtils.setCookie(response, "rt", rt, rtCookieMaxAge);
+        if (myUserDetails.getUserModel().getUpw() == null) {
+            SecurityPrincipal myPrincipal = myUserDetails.getSecurityPrincipal();
 
+            String at = jwtTokenProvider.generateAccessToken(myPrincipal);
+            String rt = jwtTokenProvider.generateRefreshToken(myPrincipal);
+
+            //rt > cookie에 담을꺼임
+            int rtCookieMaxAge = appProperties.getJwt().getRefreshTokenCookieMaxAge();
+            cookieUtils.deleteCookie(response, "rt");
+            cookieUtils.setCookie(response, "rt", rt, rtCookieMaxAge);
+
+            UserModel userModel = myUserDetails.getUserModel();
+
+            return UriComponentsBuilder.fromUriString(targetUrl)
+                    .queryParam("access_token", at)
+                    .queryParam("iuser", userModel.getIuser())
+                    .queryParam("auth", userModel.getAuth().getIauth())
+                    .queryParam("result", 1L).encode()
+                    .build()
+                    .toUriString();
+        }
         UserModel userModel = myUserDetails.getUserModel();
-
         return UriComponentsBuilder.fromUriString(targetUrl)
-                .queryParam("access_token", at)
-                .queryParam("iuser", userModel.getIuser())
-                .queryParam("nm", userModel.getNm()).encode()
-                .queryParam("pic", userModel.getPic())
-                .queryParam("firebase_token", userModel.getFirebaseToken())
+                .queryParam("uid", userModel.getUid()).encode()
+                .queryParam("upw", userModel.getUpw()).encode()
+                .queryParam("provider-type", userModel.getProvideType()).encode()
                 .build()
                 .toUriString();
+
+
     }
 
     private void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {
@@ -91,7 +105,7 @@ public class OAth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSu
                 .stream().anyMatch(redirectUri -> {
                     URI authorizedURI = URI.create(uri);
                     if (authorizedURI.getHost().equalsIgnoreCase(clientRedirectUri.getHost())
-                            && authorizedURI.getPort() == clientRedirectUri.getPort()) {
+                        && authorizedURI.getPort() == clientRedirectUri.getPort()) {
                         return true;
                     }
                     return false;

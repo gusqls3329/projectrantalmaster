@@ -1,6 +1,8 @@
 package com.team5.projrental.payment;
 
+import com.team5.projrental.admin.AdminRepository;
 import com.team5.projrental.admin.model.PaymentInfoVo;
+import com.team5.projrental.administration.repository.ResolvedUserRepository;
 import com.team5.projrental.common.Const;
 import com.team5.projrental.common.aop.anno.NamedLock;
 import com.team5.projrental.common.exception.BadDivInformationException;
@@ -14,8 +16,10 @@ import com.team5.projrental.common.security.AuthenticationFacade;
 import com.team5.projrental.common.utils.CommonUtils;
 import com.team5.projrental.entities.*;
 import com.team5.projrental.entities.embeddable.RentalDates;
+import com.team5.projrental.entities.enums.DisputeReason;
 import com.team5.projrental.entities.enums.PaymentInfoStatus;
 import com.team5.projrental.entities.enums.ProductStatus;
+import com.team5.projrental.entities.enums.UserStatus;
 import com.team5.projrental.entities.ids.PaymentInfoIds;
 import com.team5.projrental.payment.model.PaymentInsDto;
 import com.team5.projrental.payment.thirdproj.PaymentRepository;
@@ -54,6 +58,8 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentInfoRepository paymentInfoRepository;
     private final RefundRepository refundRepository;
+    private final ResolvedUserRepository resolvedUserRepository;
+    private final AdminRepository adminRepository;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @NamedLock("postPayment")
@@ -129,7 +135,7 @@ public class PaymentService {
                         .ipayment(savePayment.getId())
                         .build())
                 .payment(savePayment)
-                .status(paymentInsDto.getRentalStartDate().isAfter(LocalDate.now()) ? PaymentInfoStatus.RESERVED : PaymentInfoStatus.ACTIVATED)
+                .status(PaymentInfoStatus.RESERVED)
                 .code(createPaymentInfoCode())
                 .user(findUserBuyer)
                 .build();
@@ -216,7 +222,7 @@ public class PaymentService {
         User findBuyer = findPayment.getUser();
         User findSeller = findPayment.getProduct().getUser();
 
-        boolean isBuyer = Objects.equals(findPayment.getId(), loginUserPk);
+        boolean isBuyer = Objects.equals(findBuyer.getId(), loginUserPk);
 
         findPaymentInfo.setStatus(
                 div == 1 ? PaymentInfoStatus.DELETED :
@@ -230,8 +236,9 @@ public class PaymentService {
             long dateGap = ChronoUnit.DAYS.between(LocalDate.now(),
                     findPayment.getRentalDates().getRentalStartDate().toLocalDate()) + 1;
             double penaltyPer = (dateGap <= 3 ? 100 : dateGap <= 7 ? 50 : 0) * 0.1;
+
+
             if (isBuyer) {
-                // 만약 예약취소 요청자가 구매자인경우
                 int refundForSeller = (int) (basePrice * penaltyPer);
                 int refundForBuyer = basePrice - refundForSeller;
 
@@ -245,26 +252,47 @@ public class PaymentService {
                 refundRepository.save(refundSeller);
                 refundRepository.save(refundBuyer);
             }
+
+
             if (!isBuyer) {
-                // 만약 예약취소 요청자가 판매자인경우
                 Refund refundEntity = getRefundEntity(findBuyer,
                         basePrice + findPayment.getDeposit(),
                         findPayment);
+
+                findSeller.setPenalty((byte) (findSeller.getPenalty() + DisputeReason.MANNER.getPenaltyScore()));
+                if (findSeller.getPenalty() <= -50) {
+
+                    changeUserWhenOverPenalty(findSeller, adminRepository.findById(Const.BILLY_BOT_ID).orElse(null),
+                            DisputeReason.DELETE_BY_ADMIN);
+                }
                 refundRepository.save(refundEntity);
             }
+
+
         }
-        return new ResVo((long) -findPaymentInfo.getStatus().getNum());
+        return new ResVo((long) findPaymentInfo.getStatus().getNum());
     }
 
+    @Transactional
+    protected void changeUserWhenOverPenalty(User user, Admin admin, DisputeReason reason) {
+        user.setStatus(UserStatus.DELETED);
+
+        ResolvedUser saveResolvedUser = ResolvedUser.builder()
+                .admin(admin)
+                .user(user)
+                .reason(reason)
+                .build();
+
+        resolvedUserRepository.save(saveResolvedUser);
+    }
 
     @Transactional
     public PaymentInfoVo getPaymentInfo(Long ipayment) {
-        Long loginUserPk = getLoginUserPk();
         PaymentInfo findPaymentInfo = paymentInfoRepository.findByIdJoinFetchPaymentInfoAndProductBy(PaymentInfoIds.builder()
-                .iuser(loginUserPk)
+                .iuser(getLoginUserPk())
                 .ipayment(ipayment)
                 .build()).orElseThrow(() -> new ClientException(NO_SUCH_PAYMENT_EX_MESSAGE,
-                "잘못된 결제정보 입니다. (login user, ipayment"));
+                "잘못된 결제정보 입니다. (login user, ipayment)"));
 
         return PaymentInfoVo.builder()
                 .method(findPaymentInfo.getPayment().getPaymentDetail().getCategory().name())
@@ -277,9 +305,8 @@ public class PaymentService {
                 .title(findPaymentInfo.getPayment().getProduct().getTitle())
                 .prodMainPic(findPaymentInfo.getPayment().getProduct().getStoredPic())
                 .myPaymentCode(findPaymentInfo.getCode())
-                .paymentStatus(findPaymentInfo.getCode())
+                .paymentStatus(findPaymentInfo.getStatus().getNum())
                 .build();
-
     }
 
 
@@ -298,7 +325,6 @@ public class PaymentService {
 
         if (findPaymentInfo.getStatus() == PaymentInfoStatus.RESERVED && myPaymentInfo.getStatus() == PaymentInfoStatus.RESERVED) {
 
-            // 상태 거래중으로 변경, 새로운 코드 발급
             findPaymentInfo.setStatus(PaymentInfoStatus.ACTIVATED);
             myPaymentInfo.setStatus(PaymentInfoStatus.ACTIVATED);
 

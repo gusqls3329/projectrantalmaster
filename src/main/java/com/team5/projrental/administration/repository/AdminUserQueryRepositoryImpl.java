@@ -60,7 +60,7 @@ public class AdminUserQueryRepositoryImpl implements AdminUserQueryRepository {
             return builder;
         }
 
-        builder.and(user.status.eq(status));
+        builder.and(user.status.eq(status)).and(user.id.ne(2147483647L));
 
         return builder;
 

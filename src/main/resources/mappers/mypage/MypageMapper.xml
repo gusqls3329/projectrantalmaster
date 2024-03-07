@@ -6,7 +6,8 @@
         SELECT distinct pa.iproduct, pa.ipayment, pp.stored_pic as ProStoredPic,
         pa.deposit, pa.total_price as totalPrice, pa.rental_end_date as rentalEndDate
         , pa.rental_start_date as rentalStartDate, pa.duration, pa.created_at as createdAt,
-        pai.`status`, pr.iuser, u.nick, u.stored_pic as userPic
+        pai.`status`, pr.iuser, u.nick, u.stored_pic as userPic, pr.title,
+        pr.main_category AS mainCategoryy, pr.sub_category AS subCategoryy
         from payment pa
         LEFT JOIN payment_info pai
         ON pa.ipayment = pai.ipayment
@@ -31,7 +32,8 @@
         SELECT distinct pr.iproduct, pa.ipayment, pp.stored_pic as ProStoredPic,
         pa.deposit, pa.total_price as totalPrice, pa.rental_end_date as rentalEndDate
         , pa.rental_start_date as rentalStartDate, pa.duration, pa.created_at as createdAt,
-        pai.`status`, pa.iuser, u.nick, u.stored_pic as userPic
+        pai.`status`, pa.iuser, u.nick, u.stored_pic as userPic, pr.title,
+        pr.main_category AS mainCategoryy, pr.sub_category AS subCategoryy
         FROM `user` u
         JOIN product pr
         ON u.iuser = pr.iuser
@@ -55,7 +57,8 @@
 
     <select id="getIbuyerReviewList">
         SELECT B.ireview, B.rating, B.`contents`, A.nick, A.stored_pic AS loginedUserPic,
-        D.iproduct, D.title, D.stored_pic AS prodPic
+        D.iproduct, D.title, D.stored_pic AS prodPic,
+        D.main_category AS mainCategoryy, D.sub_category AS subCategoryy
         FROM user A
         LEFT JOIN review B
         ON A.iuser = B.iuser
@@ -71,7 +74,7 @@
 
     <select id="getFavList">
         SELECT A.iproduct, A.title, A.`contents`, A.stored_pic AS pic,
-        A.rental_price AS rentalPrice, A.iuser, B.stored_pic, B.nick
+        A.rental_price AS rentalPrice, A.iuser, B.stored_pic as storedPic, B.nick
         , A.main_category as mainCategory, A.sub_category as subCategory
         FROM product A
         LEFT JOIN user B
@@ -94,10 +97,11 @@
         where P.iuser = #{iuser} and R.contents != '' and R.rating > 0
     </select>
     <select id="getReservePayList">
-        SELECT distinct pa.iproduct, pa.ipayment, pp.stored_pic as ProStoredPic,
+        SELECT distinct pa.iproduct, pa.ipayment, pp.stored_pic as ProStoredPic, pr.title,
         pa.deposit, pa.total_price as totalPrice, pa.rental_end_date as rentalEndDate
         , pa.rental_start_date as rentalStartDate, pa.duration, pa.created_at as createdAt,
         pai.`status`, pr.iuser, u.nick, u.stored_pic as userPic
+        , pr.main_category AS mainCategoryy, pr.sub_category AS subCategoryy
         from payment pa
         LEFT JOIN payment_info pai
         ON pa.ipayment = pai.ipayment
@@ -117,7 +121,7 @@
         SELECT distinct pr.iproduct, pa.ipayment, pp.stored_pic as ProStoredPic,
         pa.deposit, pa.total_price as totalPrice, pa.rental_end_date as rentalEndDate
         , pa.rental_start_date as rentalStartDate, pa.duration, pa.created_at as createdAt,
-        pai.`status`, pa.iuser, u.nick, u.stored_pic as userPic
+        pai.`status`, pa.iuser, u.nick, u.stored_pic as userPic, pr.main_category AS mainCategoryy, pr.sub_category AS subCategoryy
         FROM  product pr
         LEFT JOIN prod_pics pp
         ON pp.iproduct = pr.iproduct

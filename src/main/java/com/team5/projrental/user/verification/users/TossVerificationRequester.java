@@ -2,6 +2,7 @@ package com.team5.projrental.user.verification.users;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.client.http.HttpStatusCodes;
 import com.team5.projrental.common.exception.ErrorCode;
 import com.team5.projrental.common.exception.thrid.ClientException;
 import com.team5.projrental.entities.VerificationInfo;
@@ -17,8 +18,11 @@ import im.toss.cert.sdk.TossCertSession;
 import im.toss.cert.sdk.TossCertSessionGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 @Component
@@ -36,15 +40,22 @@ public class TossVerificationRequester {
         VerificationRequestDto dto = encode(userInfo);
 
         // 요청
-        String responseJSON = RestClient.builder()
-                .baseUrl(tossVerificationProperties.getReadyRequestUrl())
-                .build()
-                .post()
-                .header(tossVerificationProperties.getTokenKey(),
-                        tossVerificationProperties.getTokenType() + tossVerificationProperties.getAccessToken())
-                .body(dto)
-                .contentType(MediaType.APPLICATION_JSON).retrieve().body(String.class);
-
+        String responseJSON = "";
+        try {
+            responseJSON = RestClient.builder()
+                    .baseUrl(tossVerificationProperties.getReadyRequestUrl())
+                    .build()
+                    .post()
+                    .header(tossVerificationProperties.getTokenKey(),
+                            tossVerificationProperties.getTokenType() + tossVerificationProperties.getAccessToken())
+                    .body(dto)
+                    .contentType(MediaType.APPLICATION_JSON).retrieve().body(String.class);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                e.printStackTrace();
+                throw new ClientException(ErrorCode.BAD_INFO_EX_MESSAGE, "잘못된 인증 정보 입니다.");
+            }
+        }
         VerificationReadyResponse verificationReadyResponse;
 
         try {
@@ -53,12 +64,8 @@ public class TossVerificationRequester {
             throw new RuntimeException(e);
         }
 
-        VerificationInfo info = VerificationInfo.builder()
-                .txId(verificationReadyResponse.getSuccess().getTxId())
-                .build();
 
         return VerificationReadyDto.builder()
-                .id(info.getId())
                 .txid(verificationReadyResponse.getSuccess().getTxId())
                 .success(verificationReadyResponse.getSuccess())
                 .fail(verificationReadyResponse.getFail())
@@ -92,15 +99,25 @@ public class TossVerificationRequester {
                 .build();
 
         // 요청
-        String responseJSON = RestClient.builder()
-                .baseUrl(tossVerificationProperties.getCheckRequestUrl())
-                .build().post()
-                .header(tossVerificationProperties.getTokenKey(),
-                        tossVerificationProperties.getTokenType() +
-                        tossVerificationProperties.getAccessToken())
-                .body(dto)
-                .contentType(MediaType.APPLICATION_JSON).retrieve().body(String.class);
-
+        String responseJSON = "";
+        try {
+            responseJSON = RestClient.builder()
+                    .baseUrl(tossVerificationProperties.getCheckRequestUrl())
+                    .build().post()
+                    .header(tossVerificationProperties.getTokenKey(),
+                            tossVerificationProperties.getTokenType() +
+                            tossVerificationProperties.getAccessToken())
+                    .body(dto)
+                    .contentType(MediaType.APPLICATION_JSON).retrieve().body(String.class);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                e.printStackTrace();
+                if (e.getMessage().contains("CE3102")) {
+                    throw new ClientException(ErrorCode.BAD_INFO_EX_MESSAGE, "요청이 완료되지 않았습니다.");
+                }
+                throw new ClientException(ErrorCode.BAD_INFO_EX_MESSAGE, "잘못된 인증 정보 입니다.");
+            }
+        }
         CheckResultDto resultDto;
 
         try {

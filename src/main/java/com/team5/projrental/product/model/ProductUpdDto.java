@@ -61,7 +61,7 @@ public class ProductUpdDto {
     private List<String> hashTags;
 
     @Size(max = 10, message = ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE)
-    private List<Integer> delHashTags;
+    private List<Long> delHashTags;
 
 }
 

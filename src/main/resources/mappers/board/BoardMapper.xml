@@ -16,29 +16,24 @@
         </foreach>
     </insert>
 
+
+
     <select id="selBoardList">
         SELECT A.nick, A.stored_pic AS userPic, B.title, B.iboard, B.view
         , B.created_at AS createdAt
-        , if(C.iuser is null, 0, 1) AS isLiked, d.cnt AS totalBoardCount
+        , if(C.iuser > 0, 1, 0) AS isLiked, SQ.cnt AS boardLikeCnt
+        , B.status
         FROM user A
         JOIN board B
         ON A.iuser = B.iuser
 
-        <!-- 게시글 총 갯수 -->
-        JOIN (
-            select count(iboard) as cnt
-            from board
-        ) as d
+        left JOIN (SELECT iuser, iboard, count(iboard) as cnt
+                    from board_like
+                    group by iboard) SQ
+        on B.iboard = SQ.iboard
 
-        <choose>
-            <when test="sort == 1">
-                INNER JOIN board_like C
-            </when>
-            <when test="sort == 0 or sort == 2">
-                LEFT JOIN board_like C
-            </when>
-        </choose>
-        ON B.iboard = C.board_iboard
+        LEFT JOIN board_like C
+        ON B.iboard = C.iboard
         WHERE B.status = #{status}
         <choose>
             <when test="type == 1">
@@ -59,10 +54,16 @@
             </when>
         </choose>
         <choose>
-            <when test="sort == 0 or sort == 1">
+            <when test="sort == 0">
+                GROUP BY B.iboard
                 ORDER BY B.iboard DESC
             </when>
+            <when test="sort == 1">
+                GROUP BY B.iboard
+                order by SQ.cnt desc, B.iboard desc
+            </when>
             <when test="sort == 2">
+                GROUP BY B.iboard
                 ORDER BY B.view DESC
             </when>
         </choose>
@@ -70,19 +71,24 @@
     </select>
 
     <select id="selBoard">
-        SELECT A.nick, A.stored_pic AS userPic, B.iboard
-        , B.title, B.contents, B.view, B.created_at AS createdAt, if(C.iuser is null, 0, 1) AS isLiked
+        SELECT A.iuser, A.nick, A.stored_pic AS userPic, B.iboard
+        , B.title, B.contents, B.view
+        , B.created_at AS createdAt, if(C.iuser > 0, 1, 0) AS isLiked
+        , C.cnt AS boardLikeCount, B.status
         FROM user A
         JOIN board B
         ON A.iuser = B.iuser
-        LEFT JOIN board_like C
-        ON B.iboard = C.board_iboard
-        WHERE B.iboard = #{iboard}
+
+        LEFT JOIN (select iuser, iboard, count(iboard) As cnt
+                from board_like
+                where iboard = #{iboard}) C
+        ON B.iboard = C.iboard
+        WHERE B.iboard = #{iboard} and B.status = #{status}
     </select>
 
     <!-- 특정 게시글의 사진들 -->
     <select id="selBoardPicList">
-        SELECT stored_pic AS boardPic
+        SELECT stored_pic AS boardPic, ipics
         FROM board_pic
         WHERE iboard = #{iboard}
     </select>
@@ -115,20 +121,21 @@
     <!-- 게시글 삭제(숨김) -->
     <update id="delBoard">
         UPDATE board
-        SET status = #{status}
-        WHERE iboard = #{iboard}
+        SET status = #{deleteStatus}
+        WHERE iboard = #{iboard} and iuser = #{iuser}
+        and status = #{activatedStatus}
     </update>
 
     <insert id="insLike">
         INSERT INTO board_like
-        SET board_iboard = #{iboard}
+        SET iboard = #{iboard}
         , iuser = #{loginIuser}
         , created_at = #{createdAt}
     </insert>
 
     <delete id="delLike">
         DELETE FROM board_like
-        WHERE board_iboard = #{iboard}
+        WHERE iboard = #{iboard}
         and iuser = #{loginIuser}
     </delete>
 
@@ -138,4 +145,8 @@
         where status = #{status};
     </select>
 
+    <delete id="delBoardPics">
+        DELETE FROM board_pic
+        WHERE iboard = #{iboard} and ipics = #{intIpics}
+    </delete>
 </mapper>

@@ -10,7 +10,7 @@ public interface ErrorMessage {
     String ILLEGAL_DATE_EX_MESSAGE = "잘못된 날짜를 입력하셨습니다.";
     //
     String BUY_DATE_MUST_BE_LATER_THAN_TODAY_EX_MESSAGE = "구매일은 오늘보다 같거나 이전이어야 합니다.";
-    String RENTAL_DATE_MUST_BE_BEFORE_THAN_TODAY_EX_MESSAGE = "대여 시작일은 오늘보다 같거나 이후어야 합니다.";
+    String RENTAL_DATE_MUST_BE_AFTER_THAN_TODAY_EX_MESSAGE = "대여 시작일은 오늘보다 같거나 이후어야 합니다.";
     String RENTAL_END_DATE_MUST_BE_AFTER_THAN_RENTAL_START_DATE_EX_MESSAGE = "대여 종료일은 대여 시작일 보다 같거나 이후어야합니다.";
     String CAN_NOT_BLANK_EX_MESSAGE = "필수값이 제공되지 않았습니다.";
     String AUTHENTICATION_FAIL_EX_MESSAGE = "인증에 실패하였습니다.";

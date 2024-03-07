@@ -1,7 +1,6 @@
 package com.team5.projrental.aachat;
 
-import com.team5.projrental.aachat.model.ChatSelDto;
-import com.team5.projrental.aachat.model.ChatSelVo;
+import com.team5.projrental.aachat.model.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -11,7 +10,9 @@ public interface ChatMapper {
 
 //    int insChat(ChatInsDto dto); // 채팅 빈 방 생성
     List<ChatSelVo> selChatAll(ChatSelDto dto); // 채팅리스트
-//
+
+    Long updChatLastMsg(ChatMsgInsDto dto);
+
 //    int insChatUser(ChatUserInsDto dto); // 빈 채팅방에 유저 참여
 //    List<ChatUserInsDto> insChatUserTest(ChatUserInsDto dto); // TDD 용
 //
@@ -19,7 +20,7 @@ public interface ChatMapper {
 //    Integer selChatUserCheck2(ChatInsDto dto);
 //
 //    int insChatMsg(ChatMsgInsDto dto);
-//    List<ChatMsgSelVo> selChatMsgAll(ChatMsgSelDto dto);
+    ChatMsgSelVo selChatMsgAll(Long ichat);
 //    int updChatLastMsgAfterDelByLastMsg(ChatMsgDelDto dto);
 //    int updChatLastMsg(ChatMsgInsDto dto);
 //

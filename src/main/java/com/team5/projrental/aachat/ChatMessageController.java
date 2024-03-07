@@ -4,8 +4,10 @@ import com.team5.projrental.aachat.model.ChatMsgInsDto;
 import com.team5.projrental.aachat.properties.RabbitMQProperties;
 import com.team5.projrental.common.SecurityProperties;
 import com.team5.projrental.common.security.JwtTokenProvider;
+import com.team5.projrental.common.security.SecurityUserDetails;
 import com.team5.projrental.common.security.model.SecurityPrincipal;
-import com.team5.projrental.common.security.oauth2.MyUserDetails;
+import com.team5.projrental.common.utils.CommonUtils;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.ExchangeTypes;
@@ -31,25 +33,20 @@ public class ChatMessageController {
     private final JwtTokenProvider jwtTokenProvider;
     private final SecurityProperties appProperties;
 
+
     @MessageMapping("chat.send.{ichatRoom}")
-    public void send(ChatMsgInsDto dto, @DestinationVariable long ichatRoom, StompHeaderAccessor accessor) {
-        String authorizationHeader = accessor.getNativeHeader(appProperties.getJwt().getHeaderSchemeName()) == null ? null : String.valueOf(accessor.getNativeHeader(appProperties.getJwt().getHeaderSchemeName()).get(0));
-        String token = authorizationHeader.substring(appProperties.getJwt().getTokenType().length() + 1);
-        UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) jwtTokenProvider.getAuthentication(token);
+    @Operation(summary = "채팅 메세지 발송", description = "채팅 메세지 발송")
+    public void send(ChatMsgInsDto dto, @DestinationVariable Long ichatRoom) {
+
+        dto.setMessage(CommonUtils.ifContainsBadWordTrue(dto.getMessage()) ?
+                CommonUtils.ifContainsBadWordChangeThat(dto.getMessage()) :
+                dto.getMessage());
 
 
+        dto.setIchat(ichatRoom);
+        Long otherPersonIuser = service.changeUserStatus(dto.getIchat(), dto.getSenderIuser());
 
-        if (auth != null) {
-            // 만약 권한이 필요하다면 여기서 처리
-            MyUserDetails myUserDetails = (MyUserDetails) auth.getPrincipal();
-            SecurityPrincipal myPrincipal = myUserDetails.getMyPrincipal();
-            dto.setSenderIuser(myPrincipal.getIuser());
-//            dto.setSenderNick(// user 의 닉네임);
-
-            dto.setIchat(ichatRoom);
-        }
-
-        service.setSeq(dto);
+        //service.setSeq(dto);
         // chat.exchange                // room.{ichatRoom}                       // 메시지
         template.convertAndSend(properties.getChatExchangeName(), String.format("%s.%d", "room", ichatRoom), dto);
         service.saveMsg(dto);

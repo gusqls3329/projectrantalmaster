@@ -12,16 +12,19 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardSelVo {
+    private int iuser;
     private String nick;
     private String userPic;
 
     private int isLiked; // 0: 안누름 , 1: 좋아요
+    private int boardLikeCount; //받은 좋아요 갯수
 
     private int iboard;
     private String title;
     private String contents;
     private int view;
     private LocalDateTime createdAt;
+    private String status; //d
 
     private List<BoardPicSelVo> pic;
 

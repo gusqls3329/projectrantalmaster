@@ -36,9 +36,7 @@ public class MyPageDisputeQueryRepositoryImpl implements MyPageDisputeQueryRepos
         return jpaQueryFactory.select(dispute.count())
                 .from(dispute)
                 .join(dispute.reportedUser)
-                .where(dispute.reportedUser.id.eq(loginUserPk))
+                .where(dispute.reporter.id.eq(loginUserPk))
                 .fetchOne();
-
-
     }
 }

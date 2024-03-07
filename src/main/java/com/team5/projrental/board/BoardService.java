@@ -5,7 +5,10 @@ import com.team5.projrental.board.comment.BoardCommentMapper;
 import com.team5.projrental.board.model.*;
 import com.team5.projrental.common.Const;
 import com.team5.projrental.common.exception.BadWordException;
+import com.team5.projrental.common.exception.ErrorCode;
 import com.team5.projrental.common.exception.NoSuchUserException;
+import com.team5.projrental.common.exception.base.BadInformationException;
+import com.team5.projrental.common.exception.base.NoSuchDataException;
 import com.team5.projrental.common.exception.checked.FileNotContainsDotException;
 import com.team5.projrental.common.exception.thrid.ClientException;
 import com.team5.projrental.common.model.ResVo;
@@ -30,8 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.team5.projrental.common.exception.ErrorCode.BAD_PIC_EX_MESSAGE;
-import static com.team5.projrental.common.exception.ErrorCode.BAD_WORD_EX_MESSAGE;
+import static com.team5.projrental.common.exception.ErrorCode.*;
 import static com.team5.projrental.common.exception.ErrorMessage.ILLEGAL_RANGE_EX_MESSAGE;
 
 @Slf4j
@@ -76,9 +78,9 @@ public class BoardService {
                 .status(BoardStatus.ACTIVATED)
                 .build();
         boardRepository.save(board);
-        board.setUser(user);
+        /*board.setUser(user);
         board.setTitle(dto.getTitle());
-        board.setContents(dto.getContents());
+        board.setContents(dto.getContents());*/
 
         String stringId= String.valueOf(board.getId());
         BoardPicInsDto boardPicInsDto = new BoardPicInsDto();
@@ -114,28 +116,44 @@ public class BoardService {
                 .boardList(list)
                 .totalBoardCount(count.getTotalBoardCount())
                 .build();
-
-
+        LocalDateTime createdAt = LocalDateTime.now();
+        System.out.println(createdAt);
+        //hi
         return vo;
     }
 
     public BoardSelVo getBoard (int iboard){
-        mapper.viewCount(iboard);
-        BoardSelVo vo = mapper.selBoard(iboard);
+        BoardStatus boardStatus = BoardStatus.ACTIVATED;
+        String status = boardStatus.name(); //enum을 문자열로
 
+        mapper.viewCount(iboard);
+        BoardSelVo vo = mapper.selBoard(iboard, status);
+
+        vo.setPic(mapper.selBoardPicList(iboard));
         List<BoardPicSelVo> picList = mapper.selBoardPicList(iboard);
         vo.setPic(picList);
 
-       List<BoardCommentSelVo> boardCommentList = commentMapper.selCommentList(iboard);
+        List<BoardCommentSelVo> boardCommentList = commentMapper.selCommentList(iboard);
         vo.setComments(boardCommentList);
 
         return vo;
     }
 
     @Transactional
-    public ResVo putBoard (BoardPutDto dto) {
+    public ResVo putBoard (BoardPutDto dto) { //gg
         Board board = boardRepository.getReferenceById((long)dto.getIboard());
 
+        if(dto.getIpics() != null && dto.getIpics().get(0) != 0) {
+            List<Integer> ipics = dto.getIpics();
+            for(int intIpics : ipics ) {
+                int affectedRow = mapper.delBoardPics(dto.getIboard(), intIpics);
+                if(affectedRow == 0) {
+                    throw new ClientException(
+                            ErrorCode.ILLEGAL_EX_MESSAGE,
+                            "존재하지 않는 사진pk값 입니다.");
+                }
+            }
+        }
         if(dto.getTitle() != null && dto.getTitle() != "") {
             board.setTitle(dto.getTitle());
         }
@@ -164,29 +182,51 @@ public class BoardService {
 
     @Transactional
     public ResVo delBoard (long iboard){
-        Board board = boardRepository.getReferenceById(iboard);
-        board.setStatus(BoardStatus.DELETED);
+        // jpa 게시글 삭제
+        /*Board board = boardRepository.getReferenceById(iboard);
+        User user = userRepository.getReferenceById(authenticationFacade.getLoginUserPk());
+        board.setUser(user);
+        board.setStatus(BoardStatus.DELETED);*/
+
         //board.setStatus(BoardStatus.DELETED);
             /*long result = mapper.delBoard(iboard);
             return new ResVo(result);*/
-        return new ResVo(Const.SUCCESS);
+
+        BoardStatus boardStatus = BoardStatus.DELETED;
+        String deleteStatus = boardStatus.name(); //enum을 문자열로
+
+        BoardStatus boardStatus2 = BoardStatus.ACTIVATED;
+        String activatedStatus = boardStatus2.name();
+
+        long loginIuser = authenticationFacade.getLoginUserPk();
+        int affecedRow = mapper.delBoard(iboard, loginIuser, deleteStatus, activatedStatus);
+        if(affecedRow == 1) {
+            return new ResVo(Const.SUCCESS);
+        }
+        throw new ClientException(
+                ErrorCode.ILLEGAL_EX_MESSAGE,
+                "잘못된 정보 입니다.");
     }
 
     public ResVo toggleLike (long iboard) {
         /*User user = userRepository.getReferenceById(authenticationFacade.getLoginUserPk());
         return null;*/
-            long loginIuser = authenticationFacade.getLoginUserPk();
-            BoardToggleLikeDto dto = new BoardToggleLikeDto();
-            dto.setIboard(iboard);
-            dto.setLoginIuser(loginIuser);
+        long loginIuser = authenticationFacade.getLoginUserPk();
+        BoardToggleLikeDto dto = new BoardToggleLikeDto();
+        dto.setIboard(iboard);
+        dto.setLoginIuser(loginIuser);
 
-            int affectedRow = mapper.delLike(dto);
-            if (affectedRow == 0) {
-                mapper.insLike(dto);
-                return new ResVo(Const.SUCCESS);
-            }
-            long result = 0;
+        int affectedRow = mapper.delLike(dto);
+        if (affectedRow == 0) {
+            mapper.insLike(dto);
+            return new ResVo(Const.SUCCESS);
+        }
+        if (affectedRow == 1) {
+            long result = -1;
             return new ResVo(result);
+        }
+        throw new ClientException(
+                ErrorCode.ILLEGAL_EX_MESSAGE);
     }
 }
 

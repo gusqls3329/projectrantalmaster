@@ -96,20 +96,24 @@ public class ProductService implements RefProductService {
             throw new IllegalCategoryException(ILLEGAL_CATEGORY_EX_MESSAGE);
         }
         // iuser 가져오기 -> isLiked 를 위해서
-        Long iuser = getLoginUserPk();
-        if (imainCategory > 0) {
-            if (imainCategory > 6) {
-                throw new ClientException(ILLEGAL_CATEGORY_EX_MESSAGE, "잘못된 카테고리입니다.");
-            }
+        Long iuser = null;
+        try {
+            iuser = getLoginUserPk();
+        } catch (ClassCastException ignored) {
+
+        }
+        if (imainCategory > 6 || isubCategory > 5) {
+            throw new ClientException(ILLEGAL_CATEGORY_EX_MESSAGE, "잘못된 카테고리입니다.");
         }
 
 
-        ProductMainCategory mainCategory = ProductMainCategory.getByNum(imainCategory);
+        ProductMainCategory mainCategory = imainCategory > 0 ? ProductMainCategory.getByNum(imainCategory)
+                : null;
         return productRepository.findAllBy(
                 sort,
                 search,
                 mainCategory,
-                ProductSubCategory.getByNum(mainCategory, isubCategory),
+                isubCategory > 0 ? ProductSubCategory.getByNum(mainCategory, isubCategory) : null,
                 addr,
                 page,
                 iuser,
@@ -118,57 +122,21 @@ public class ProductService implements RefProductService {
 
     }
 
-    public List<ProductListVo> getProductListForMain(Integer cnt) {
+    public List<ProductListVo> getProductListForMain(
+            List<Integer> imainCategory,
+            List<Integer> isubCategory
+    ) {
+        int page = 0;
+        int limit = Const.MAIN_PROD_PER_PAGE;
+        List<ProductListVo> result = new ArrayList<>();
+        for (int i = 0; i < imainCategory.size(); i++) {
+            result.addAll(getProductList(null, null, imainCategory.get(i), isubCategory.get(i), null, page, limit));
+        }
 
 
-        int limit = cnt == null || cnt == 0 ? Const.MAIN_PROD_PER_PAGE : cnt;
-
-
-        List<ProductListForMainDto> dto = productRepository.findEachTop8ByCategoriesOrderByIproductDesc(limit);
-
-        Long loginUserPk = authenticationFacade.getLoginUserPk();
-
-        List<Long> iproducts = dto.stream().map(ProductListForMainDto::getIproduct).toList();
-
-        // 제품의 전체 좋아요 수와 로그인 유저가 좋아요 했는지 여부 가져오기
-        List<ProdLike> prodLikes = productLikeRepository.countByIuserAndInIproduct(loginUserPk, iproducts);
-
-//        List<Product> findProduct = productRepository.findByIdIn(iproducts);
-
-
-        // dto -> vo 변환작업 시작
-        return dto.stream().map(d -> ProductListVo.builder()
-                        .iuser(d.getIuser())
-                        .nick(d.getNick())
-                        .userPic(d.getUserPic())
-                        .iproduct(d.getIproduct())
-                        .title(d.getTitle())
-                        .prodMainPic(d.getProdMainPic())
-                        .rentalPrice(d.getRentalPrice())
-                        .rentalStartDate(d.getRentalStartDate())
-                        .rentalEndDate(d.getRentalEndDate())
-                        .addr(d.getAddr())
-                        .restAddr(d.getRestAddr())
-                        // 해당 제품의 찜 수
-                        .isLiked(prodLikes.stream().anyMatch(l -> Objects.equals(l.getProduct().getId(),
-                                d.getIproduct())) ? 1 : 0) // 내가
-                        // 좋아요 했는지 여부
-                        .istatus(d.getStatus().getNum())
-//                .inventory(findProduct.stream() // 재고 삭제, 무조건 1개 제품 등록 가능
-//                        .filter(fp -> Objects.equals(fp.getId(), d.getIproduct()))
-//                        .findFirst()
-//                        .orElseThrow(() -> new ServerException(SERVER_ERR_MESSAGE, "재고 조회중 에러 발생."))
-//                        .getStocks()
-//                        .size()) // 전체 재고 수
-                        .view(d.getView())
-                        .categories(Categories.builder()
-                                .mainCategory(d.getMainCategory().getNum())
-                                .subCategory(d.getSubCategory().getNum())
-                                .build())
-                        .build()
-        ).collect(Collectors.toList());
-
+        return result;
     }
+
 
     /**
      * 선택한 특정 제품페이지 조회.
@@ -307,10 +275,17 @@ public class ProductService implements RefProductService {
         ProductMainCategory mainCategory = ProductMainCategory.getByNum(dto.getIcategory().getMainCategory());
 
         // 도배방지
+        // todo 잠시 풀어둠 다시 잠그기
+        /*
         LocalDateTime lastCreatedAt = productRepository.findLastProductCreatedAtBy(findUser);
-        if (ChronoUnit.MINUTES.between(lastCreatedAt, LocalDateTime.now()) < 1) {
-            throw new ClientException(ErrorCode.ILLEGAL_EX_MESSAGE, "작성글은 1분에 한번만 작성 가능 합니다.");
+        if (lastCreatedAt != null) {
+            if (ChronoUnit.MINUTES.between(lastCreatedAt, LocalDateTime.now()) < 1) {
+                throw new ClientException(ErrorCode.ILLEGAL_EX_MESSAGE, "작성글은 1분에 한번만 작성 가능 합니다.");
+            }
         }
+        */
+
+
         Long stockSeq = 0L;
 
         Product saveProduct = Product.builder()
@@ -335,7 +310,8 @@ public class ProductService implements RefProductService {
         saveProduct.getHashTags().addAll(dto.getHashTags()
                 .stream()
                 .map(hash -> HashTag.builder()
-                        .tag(hash.replaceAll(" ", ""))
+                        .tag(hash.charAt(0) != '#' ? "#" + hash.replaceAll(" ", "") :
+                                hash.replaceAll(" ", ""))
                         .product(saveProduct)
                         .build()).toList());
 
@@ -476,12 +452,13 @@ public class ProductService implements RefProductService {
         // 문제 없음.
 
         // 해시태그 작업(삭제)
-        findProduct.getHashTags().stream().filter(hash -> dto.getHashTags().contains(hash.getTag()))
-                .forEach(findProduct.getHashTags()::remove);
+        findProduct.getHashTags().removeAll(
+                findProduct.getHashTags().stream().filter(hash -> dto.getDelHashTags().contains(hash.getId())).toList()
+        );
 
         // 해시태그 작업(추가)
         findProduct.getHashTags().addAll(dto.getHashTags().stream().map(hash -> HashTag.builder()
-                .tag(hash)
+                .tag(!hash.contains("#") ? "#" + hash.replaceAll(" ", "") : hash.replaceAll(" ", ""))
                 .product(findProduct)
                 .build()).toList());
 
@@ -597,9 +574,14 @@ public class ProductService implements RefProductService {
     public List<ProductUserVo> getUserProductList(Long iuser, Integer page) {
         User findUser = userRepository.findById(iuser == null ? getLoginUserPk() : iuser)
                 .orElseThrow(() -> new ClientException(NO_SUCH_USER_EX_MESSAGE, "존재하지 않는 유저입니다."));
-        List<Product> findProducts = productRepository.findByUser(findUser, page);
-        List<Long> usersLikeProductInFindProducts = productLikeRepository.findByUserAndProductIn(findUser, findProducts)
-                .stream().map(prodLike -> prodLike.getProduct().getId()).toList();
+        List<ProductStatus> status = new ArrayList<>();
+        status.add(ProductStatus.ACTIVATED);
+        if (iuser == null) {
+            status.add(ProductStatus.HIDDEN);
+        }
+
+        List<Product> findProducts = productRepository.findByUser(findUser, page, status);
+        List<Long> usersLikeProductInFindProducts = productLikeRepository.findByUserAndProductIn(findUser, findProducts);
 
 
         return findProducts
@@ -757,8 +739,13 @@ public class ProductService implements RefProductService {
     }
 
     public ResVo getUserProductCount(Integer iuser) {
-
-        return new ResVo(productRepository.findByIuser(iuser == null || iuser == 0 ? getLoginUserPk() : iuser));
+        List<ProductStatus> status = new ArrayList<>();
+        status.add(ProductStatus.ACTIVATED);
+        if (iuser == null) {
+            status.add(ProductStatus.HIDDEN);
+        }
+        return new ResVo(productRepository.findByIuser(iuser == null || iuser == 0 ? getLoginUserPk() : iuser,
+                status));
 
     }
 

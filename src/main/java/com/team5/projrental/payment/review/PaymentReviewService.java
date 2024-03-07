@@ -90,6 +90,8 @@ public class PaymentReviewService {
                         throw new BadInformationException(ILLEGAL_EX_MESSAGE);
                     }
                     if (dto.getRating() == null) {
+                        Review review1 = reviewRepository.save(review);
+                        dto.setIreview(review1.getId().intValue());
                         return dto.getIreview();
                     }
                     user = paymentRepository.selUser(dto.getIpayment().longValue());
@@ -133,7 +135,6 @@ public class PaymentReviewService {
         //CheckIsBuyer buyCheck = reviewMapper.selBuyRew(loginUserPk, check.get().getPayment().getId().intValue());
         CommonUtils.ifAnyNullThrow(BadInformationException.class, BAD_INFO_EX_MESSAGE, payment);
         Optional<User> userOptional = usersRepository.findById(loginUserPk);
-        User user = userOptional.get();
         Review review = reviewRepository.findById(dto.getIreview().longValue()).get();
 
         //수정전 리뷰를 작성한 사람이 iuser가 맞는지 확인
@@ -142,10 +143,16 @@ public class PaymentReviewService {
         if (dto.getRating() == null && (dto.getContents() == null || dto.getContents().equals(""))) {
             throw new BadInformationException(ILLEGAL_EX_MESSAGE);
         }
-        if (dto.getRating() == null) {
-            return dto.getIreview();
+        User user = paymentRepository.selUser(review.getPayment().getId());
+        if(dto.getRating() == null){
+            dto.setRating(review.getRating());
         }
-        user = paymentRepository.selUser(review.getPayment().getId());
+        if(user.getBaseUser().getRating() == 0){
+            review.setRating(dto.getRating() == null ? 0 : dto.getRating());
+            review.setContents(dto.getContents() == null ? review.getContents() : dto.getContents());
+            user.getBaseUser().setRating(dto.getRating().doubleValue());
+            return (int) Const.SUCCESS;
+        }
         //int chIuser = reviewMapper.selUser(dto.getIpayment());
         SelRatVo vo = paymentRepository.selRat(user.getId());
         // SelRatVo vo = reviewMapper.selRat(user.getId().intValue());
@@ -177,7 +184,7 @@ public class PaymentReviewService {
         //삭제전 리뷰를 작성한 사람이 iuser가 맞는지 확인
 
         User user = usersRepository.findById(loginUserPk).get();
-        Review check = reviewRepository.findByUser(user);
+        Review check = reviewRepository.findByUserAndId(user, (long) dto.getIreview());
         if (check == null) {
             throw new BadInformationException(BAD_INFO_EX_MESSAGE);
         }

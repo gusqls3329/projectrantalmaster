@@ -61,7 +61,9 @@ public class AdminBoardQueryRepositoryImpl implements AdminBoardQueryRepository 
 
     private BooleanBuilder whereFindAllLimitPage(Integer type, String search) {
         BooleanBuilder builder = new BooleanBuilder();
-        if(type == null) return builder;
+        builder.and(board.status.eq(BoardStatus.ACTIVATED));
+
+        if (type == null) return builder;
         if (type == 1) {
             builder.and(board.user.nick.like("%" + search + "%"));
         }

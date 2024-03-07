@@ -24,8 +24,8 @@ public class StompConfiguration implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.setErrorHandler(stompErrorHandler)
                 .addEndpoint(properties.getStompEndPoint())
-                .setAllowedOrigins(properties.getStompAllowedOriginPatterns())
-                .withSockJS();
+                .setAllowedOriginPatterns(properties.getStompAllowedOriginPatterns());
+                //.withSockJS();
     }
 
     @Override

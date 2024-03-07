@@ -13,7 +13,7 @@ public class UserSelDto {
     private String uid;
 
     @Range(min = 1)
-    private int iuser;
+    private Long iuser;
 
     private String providerType;
 }

@@ -50,7 +50,7 @@ public class BoardController {
             "<br>title: 게시글 제목" +
             "<br>view: 게시글 조회수" +
             "<br>createdAt: 등록 날짜" +
-            "}]")
+            "<br>boardLikeCnt: 좋아요 받은 갯수}]")
     @Parameters(value = {
             @Parameter(name = "page", description = "페이지, min:1 / 게시글 12개씩 나옴"),
             @Parameter(name = "search", description = "search(검색어)가 제공될 경우 해당 키워드가 포함된 게시글만 조회<br>" +
@@ -62,13 +62,13 @@ public class BoardController {
     @Validated
     @GetMapping
     public BoardListVo getBoardList(@RequestParam(defaultValue = "1") @Min(1)
-                                             int page,
-                                             @RequestParam(defaultValue = "0")
-                                             int sort,
-                                             @RequestParam(name = "search", required = false)
-                                             String search,
-                                             @RequestParam(name = "type", required = false)
-                                             Integer type)
+                                    int page,
+                                    @RequestParam(defaultValue = "0")
+                                    int sort,
+                                    @RequestParam(name = "search", required = false)
+                                    String search,
+                                    @RequestParam(name = "type", required = false)
+                                    Integer type)
     {
         BoardListSelDto dto = new BoardListSelDto();
 
@@ -88,12 +88,14 @@ public class BoardController {
         return service.getBoard(iboard);
     }
 
-    @Operation(summary = "게시글 수정", description = "특정 게시글 수정<br>result:1(수정 성공)")
+    @Operation(summary = "게시글 수정", description = "특정 게시글 수정<br>result:1(수정 성공)" +
+            "<br>ipics: 삭제 할 사진pk값(List여러개 입력 가능 ex[1,4,5])" +
+            "<br>사진 삭제 안하면 default:0 그대로 두면됨")
     @Parameters(value = {
             @Parameter(name = "iboard", description = "수정 할 게시글pk"),
-            @Parameter(name = "title", description = "수정 할 게시글 제목"),
-            @Parameter(name = "contents", description = "수정 할 게시글 내용"),
-            @Parameter(name = "storedPic", description = "수정할 게시글 사진")})
+            @Parameter(name = "title", description = "수정 할 게시글 제목 - 따옴표 없애고 그냥 null 입력시 수정x"),
+            @Parameter(name = "contents", description = "수정 할 게시글 내용 - 따옴표 없애고 그냥 null 입력시 수정x"),
+            @Parameter(name = "storedPic", description = "수정(추가) 할 게시글 사진")})//1
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResVo putBoard(@RequestPart(required = false) List<MultipartFile> storedPic, @RequestPart @Validated BoardPutDto dto) {
         dto.setStoredPic(storedPic);
@@ -111,7 +113,7 @@ public class BoardController {
     }
 
 
-    @Operation(summary = "게시글 좋아요 처리", description = "게시글 좋아요 토글<br> result:1(좋아요 누름), result:0(좋아요 취소)")
+    @Operation(summary = "게시글 좋아요 처리", description = "게시글 좋아요 토글<br> result:1(좋아요 누름), result:-1(좋아요 취소)")
     @Parameters(value = {
             @Parameter(name = "iboard", description = "좋아요 처리 할 게시판pk")})
     @GetMapping("/like/{iboard}")

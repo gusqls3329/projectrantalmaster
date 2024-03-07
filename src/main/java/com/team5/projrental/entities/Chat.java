@@ -4,6 +4,12 @@ import com.team5.projrental.entities.mappedsuper.CreatedAt;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -11,6 +17,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
+@EntityListeners(AuditingEntityListener.class)
+
 public class Chat extends CreatedAt {
 
     @Id
@@ -25,5 +33,8 @@ public class Chat extends CreatedAt {
     @Column(length = 2000, name = "last_msg")
     private String lastMsg;
 
-    private String lastMsgAt;
+    @UpdateTimestamp
+    @Column(name = "last_msg_at")
+    private LocalDateTime lastMsgAt;
+
 }

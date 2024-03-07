@@ -78,7 +78,9 @@ public class JwtTokenProvider {
         } catch (JsonProcessingException e) {
             throw new WrapRuntimeException(SERVER_ERR_MESSAGE);
         }
-        return new SecurityUserDetails(principal);
+        SecurityUserDetails securityUserDetails = new SecurityUserDetails();
+        securityUserDetails.setSecurityPrincipal(principal);
+        return securityUserDetails;
     }
     public Authentication getAuthentication(String token) {
         UserDetails userDetails = getUserDetailsFromToken(token);
