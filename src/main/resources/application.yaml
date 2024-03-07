@@ -183,3 +183,12 @@ app: #속성을 바꿀 수 있는 부분 들은 상수 처럼 쓰기 편하도�
 logging:
   level:
     -com.team5.projrental: info
+
+api:
+  pay:
+    kakao:
+      success-redirect-url: "http://192.168.0.144:5226/payment/success"
+      cancel-redirect-url: "http://192.168.0.144:5226/payment/cancel"
+      fail-redirect-url: "http://192.168.0.144:5226/payment/fail"
+      request-url: "https://open-api.kakaopay.com/online/v1/payment/ready"
+      approve-url: "https://open-api.kakaopay.com/online/v1/payment/approve"
