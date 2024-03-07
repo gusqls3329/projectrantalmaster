@@ -276,9 +276,12 @@ public class ProductService implements RefProductService {
 
         // 도배방지
         LocalDateTime lastCreatedAt = productRepository.findLastProductCreatedAtBy(findUser);
-        if (ChronoUnit.MINUTES.between(lastCreatedAt, LocalDateTime.now()) < 1) {
-            throw new ClientException(ErrorCode.ILLEGAL_EX_MESSAGE, "작성글은 1분에 한번만 작성 가능 합니다.");
+        if (lastCreatedAt != null) {
+            if (ChronoUnit.MINUTES.between(lastCreatedAt, LocalDateTime.now()) < 1) {
+                throw new ClientException(ErrorCode.ILLEGAL_EX_MESSAGE, "작성글은 1분에 한번만 작성 가능 합니다.");
+            }
         }
+
         Long stockSeq = 0L;
 
         Product saveProduct = Product.builder()
