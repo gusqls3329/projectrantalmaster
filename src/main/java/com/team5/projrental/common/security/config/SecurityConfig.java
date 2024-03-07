@@ -63,24 +63,24 @@ public class SecurityConfig {
                         // 권한
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN")
                         .requestMatchers("/api/sse/connect").hasAnyRole("USER")
-                        .requestMatchers("/api/prod/fav/**",
+                        .requestMatchers(
+                                "/api/prod/fav/**",
                                 "/api/pay/kakao/**",
-                                "/api/board/like/").hasAnyRole("USER")
-                        .requestMatchers(HttpMethod.POST, "/api/prod",
-                                "/api/board").hasRole("USER")
-
+                                "/api/board/like/"
+                        ).hasAnyRole("USER")
+                        .requestMatchers(
+                                HttpMethod.POST, "/api/prod",
+                                "/api/board"
+                        ).hasRole("USER")
+                        //
                         .anyRequest().permitAll())
-                /*.exceptionHandling(ex -> {
-                    ex.authenticationEntryPoint(new JwtAuthenticationEntryPoint());
-                    ex.accessDeniedHandler(new JwtAccessDeniedHandler());
-                }).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).build();*/
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(except -> {
                     except.authenticationEntryPoint(new JwtAuthenticationEntryPoint())
                             .accessDeniedHandler(new JwtAccessDeniedHandler());
                 })
-                .oauth2Login(oauth2 -> oauth2.authorizationEndpoint(auth ->
-                                        auth.baseUri("/oauth2/authorization")
+                .oauth2Login(oauth2 -> oauth2.authorizationEndpoint(
+                                        auth -> auth.baseUri("/oauth2/authorization")
                                                 .authorizationRequestRepository(oAuth2AuthenticationRequestBasedOnCookieRepository)
 
                                 ).redirectionEndpoint(redirection -> redirection.baseUri("/*/oauth2/code/*"))
