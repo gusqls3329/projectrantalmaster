@@ -56,29 +56,27 @@
     </select>-->
 
     <select id="selChatAll">
-        SELECT
-        (SELECT COUNT(ichat) AS totalChatCount FROM chat WHERE u.iuser != 2 AND cu.`status`= 'ACTIVE') AS totalChatCount,
-        c.ichat,
-        c.last_msg AS lastMsg,
-        c.last_msg_at AS lastMsgAt,
-        cu.`status` AS istatus,
-        p.iproduct,
-        p.stored_pic as prodPic,
-        p.title,
-        u.nick,
-        u.stored_pic as otherPersonPic,
-        uu.iuser AS otherPersonIuser,
-        uu.nick AS otherPersonNm
-        FROM user u
-        JOIN chat_user cu
-        ON u.iuser != cu.iuser
-        JOIN user uu
-        ON uu.iuser = cu.iuser
-        JOIN chat c
-        ON cu.ichat = c.ichat
-        JOIN product p
-        ON c.iproduct = p.iproduct
-        WHERE u.iuser = #{loginedIuser} AND cu.`status`= 'ACTIVE'
+        select
+        (SELECT COUNT(q.last_msg) totalChatCount FROM chat q WHERE u.iuser = #{loginedIuser} AND cu.`status`= 'ACTIVE') AS totalChatCount,
+        C.ichat,
+        C.last_msg AS lastMsg,
+        C.last_msg_at AS lastMsgAt,
+        CU.`status` AS istatus,
+        P.iproduct,
+        P.stored_pic as prodPic,
+        P.title,
+        U.nick,
+        UU.stored_pic as otherPersonPic,
+        UU.iuser AS otherPersonIuser,
+        UU.nick AS otherPersonNm
+        from chat C
+        join chat_user CU on C.ichat = CU.ichat
+        join user U on CU.iuser = U.iuser
+        join chat_user CUU on C.ichat = CUU.ichat
+        join user UU on CUU.iuser = UU.iuser
+        join product P on C.iproduct = P.iproduct
+        where CU.iuser = #{loginedIuser} and CUU.iuser != #{loginedIuser}
+        order by C.last_msg_at desc
     </select>
 
 
