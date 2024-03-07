@@ -184,7 +184,7 @@ public class PaymentReviewService {
         //삭제전 리뷰를 작성한 사람이 iuser가 맞는지 확인
 
         User user = usersRepository.findById(loginUserPk).get();
-        Review check = reviewRepository.findByUser(user);
+        Review check = reviewRepository.findByUserAndId(user, (long) dto.getIreview());
         if (check == null) {
             throw new BadInformationException(BAD_INFO_EX_MESSAGE);
         }

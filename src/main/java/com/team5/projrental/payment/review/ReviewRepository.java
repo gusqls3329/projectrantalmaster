@@ -11,6 +11,6 @@ import org.springframework.data.jpa.repository.Query;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     Integer countByPaymentAndUser(Payment payment, User user);
 
+    Review findByUserAndId(User user, Long ireview);
     Review findByUser(User user);
-
 }
