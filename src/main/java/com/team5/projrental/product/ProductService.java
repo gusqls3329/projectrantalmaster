@@ -574,8 +574,7 @@ public class ProductService implements RefProductService {
         }
 
         List<Product> findProducts = productRepository.findByUser(findUser, page, status);
-        List<Long> usersLikeProductInFindProducts = productLikeRepository.findByUserAndProductIn(findUser, findProducts)
-                .stream().map(prodLike -> prodLike.getProduct().getId()).toList();
+        List<Long> usersLikeProductInFindProducts = productLikeRepository.findByUserAndProductIn(findUser, findProducts);
 
 
         return findProducts
