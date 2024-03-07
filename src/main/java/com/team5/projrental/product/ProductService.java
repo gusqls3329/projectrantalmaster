@@ -275,12 +275,16 @@ public class ProductService implements RefProductService {
         ProductMainCategory mainCategory = ProductMainCategory.getByNum(dto.getIcategory().getMainCategory());
 
         // 도배방지
+        // todo 잠시 풀어둠 다시 잠그기
+        /*
         LocalDateTime lastCreatedAt = productRepository.findLastProductCreatedAtBy(findUser);
         if (lastCreatedAt != null) {
             if (ChronoUnit.MINUTES.between(lastCreatedAt, LocalDateTime.now()) < 1) {
                 throw new ClientException(ErrorCode.ILLEGAL_EX_MESSAGE, "작성글은 1분에 한번만 작성 가능 합니다.");
             }
         }
+        */
+
 
         Long stockSeq = 0L;
 

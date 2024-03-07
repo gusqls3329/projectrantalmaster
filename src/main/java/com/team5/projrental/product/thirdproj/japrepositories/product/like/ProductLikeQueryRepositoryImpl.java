@@ -13,7 +13,7 @@ import java.util.List;
 import static com.team5.projrental.entities.QProdLike.prodLike;
 
 @RequiredArgsConstructor
-public class ProductLikeQueryRepositoryImpl implements ProductLikeQueryRepository{
+public class ProductLikeQueryRepositoryImpl implements ProductLikeQueryRepository {
 
     private final JPAQueryFactory query;
 
@@ -36,8 +36,9 @@ public class ProductLikeQueryRepositoryImpl implements ProductLikeQueryRepositor
 
         return user == null ? new ArrayList<>() :
                 query.select(prodLike.prodLikeIds.iproduct)
-                .where(prodLike.user.eq(user).and(prodLike.product.in(products)))
-                .fetch();
+                        .from(prodLike)
+                        .where(prodLike.user.eq(user).and(prodLike.product.in(products)))
+                        .fetch();
 
     }
 
