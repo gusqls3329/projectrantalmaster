@@ -1,20 +1,19 @@
 package com.team5.projrental.product.thirdproj.japrepositories.product.like;
 
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.team5.projrental.entities.ProdLike;
 import com.team5.projrental.entities.Product;
 import com.team5.projrental.entities.User;
-import com.team5.projrental.product.thirdproj.model.IsLikedDto;
 import com.team5.projrental.product.thirdproj.model.ProductLikeCountAndMyLikeDto;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.team5.projrental.entities.QProdLike.prodLike;
 
 @RequiredArgsConstructor
-public class ProductLikeQueryRepositoryImpl implements ProductLikeQueryRepository{
+public class ProductLikeQueryRepositoryImpl implements ProductLikeQueryRepository {
 
     private final JPAQueryFactory query;
 
@@ -32,11 +31,15 @@ public class ProductLikeQueryRepositoryImpl implements ProductLikeQueryRepositor
     }
 
     @Override
-    public List<ProdLike> findByUserAndProductIn(User user, List<Product> products) {
+    public List<Long> findByUserAndProductIn(User user, List<Product> products) {
 
-        return query.selectFrom(prodLike)
-                .where(prodLike.user.eq(user).and(prodLike.product.in(products)))
-                .fetch();
+
+        return user == null ? new ArrayList<>() :
+                query.select(prodLike.prodLikeIds.iproduct)
+                        .from(prodLike)
+                        .where(prodLike.user.eq(user).and(prodLike.product.in(products)))
+                        .fetch();
 
     }
+
 }
