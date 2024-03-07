@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StockRepository extends JpaRepository<Stock, Long>, StockQueryRepository{
 
-    int countById(Long id);
+
 
     Integer countByProduct(Product product);
 }

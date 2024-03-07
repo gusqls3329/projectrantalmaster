@@ -6,13 +6,12 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.team5.projrental.common.Const;
+import com.team5.projrental.common.security.AuthenticationFacade;
 import com.team5.projrental.entities.*;
 import com.team5.projrental.entities.enums.ProductMainCategory;
 import com.team5.projrental.entities.enums.ProductStatus;
 import com.team5.projrental.entities.enums.ProductSubCategory;
 import com.team5.projrental.entities.enums.ReviewStatus;
-import com.team5.projrental.entities.ids.ProdLikeIds;
-import com.team5.projrental.product.like.ProductLikeMapper;
 import com.team5.projrental.product.model.CanNotRentalDateVo;
 import com.team5.projrental.product.model.Categories;
 import com.team5.projrental.product.model.HashTags;
@@ -21,7 +20,7 @@ import com.team5.projrental.product.model.jpa.ActivatedStock;
 import com.team5.projrental.product.thirdproj.japrepositories.product.like.ProductLikeRepository;
 import com.team5.projrental.product.thirdproj.japrepositories.product.stock.StockRepository;
 import com.team5.projrental.product.thirdproj.model.ProductListForMainDto;
-import jakarta.persistence.EntityManager;
+import com.team5.projrental.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -51,6 +50,8 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
     private final ProductLikeRepository productLikeRepository;
     private final JdbcTemplate jdbcTemplate;
     private final HashTagRepository hashTagRepository;
+    private final UserRepository userRepository;
+    private final AuthenticationFacade facade;
 
     public Map<Long, List<ActivatedStock>> getActivatedStock(LocalDateTime refDate) {
 
@@ -103,7 +104,9 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
     public List<ProductListVo> findAllBy(Integer sort, String search, ProductMainCategory mainCategory,
                                          ProductSubCategory subCategory, String addr, int page, Long iuser, int limit) {
         List<Product> findProducts = query.select(product)
-                .from(product).leftJoin(product.prodLikes).fetchJoin()
+                .from(product)
+                .leftJoin(product.prodLikes).fetchJoin() // 전부 join 걸기
+                .leftJoin(product.user).fetchJoin()
                 .where(whereSearchForFindAllBy(search, mainCategory, subCategory, addr)
                         .and(product.status.in(ProductStatus.ACTIVATED)))
                 .offset(page)
@@ -111,48 +114,57 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
                 .orderBy(orderByForFindAllBy(sort))
                 .fetch();
 
+
         // hashTag 가져오기
         List<HashTag> findHashTags = hashTagRepository.findByOpt(findProducts, search);
 
+        // like 관련
+        User findUser = null;
+        try {
+            findUser = userRepository.findById(facade.getLoginUserPk()).orElse(null);
+        } catch (ClassCastException ignored) {
+
+        }
+        List<Long> prodLikeCnts =
+                productLikeRepository.findByUserAndProductIn(findUser, findProducts);
+        List<Long> prodLikesForCounts =
+                productLikeRepository.findByProductIn(findProducts);
+
+        // 재고 관련
+        List<Long> stocksPk = stockRepository.countByProducts(findProducts);
         return findProducts
                 .stream()
-                .map(productEntity -> {
-                    int prodLikeCount = productLikeRepository.countByProdLikeIds(ProdLikeIds.builder()
-                            .iuser(productEntity.getUser().getId())
-                            .iproduct(productEntity.getId())
-                            .build());
-
-                    return ProductListVo.builder()
-                            .iuser(productEntity.getUser().getId())
-                            .nick(productEntity.getUser().getNick())
-                            .userPic(productEntity.getUser().getBaseUser().getStoredPic())
-                            .iproduct(productEntity.getId())
-                            .title(productEntity.getTitle())
-                            .prodMainPic(productEntity.getStoredPic())
-                            .rentalPrice(productEntity.getRentalPrice())
-                            .rentalStartDate(productEntity.getRentalDates().getRentalStartDate())
-                            .rentalEndDate(productEntity.getRentalDates().getRentalEndDate())
-                            .addr(productEntity.getAddress().getAddr())
-                            .restAddr(productEntity.getAddress().getRestAddr())
-                            .prodLike(prodLikeCount)
-                            //FIXME -> enum 숫자 2차때랑 동일하게 변경. (ordinal 로 불가능한것은 value 설정 하기
-                            .istatus(productEntity.getStatus().getNum())
-                            .inventory(stockRepository.countById(productEntity.getId()))
-                            .hashTags(findHashTags.stream()
-                                    .filter(hash -> Objects.equals(hash.getProduct().getId(), productEntity.getId()))
-                                    .map(hash -> HashTags.builder()
-                                            .id(hash.getId().intValue())
-                                            .tag(hash.getTag())
-                                            .build()).collect(Collectors.toList()))
-                            .isLiked(iuser == null ? 0 : productEntity.getProdLikes().stream()
-                                    .anyMatch(prodLike -> prodLike.getUser().getId().equals(iuser)) ? 1 : 0)
-                            .view(productEntity.getView())
-                            .categories(Categories.builder()
-                                    .mainCategory(productEntity.getMainCategory().getNum())
-                                    .subCategory(productEntity.getSubCategory().getNum())
-                                    .build())
-                            .build();
-                }).collect(Collectors.toList());
+                .map(productEntity -> ProductListVo.builder()
+                        .iuser(productEntity.getUser().getId())
+                        .nick(productEntity.getUser().getNick())
+                        .userPic(productEntity.getUser().getBaseUser().getStoredPic())
+                        .iproduct(productEntity.getId())
+                        .title(productEntity.getTitle())
+                        .prodMainPic(productEntity.getStoredPic())
+                        .rentalPrice(productEntity.getRentalPrice())
+                        .rentalStartDate(productEntity.getRentalDates().getRentalStartDate())
+                        .rentalEndDate(productEntity.getRentalDates().getRentalEndDate())
+                        .addr(productEntity.getAddress().getAddr())
+                        .restAddr(productEntity.getAddress().getRestAddr())
+                        .prodLike((int) prodLikesForCounts.stream().filter(pc -> Objects.equals(pc, productEntity.getId())).count())
+                        //FIXME -> enum 숫자 2차때랑 동일하게 변경. (ordinal 로 불가능한것은 value 설정 하기
+                        .istatus(productEntity.getStatus().getNum())
+                        .inventory(stocksPk.stream().filter(st -> Objects.equals(st, productEntity.getId())).toList().size())
+                        .hashTags(findHashTags.stream()
+                                .filter(hash -> Objects.equals(hash.getProduct().getId(), productEntity.getId()))
+                                .map(hash -> HashTags.builder()
+                                        .id(hash.getId().intValue())
+                                        .tag(hash.getTag())
+                                        .build()).collect(Collectors.toList()))
+                        .isLiked(iuser == null ? 0 : prodLikeCnts.stream()
+                                .anyMatch(pl -> Objects.equals(pl, productEntity.getId())) ? 1 : 0
+                        )
+                        .view(productEntity.getView())
+                        .categories(Categories.builder()
+                                .mainCategory(productEntity.getMainCategory().getNum())
+                                .subCategory(productEntity.getSubCategory().getNum())
+                                .build())
+                        .build()).collect(Collectors.toList());
 
 
     }
